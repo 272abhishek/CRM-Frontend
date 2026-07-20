@@ -1,0 +1,10 @@
+<div class="property-list">
+  <h2>Properties</h2>
+  <ul>
+    <li *ngFor="let property of properties">
+      <a [routerLink]="['/propertydetails', property._id]">
+        {{ property.title }} - {{ property.area }} ({{ property.possessionStatus }})
+      </a>
+    </li>
+  </ul>
+</div>

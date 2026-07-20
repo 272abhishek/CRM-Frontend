@@ -1,0 +1,17 @@
+<div class="profile-container" *ngIf="user">
+  <h2>{{ user.name }}</h2>
+  <p><strong>Email:</strong> {{ user.email | json}}</p>
+  <p><strong>Phone:</strong> {{ user.phone }}</p>
+  <p><strong>Role:</strong> {{ user.role }}</p>
+  <p><strong>Status:</strong> {{ user.isActive ? 'Active' : 'Inactive' }}</p>
+  <p>
+  <strong>Status:</strong>
+  <span [class.active]="user.isActive" [class.inactive]="!user.isActive">
+    {{ user.isActive ? 'Active' : 'Inactive' }}
+  </span>
+</p>
+</div>
+
+<div *ngIf="!user">
+  Loading profile...
+</div>

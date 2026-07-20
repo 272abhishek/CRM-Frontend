@@ -1,0 +1,17 @@
+<div *ngIf="property" class="property-detail">
+  <h2>{{ property.title }}</h2>
+  <p><strong>Address:</strong> {{ property.address }}</p>
+  <p><strong>Area:</strong> {{ property.area }} - {{ property.subArea }}</p>
+  <p><strong>Status:</strong> {{ property.possessionStatus }}</p>
+  <p><strong>Commission:</strong> {{ property.commissionPercentage }}%</p>
+
+  <h3>Amenities</h3>
+  <ul>
+    <li *ngFor="let amenity of property.amenities">{{ amenity }}</li>
+  </ul>
+
+  <h3>Images</h3>
+  <div *ngFor="let img of property.images">
+    <img [src]="img" alt="Property image" width="200" />
+  </div>
+</div>

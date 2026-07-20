@@ -1,0 +1,61 @@
+<h2>Add New Property</h2>
+<form [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
+  <label>Title:</label>
+  <input formControlName="title" />
+
+  <label>Address:</label>
+  <input formControlName="address" />
+
+  <label>Area:</label>
+  <input formControlName="area" />
+
+  <label>Sub Area:</label>
+  <input formControlName="subArea" />
+
+  <label>Possession Status:</label>
+  <select formControlName="possessionStatus">
+    <option value="Ready-to-move">Ready-to-move</option>
+    <option value="Under-construction">Under-construction</option>
+    <option value="Upcoming">Upcoming</option>
+  </select>
+
+  <label>Commission Percentage:</label>
+  <input type="number" formControlName="commissionPercentage" />
+
+  <h3>Builder Promises</h3>
+  <div formArrayName="builderPromises">
+    <div *ngFor="let promise of builderPromises.controls; let i = index">
+      <input [formControlName]="i" />
+    </div>
+    <button type="button" (click)="addBuilderPromise()">Add Promise</button>
+  </div>
+
+  <h3>Amenities</h3>
+  <div formArrayName="amenities">
+    <div *ngFor="let amenity of amenities.controls; let i = index">
+      <input [formControlName]="i" />
+    </div>
+    <button type="button" (click)="addAmenity()">Add Amenity</button>
+  </div>
+
+  <h3>Variants</h3>
+  <div formArrayName="variants">
+    <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i">
+      <label>Carpet Size:</label>
+      <input formControlName="carpetSize" type="number" />
+      <label>Super Built Up Area:</label>
+      <input formControlName="superBuiltUpArea" type="number" />
+      <label>Price:</label>
+      <input formControlName="price" type="number" />
+      <label>Floor:</label>
+      <input formControlName="floor" type="number" />
+      <label>Master Bedroom:</label>
+      <input formControlName="masterBedroom" type="checkbox" />
+      <label>Modular Kitchen:</label>
+      <input formControlName="modularKitchen" type="checkbox" />
+    </div>
+    <button type="button" (click)="addVariant()">Add Variant</button>
+  </div>
+
+  <button type="submit">Create Property</button>
+</form>
