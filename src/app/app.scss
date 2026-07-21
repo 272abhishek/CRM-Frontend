@@ -1,26 +1,219 @@
-nav {
-  background-color: #1976d2; // Angular Material blue
-  padding: 1rem;
-  display: flex;
-  gap: 1rem;
+/* =====================================================
+   GLOBAL RESET
+===================================================== */
 
-  a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-
-    &:hover {
-      color: #ffeb3b; // yellow on hover
-    }
-
-    &.active {
-      border-bottom: 2px solid #fff;
-    }
-  }
+* {
+  box-sizing: border-box;
 }
+
+
+html,
+body {
+  margin: 0;
+
+  min-height: 100%;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  background:
+    #f8fafc;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+nav {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 1000;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  min-height: 70px;
+
+  padding: 12px 25px;
+
+  background:
+    rgba(255, 255, 255, 0.92);
+
+  border-bottom: 1px solid
+    rgba(226, 232, 240, 0.8);
+
+  box-shadow:
+    0 8px 25px
+    rgba(15, 23, 42, 0.08);
+
+  backdrop-filter: blur(18px);
+
+}
+
+
+/* =====================================================
+   NAV LINKS
+===================================================== */
+
+nav a {
+  position: relative;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 42px;
+
+  padding: 0 17px;
+
+  border-radius: 12px;
+
+  color: #475569;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+
+/* =====================================================
+   HOVER
+===================================================== */
+
+nav a:hover {
+  color: #833ab4;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(131, 58, 180, 0.1),
+      rgba(253, 29, 29, 0.08)
+    );
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* =====================================================
+   ACTIVE ROUTE
+===================================================== */
+
+nav a.router-link-active {
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      90deg,
+      #833ab4,
+      #fd1d1d,
+      #fcb045
+    );
+
+  box-shadow:
+    0 6px 16px
+    rgba(225, 29, 72, 0.2);
+}
+
+
+/* =====================================================
+   REMOVE PIPE STYLE
+===================================================== */
+
+nav {
+  font-size: 0;
+}
+
+
+nav a {
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   PAGE CONTENT
+===================================================== */
 
 router-outlet {
   display: block;
-  margin-top: 2rem;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 768px) {
+
+  nav {
+    justify-content: flex-start;
+
+    overflow-x: auto;
+
+    flex-wrap: nowrap;
+
+    padding: 10px 14px;
+
+    scrollbar-width: none;
+  }
+
+
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+
+
+  nav a {
+    flex-shrink: 0;
+
+    min-height: 40px;
+
+    padding: 0 14px;
+
+    font-size: 13px;
+  }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 480px) {
+
+  nav {
+    gap: 5px;
+  }
+
+
+  nav a {
+    padding: 0 12px;
+
+    border-radius: 10px;
+
+    font-size: 12px;
+  }
+
 }

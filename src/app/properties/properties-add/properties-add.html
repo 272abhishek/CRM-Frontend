@@ -2,25 +2,32 @@
 <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
   <label>Title:</label>
   <input formControlName="title" />
+  <div *ngIf="propertyForm.get('title')?.invalid && propertyForm.get('title')?.touched">Title required</div>
 
   <label>Address:</label>
   <input formControlName="address" />
+  <div *ngIf="propertyForm.get('address')?.invalid && propertyForm.get('address')?.touched">Address required</div>
 
   <label>Area:</label>
   <input formControlName="area" />
+  <div *ngIf="propertyForm.get('area')?.invalid && propertyForm.get('area')?.touched">Area required</div>
 
   <label>Sub Area:</label>
   <input formControlName="subArea" />
+  <div *ngIf="propertyForm.get('subArea')?.invalid && propertyForm.get('subArea')?.touched">Sub Area required</div>
 
   <label>Possession Status:</label>
   <select formControlName="possessionStatus">
+    <option value="" disabled selected>Select status</option>
     <option value="Ready-to-move">Ready-to-move</option>
     <option value="Under-construction">Under-construction</option>
     <option value="Upcoming">Upcoming</option>
   </select>
+  <div *ngIf="propertyForm.get('possessionStatus')?.invalid && propertyForm.get('possessionStatus')?.touched">Possession status required</div>
 
   <label>Commission Percentage:</label>
   <input type="number" formControlName="commissionPercentage" />
+  <div *ngIf="propertyForm.get('commissionPercentage')?.invalid && propertyForm.get('commissionPercentage')?.touched">Must be between 0 and 100</div>
 
   <h3>Builder Promises</h3>
   <div formArrayName="builderPromises">
@@ -38,7 +45,7 @@
     <button type="button" (click)="addAmenity()">Add Amenity</button>
   </div>
 
-  <h3>Variants</h3>
+  <h3>Variants (at least 1 required)</h3>
   <div formArrayName="variants">
     <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i">
       <label>Carpet Size:</label>
@@ -55,7 +62,8 @@
       <input formControlName="modularKitchen" type="checkbox" />
     </div>
     <button type="button" (click)="addVariant()">Add Variant</button>
+    <div *ngIf="variants.length === 0" style="color:red">Kam se kam ek variant add karo</div>
   </div>
 
-  <button type="submit">Create Property</button>
+  <button type="submit" [disabled]="propertyForm.invalid || variants.length === 0">Create Property</button>
 </form>

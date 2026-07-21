@@ -1,0 +1,641 @@
+/* =====================================================
+   EDIT PROPERTY PAGE
+===================================================== */
+
+:host {
+
+  display: block;
+
+  min-height: 100vh;
+
+  padding: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fafc 0%,
+      #eef2ff 50%,
+      #f8fafc 100%
+    );
+
+}
+
+
+/* =====================================================
+   MAIN FORM
+===================================================== */
+
+form {
+
+  width: 100%;
+
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  padding: 32px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 20px 45px rgba(15, 23, 42, 0.09);
+
+}
+
+
+/* =====================================================
+   PAGE TITLE
+===================================================== */
+
+h2 {
+
+  width: 100%;
+
+  max-width: 1100px;
+
+  margin: 0 auto 25px;
+
+  color: #0f172a;
+
+  font-size: clamp(26px, 4vw, 36px);
+
+  font-weight: 800;
+
+  letter-spacing: -0.7px;
+
+}
+
+
+h3 {
+
+  margin: 32px 0 18px;
+
+  padding-bottom: 10px;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  color: #334155;
+
+  font-size: 20px;
+
+  font-weight: 800;
+
+}
+
+
+/* =====================================================
+   LABELS
+===================================================== */
+
+form > label {
+
+  display: block;
+
+  margin: 18px 0 7px;
+
+  color: #334155;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+}
+
+
+/* =====================================================
+   INPUTS & SELECT
+===================================================== */
+
+input:not([type="checkbox"]),
+
+select {
+
+  width: 100%;
+
+  min-height: 46px;
+
+  padding: 0 14px;
+
+  border: 1px solid #dbe2ea;
+
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  color: #1e293b;
+
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+
+
+  &::placeholder {
+
+    color: #94a3b8;
+
+  }
+
+
+  &:hover {
+
+    border-color: #a5b4fc;
+
+  }
+
+
+  &:focus {
+
+    border-color: #6366f1;
+
+    box-shadow:
+      0 0 0 4px
+      rgba(99, 102, 241, 0.12);
+
+  }
+
+}
+
+
+select {
+
+  cursor: pointer;
+
+}
+
+
+/* =====================================================
+   BUILDER PROMISES & AMENITIES
+===================================================== */
+
+div[formArrayName="builderPromises"],
+
+div[formArrayName="amenities"] {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+
+  padding: 20px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 16px;
+
+  background: #f8fafc;
+
+
+  > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+
+    input {
+
+      flex: 1;
+
+    }
+
+  }
+
+
+  button {
+
+    align-self: flex-start;
+
+    margin-top: 5px;
+
+  }
+
+}
+
+
+/* =====================================================
+   VARIANTS SECTION
+===================================================== */
+
+div[formArrayName="variants"] {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+
+}
+
+
+/* =====================================================
+   VARIANT CARD
+===================================================== */
+
+div[formGroupName] {
+
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 16px;
+
+  padding: 24px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #f8fafc
+    );
+
+  box-shadow:
+    0 8px 20px
+    rgba(15, 23, 42, 0.05);
+
+
+  &::before {
+
+    content: 'PROPERTY VARIANT';
+
+    grid-column: 1 / -1;
+
+    color: #6366f1;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+  }
+
+
+  label {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    color: #475569;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+  }
+
+
+  /* Checkbox labels */
+
+  label:has(input[type="checkbox"]) {
+
+    flex-direction: row;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-height: 44px;
+
+    padding: 11px 14px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+
+
+    &:hover {
+
+      border-color: #a5b4fc;
+
+      background: #eef2ff;
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   CHECKBOX
+===================================================== */
+
+input[type="checkbox"] {
+
+  width: 18px;
+
+  height: 18px;
+
+  accent-color: #6366f1;
+
+  cursor: pointer;
+
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+button {
+
+  min-height: 42px;
+
+  padding: 0 18px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+
+
+  &:hover {
+
+    transform: translateY(-2px);
+
+  }
+
+
+  &:active {
+
+    transform: translateY(0);
+
+  }
+
+}
+
+
+/* =====================================================
+   ADD BUTTONS
+===================================================== */
+
+div[formArrayName="builderPromises"] button,
+
+div[formArrayName="amenities"] button,
+
+div[formArrayName="variants"] > button {
+
+  background: #eef2ff;
+
+  color: #4f46e5;
+
+
+  &:hover {
+
+    background: #e0e7ff;
+
+    box-shadow:
+      0 7px 15px
+      rgba(79, 70, 229, 0.18);
+
+  }
+
+}
+
+
+/* =====================================================
+   SUBMIT BUTTON
+===================================================== */
+
+button[type="submit"] {
+
+  display: block;
+
+  width: 100%;
+
+  min-height: 52px;
+
+  margin-top: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #4f46e5,
+      #7c3aed
+    );
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 800;
+
+  box-shadow:
+    0 10px 22px
+    rgba(79, 70, 229, 0.25);
+
+
+  &:hover:not(:disabled) {
+
+    box-shadow:
+      0 15px 30px
+      rgba(79, 70, 229, 0.35);
+
+  }
+
+
+  &:disabled {
+
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE TABLET
+===================================================== */
+
+@media (max-width: 768px) {
+
+  :host {
+
+    padding: 18px;
+
+  }
+
+
+  form {
+
+    padding: 24px;
+
+    border-radius: 20px;
+
+  }
+
+
+  div[formGroupName] {
+
+    grid-template-columns: 1fr;
+
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE MOBILE
+===================================================== */
+
+@media (max-width: 520px) {
+
+  :host {
+
+    padding: 10px;
+
+  }
+
+
+  h2 {
+
+    margin-bottom: 18px;
+
+    font-size: 26px;
+
+  }
+
+
+  form {
+
+    padding: 18px;
+
+    border-radius: 16px;
+
+  }
+
+
+  h3 {
+
+    margin-top: 26px;
+
+    font-size: 18px;
+
+  }
+
+
+  input:not([type="checkbox"]),
+
+  select {
+
+    min-height: 44px;
+
+    font-size: 13px;
+
+  }
+
+
+  div[formArrayName="builderPromises"],
+
+  div[formArrayName="amenities"] {
+
+    padding: 14px;
+
+  }
+
+
+  div[formArrayName="builderPromises"] > div,
+
+  div[formArrayName="amenities"] > div {
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+  }
+
+
+  div[formArrayName="builderPromises"] button,
+
+  div[formArrayName="amenities"] button,
+
+  div[formArrayName="variants"] > button {
+
+    width: 100%;
+
+  }
+
+
+  div[formGroupName] {
+
+    padding: 16px;
+
+  }
+
+
+  button[type="submit"] {
+
+    min-height: 48px;
+
+  }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 360px) {
+
+  form {
+
+    padding: 14px;
+
+  }
+
+
+  h2 {
+
+    font-size: 23px;
+
+  }
+
+}

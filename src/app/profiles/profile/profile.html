@@ -1,17 +1,186 @@
-<div class="profile-container" *ngIf="user">
-  <h2>{{ user.name }}</h2>
-  <p><strong>Email:</strong> {{ user.email | json}}</p>
-  <p><strong>Phone:</strong> {{ user.phone }}</p>
-  <p><strong>Role:</strong> {{ user.role }}</p>
-  <p><strong>Status:</strong> {{ user.isActive ? 'Active' : 'Inactive' }}</p>
-  <p>
-  <strong>Status:</strong>
-  <span [class.active]="user.isActive" [class.inactive]="!user.isActive">
-    {{ user.isActive ? 'Active' : 'Inactive' }}
-  </span>
-</p>
-</div>
+<div class="profile-page">
 
-<div *ngIf="!user">
-  Loading profile...
+  <div
+    class="profile-container"
+    *ngIf="user"
+  >
+
+    <!-- Profile Header -->
+
+    <div class="profile-header">
+
+      <div class="profile-avatar">
+
+        {{ user.name?.charAt(0)?.toUpperCase() }}
+
+      </div>
+
+
+      <div class="profile-info">
+
+        <div class="profile-title">
+
+          <h2>
+            {{ user.name }}
+          </h2>
+
+          <span
+            class="role-badge"
+          >
+
+            {{ user.role }}
+
+          </span>
+
+        </div>
+
+
+        <p class="username">
+          @{{ user.name | lowercase }}
+        </p>
+
+
+        <div class="profile-stats">
+
+          <div>
+            <strong>1</strong>
+            <span>Profile</span>
+          </div>
+
+          <div>
+            <strong>Active</strong>
+            <span>Status</span>
+          </div>
+
+          <div>
+            <strong>{{ user.role }}</strong>
+            <span>Role</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Profile Details -->
+
+    <div class="profile-details">
+
+      <div class="detail-item">
+
+        <span class="detail-icon">
+          ✉️
+        </span>
+
+        <div>
+
+          <small>
+            Email
+          </small>
+
+          <p>
+            {{ user.email }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="detail-item">
+
+        <span class="detail-icon">
+          📞
+        </span>
+
+        <div>
+
+          <small>
+            Phone
+          </small>
+
+          <p>
+            {{ user.phone || 'Not provided' }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="detail-item">
+
+        <span class="detail-icon">
+          👤
+        </span>
+
+        <div>
+
+          <small>
+            Account Role
+          </small>
+
+          <p>
+            {{ user.role }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="detail-item">
+
+        <span class="detail-icon">
+          🟢
+        </span>
+
+        <div>
+
+          <small>
+            Account Status
+          </small>
+
+          <p>
+
+            <span
+              class="status-badge"
+              [class.active]="user.isActive"
+              [class.inactive]="!user.isActive"
+            >
+
+              <span class="status-dot"></span>
+
+              {{ user.isActive ? 'Active' : 'Inactive' }}
+
+            </span>
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Loading -->
+
+  <div
+    class="loading-profile"
+    *ngIf="!user"
+  >
+
+    <div class="loader"></div>
+
+    <p>
+      Loading profile...
+    </p>
+
+  </div>
+
 </div>

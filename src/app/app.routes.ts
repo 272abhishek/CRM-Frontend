@@ -5,6 +5,7 @@ import { Profile } from './profiles/profile/profile';
 import { PropertyDetail } from './properties/property-detail/property-detail';
 import { PropertyList } from './properties/property-list/property-list';
 import { PropertiesAdd } from './properties/properties-add/properties-add';
+import { PropertyEdit } from './properties/property-edit/property-edit';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -13,5 +14,7 @@ export const routes: Routes = [
   { path: 'profile', component: Profile},
   { path: 'property-list', component: PropertyList },
   { path: 'propertydetails/:id', component: PropertyDetail },
-  { path: 'add', component: PropertiesAdd }
+  { path: 'add', component: PropertiesAdd },
+   // 👇 New Route
+  { path: 'edit-property/:id', component: PropertyEdit }
 ];

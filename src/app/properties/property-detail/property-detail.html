@@ -1,17 +1,569 @@
-<div *ngIf="property" class="property-detail">
-  <h2>{{ property.title }}</h2>
-  <p><strong>Address:</strong> {{ property.address }}</p>
-  <p><strong>Area:</strong> {{ property.area }} - {{ property.subArea }}</p>
-  <p><strong>Status:</strong> {{ property.possessionStatus }}</p>
-  <p><strong>Commission:</strong> {{ property.commissionPercentage }}%</p>
+<div
+  *ngIf="property"
+  class="property-detail"
+>
 
-  <h3>Amenities</h3>
-  <ul>
-    <li *ngFor="let amenity of property.amenities">{{ amenity }}</li>
-  </ul>
+  <!-- =====================================================
+       BASIC PROPERTY INFORMATION
+  ====================================================== -->
 
-  <h3>Images</h3>
-  <div *ngFor="let img of property.images">
-    <img [src]="img" alt="Property image" width="200" />
+  <h2>
+    {{ property.title }}
+  </h2>
+
+
+  <div class="basic-info">
+
+    <p>
+      <strong>Address:</strong>
+      {{ property.address }}
+    </p>
+
+    <p>
+      <strong>Area:</strong>
+      {{ property.area }}
+    </p>
+
+    <p>
+      <strong>Sub Area:</strong>
+      {{ property.subArea }}
+    </p>
+
+    <p>
+      <strong>Possession Status:</strong>
+      {{ property.possessionStatus }}
+    </p>
+
+    <p>
+      <strong>Commission:</strong>
+      {{ property.commissionPercentage }}%
+    </p>
+
   </div>
+
+
+  <!-- =====================================================
+       PROPERTY VARIANTS
+  ====================================================== -->
+
+  <h3>
+    Property Variants
+  </h3>
+
+
+  <div
+    class="variants-container"
+  >
+
+    <div
+      class="variant-card"
+      *ngFor="let variant of property.variants; let i = index"
+    >
+
+      <h4>
+        Variant {{ i + 1 }}
+      </h4>
+
+
+      <p>
+        <strong>
+          Carpet Size:
+        </strong>
+
+        {{ variant.carpetSize }}
+        Sq.Ft
+      </p>
+
+
+      <p>
+        <strong>
+          Super Built-up Area:
+        </strong>
+
+        {{ variant.superBuiltUpArea }}
+        Sq.Ft
+      </p>
+
+
+      <p>
+        <strong>
+          Price:
+        </strong>
+
+        ₹{{ variant.price | number }}
+      </p>
+
+
+      <p>
+        <strong>
+          Floor:
+        </strong>
+
+        <span
+          *ngIf="variant.floor === 0"
+        >
+          Ground Floor
+        </span>
+
+        <span
+          *ngIf="variant.floor !== 0"
+        >
+          {{ variant.floor }}
+        </span>
+
+      </p>
+
+
+      <p>
+        <strong>
+          Master Bedroom:
+        </strong>
+
+        <span
+          *ngIf="variant.masterBedroom"
+        >
+          Available
+        </span>
+
+        <span
+          *ngIf="!variant.masterBedroom"
+        >
+          Not Available
+        </span>
+
+      </p>
+
+
+      <p>
+        <strong>
+          Modular Kitchen:
+        </strong>
+
+        <span
+          *ngIf="variant.modularKitchen"
+        >
+          Available
+        </span>
+
+        <span
+          *ngIf="!variant.modularKitchen"
+        >
+          Not Available
+        </span>
+
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       AMENITIES
+  ====================================================== -->
+
+  <h3>
+    Amenities
+  </h3>
+
+
+  <div
+    class="tag-container"
+    *ngIf="property.amenities?.length"
+  >
+
+    <span
+      class="tag"
+      *ngFor="let amenity of property.amenities"
+    >
+
+      {{ amenity }}
+
+    </span>
+
+  </div>
+
+
+  <p
+    *ngIf="!property.amenities?.length"
+  >
+
+    No amenities available.
+
+  </p>
+
+
+  <!-- =====================================================
+       BUILDER PROMISES
+  ====================================================== -->
+
+  <h3>
+    Builder Promises
+  </h3>
+
+
+  <div
+    class="tag-container"
+    *ngIf="property.builderPromises?.length"
+  >
+
+    <span
+      class="tag"
+      *ngFor="let promise of property.builderPromises"
+    >
+
+      {{ promise }}
+
+    </span>
+
+  </div>
+
+
+  <p
+    *ngIf="!property.builderPromises?.length"
+  >
+
+    No builder promises available.
+
+  </p>
+
+
+  <!-- =====================================================
+       COMMUNITY RESTRICTIONS
+  ====================================================== -->
+
+  <h3>
+    Community Restrictions
+  </h3>
+
+
+  <p>
+
+    {{ property.communityRestrictions || 'No restrictions specified' }}
+
+  </p>
+
+
+  <!-- =====================================================
+       CONNECTIVITY
+  ====================================================== -->
+
+  <h3>
+    Connectivity
+  </h3>
+
+
+  <p>
+
+    {{ property.connectivityNotes || 'No connectivity information available' }}
+
+  </p>
+
+
+  <!-- =====================================================
+       DISTANCE INFORMATION
+  ====================================================== -->
+
+  <h3>
+    Nearby Locations
+  </h3>
+
+
+  <div
+    class="distance-grid"
+  >
+
+    <div
+      *ngIf="property.airportDistanceKm !== null &&
+             property.airportDistanceKm !== undefined"
+    >
+
+      <strong>
+        Airport
+      </strong>
+
+      <span>
+        {{ property.airportDistanceKm }}
+        KM
+      </span>
+
+    </div>
+
+
+    <div
+      *ngIf="property.railwayStationDistanceKm !== null &&
+             property.railwayStationDistanceKm !== undefined"
+    >
+
+      <strong>
+        Railway Station
+      </strong>
+
+      <span>
+        {{ property.railwayStationDistanceKm }}
+        KM
+      </span>
+
+    </div>
+
+
+    <div
+      *ngIf="property.metroDistanceKm !== null &&
+             property.metroDistanceKm !== undefined"
+    >
+
+      <strong>
+        Metro
+      </strong>
+
+      <span>
+        {{ property.metroDistanceKm }}
+        KM
+      </span>
+
+    </div>
+
+
+    <div
+      *ngIf="property.busStopDistanceKm !== null &&
+             property.busStopDistanceKm !== undefined"
+    >
+
+      <strong>
+        Bus Stop
+      </strong>
+
+      <span>
+        {{ property.busStopDistanceKm }}
+        KM
+      </span>
+
+    </div>
+
+
+    <div
+      *ngIf="property.parkDistanceKm !== null &&
+             property.parkDistanceKm !== undefined"
+    >
+
+      <strong>
+        Park
+      </strong>
+
+      <span>
+        {{ property.parkDistanceKm }}
+        KM
+      </span>
+
+    </div>
+
+
+    <div
+      *ngIf="property.stadiumDistanceKm !== null &&
+             property.stadiumDistanceKm !== undefined"
+    >
+
+      <strong>
+        Stadium
+      </strong>
+
+      <span>
+        {{ property.stadiumDistanceKm }}
+        KM
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       IMAGES
+  ====================================================== -->
+
+  <h3>
+    Property Images
+  </h3>
+
+
+  <div
+    class="image-gallery"
+    *ngIf="property.images?.length"
+  >
+
+    <div
+      class="image-card"
+      *ngFor="let img of property.images"
+    >
+
+      <img
+        [src]="img"
+        alt="Property image"
+      />
+
+    </div>
+
+  </div>
+
+
+  <p
+    *ngIf="!property.images?.length"
+  >
+
+    No images available.
+
+  </p>
+
+
+  <!-- =====================================================
+       DOCUMENTS
+  ====================================================== -->
+
+  <h3>
+    Property Documents
+  </h3>
+
+
+  <div
+    class="documents-list"
+    *ngIf="property.documents?.length"
+  >
+
+    <div
+      class="document-item"
+      *ngFor="let document of property.documents; let i = index"
+    >
+
+      <span>
+        Document {{ i + 1 }}
+      </span>
+
+
+      <a
+        [href]="document"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+
+        View / Download
+
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <p
+    *ngIf="!property.documents?.length"
+  >
+
+    No documents available.
+
+  </p>
+
+
+  <!-- =====================================================
+       PROPERTY OWNERSHIP INFORMATION
+  ====================================================== -->
+
+  <h3>
+    Property Information
+  </h3>
+
+
+  <p
+    *ngIf="property.role"
+  >
+
+    <strong>
+      Created By Role:
+    </strong>
+
+    {{ property.role }}
+
+  </p>
+
+
+  <p
+    *ngIf="property.createdBy"
+  >
+
+    <strong>
+      Created By:
+    </strong>
+
+    {{ property.createdBy._id }}
+
+  </p>
+
+
+  <p
+    *ngIf="property.builderId"
+  >
+
+    <strong>
+      Builder ID:
+    </strong>
+
+    {{ property.builderId }}
+
+  </p>
+
+
+  <p
+    *ngIf="property.sellerId"
+  >
+
+    <strong>
+      Seller ID:
+    </strong>
+
+    {{ property.sellerId }}
+
+  </p>
+
+
+  <p
+    *ngIf="property.agentId"
+  >
+
+    <strong>
+      property ID:
+    </strong>
+
+    {{ property._id }}
+
+  </p>
+
+
+  <!-- =====================================================
+       CREATED / UPDATED DATE
+  ====================================================== -->
+
+  <p
+    *ngIf="property.createdAt"
+  >
+
+    <strong>
+      Created At:
+    </strong>
+
+    {{ property.createdAt | date:'medium' }}
+
+  </p>
+
+
+  <p
+    *ngIf="property.updatedAt"
+  >
+
+    <strong>
+      Last Updated:
+    </strong>
+
+    {{ property.updatedAt | date:'medium' }}
+
+  </p>
+
 </div>

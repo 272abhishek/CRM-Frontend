@@ -1,10 +1,731 @@
-<div class="property-list">
-  <h2>Properties</h2>
-  <ul>
-    <li *ngFor="let property of properties">
-      <a [routerLink]="['/propertydetails', property._id]">
-        {{ property.title }} - {{ property.area }} ({{ property.possessionStatus }})
-      </a>
-    </li>
-  </ul>
+<!-- =====================================================
+     PROPERTY FILTER SECTION
+===================================================== -->
+
+<!-- =====================================================
+     FILTER HEADER
+===================================================== -->
+
+<div class="filter-header">
+
+  <div>
+    <h2>Property Filters</h2>
+    <span>Filter properties according to your requirements</span>
+  </div>
+
+  <button
+    type="button"
+    class="filter-toggle-btn"
+    (click)="showFilters = !showFilters"
+  >
+
+    <span>
+      ⚙️ Filters
+    </span>
+
+    <span
+      class="arrow"
+      [class.rotate]="showFilters"
+    >
+      ▼
+    </span>
+
+  </button>
+
+</div>
+
+
+<!-- =====================================================
+     FILTER PANEL
+===================================================== -->
+
+<div
+  class="filter-panel"
+  *ngIf="showFilters"
+>
+
+  <form
+    [formGroup]="filterForm"
+  >
+
+    <!-- ================= SEARCH ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Search Property
+      </label>
+
+      <input
+        type="text"
+        formControlName="q"
+        placeholder="Search title, area, sub area..."
+      />
+
+    </div>
+
+
+    <!-- ================= TITLE ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Property Title
+      </label>
+
+      <input
+        type="text"
+        formControlName="title"
+        placeholder="Enter property title"
+      />
+
+    </div>
+
+
+    <!-- ================= AREA ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Area
+      </label>
+
+      <input
+        type="text"
+        formControlName="area"
+        placeholder="Enter area"
+      />
+
+    </div>
+
+
+    <!-- ================= SUB AREA ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Sub Area
+      </label>
+
+      <input
+        type="text"
+        formControlName="subArea"
+        placeholder="Enter sub area"
+      />
+
+    </div>
+
+
+    <!-- ================= POSSESSION ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Possession Status
+      </label>
+
+      <select
+        formControlName="possessionStatus"
+      >
+
+        <option value="">
+          All Status
+        </option>
+
+        <option value="Ready-to-move">
+          Ready to Move
+        </option>
+
+        <option value="Under-construction">
+          Under Construction
+        </option>
+
+        <option value="Upcoming">
+          Upcoming
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- ================= COMMISSION ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Commission Percentage
+      </label>
+
+      <div class="range-inputs">
+
+        <input
+          type="number"
+          formControlName="minCommission"
+          placeholder="Min %"
+        />
+
+        <input
+          type="number"
+          formControlName="maxCommission"
+          placeholder="Max %"
+        />
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= PRICE ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Property Price
+      </label>
+
+      <div class="range-inputs">
+
+        <input
+          type="number"
+          formControlName="minPrice"
+          placeholder="Minimum price"
+        />
+
+        <input
+          type="number"
+          formControlName="maxPrice"
+          placeholder="Maximum price"
+        />
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= CARPET SIZE ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Carpet Size
+      </label>
+
+      <div class="range-inputs">
+
+        <input
+          type="number"
+          formControlName="minCarpetSize"
+          placeholder="Min Sq.Ft"
+        />
+
+        <input
+          type="number"
+          formControlName="maxCarpetSize"
+          placeholder="Max Sq.Ft"
+        />
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= FLOOR ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Floor
+      </label>
+
+      <select
+        formControlName="floor"
+      >
+
+        <option value="">
+          All Floors
+        </option>
+
+        <option value="0">
+          Ground Floor
+        </option>
+
+        <option value="1">
+          1st Floor
+        </option>
+
+        <option value="2">
+          2nd Floor
+        </option>
+
+        <option value="3">
+          3rd Floor
+        </option>
+
+        <option value="4">
+          4th Floor
+        </option>
+
+        <option value="5">
+          5th Floor
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- ================= MASTER BEDROOM ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Master Bedroom
+      </label>
+
+      <select
+        formControlName="masterBedroom"
+      >
+
+        <option value="">
+          Any
+        </option>
+
+        <option value="true">
+          Available
+        </option>
+
+        <option value="false">
+          Not Available
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- ================= MODULAR KITCHEN ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Modular Kitchen
+      </label>
+
+      <select
+        formControlName="modularKitchen"
+      >
+
+        <option value="">
+          Any
+        </option>
+
+        <option value="true">
+          Available
+        </option>
+
+        <option value="false">
+          Not Available
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- ================= AMENITIES ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Amenities
+      </label>
+
+      <select
+        formControlName="amenities"
+      >
+
+        <option value="">
+          All Amenities
+        </option>
+
+        <option value="Parking">
+          Parking
+        </option>
+
+        <option value="Lift">
+          Lift
+        </option>
+
+        <option value="Swimming Pool">
+          Swimming Pool
+        </option>
+
+        <option value="Gym">
+          Gym
+        </option>
+
+        <option value="Security">
+          Security
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- ================= CONNECTIVITY ================= -->
+
+    <div class="filter-item">
+
+      <label>
+        Connectivity
+      </label>
+
+      <input
+        type="text"
+        formControlName="connectivityNotes"
+        placeholder="Search connectivity"
+      />
+
+    </div>
+
+
+    <!-- ================= CLEAR ================= -->
+
+    <button
+      type="button"
+      class="clear-btn"
+      (click)="clearFilters()"
+    >
+
+      Clear All Filters
+
+    </button>
+
+  </form>
+
+</div>
+
+
+<!-- =====================================================
+     PROPERTY LIST HEADER
+===================================================== -->
+
+<div class="list-header">
+
+  <h2>
+    Properties
+  </h2>
+
+  <span
+    *ngIf="totalItems > 0"
+  >
+
+    {{ totalItems }} Properties Found
+
+  </span>
+
+</div>
+
+
+<!-- =====================================================
+     PROPERTY CARDS
+===================================================== -->
+
+<div
+  class="property-list"
+>
+
+  <div
+    *ngFor="let property of properties"
+    class="card"
+  >
+
+    <!-- ================= PROPERTY BASIC DETAILS ================= -->
+
+    <div class="property-content">
+
+      <h3>
+        {{ property.title }}
+      </h3>
+
+
+      <p>
+        <strong>
+          Address:
+        </strong>
+
+        {{ property.address }}
+
+      </p>
+
+
+      <p>
+        <strong>
+          Area:
+        </strong>
+
+        {{ property.area }}
+
+      </p>
+
+
+      <p>
+        <strong>
+          Sub Area:
+        </strong>
+
+        {{ property.subArea }}
+
+      </p>
+
+
+      <p>
+        <strong>
+          Possession:
+        </strong>
+
+        {{ property.possessionStatus }}
+
+      </p>
+
+
+      <p>
+        <strong>
+          Commission:
+        </strong>
+
+        {{ property.commissionPercentage }}%
+
+      </p>
+
+
+      <!-- ================= DISTANCES ================= -->
+
+      <div
+        class="distance-info"
+      >
+
+        <span
+          *ngIf="property.airportDistanceKm !== undefined"
+        >
+
+          Airport:
+          {{ property.airportDistanceKm }} KM
+
+        </span>
+
+
+        <span
+          *ngIf="property.railwayStationDistanceKm !== undefined"
+        >
+
+          Railway:
+          {{ property.railwayStationDistanceKm }} KM
+
+        </span>
+
+
+        <span
+          *ngIf="property.metroDistanceKm !== undefined"
+        >
+
+          Metro:
+          {{ property.metroDistanceKm }} KM
+
+        </span>
+
+
+        <span
+          *ngIf="property.busStopDistanceKm !== undefined"
+        >
+
+          Bus Stop:
+          {{ property.busStopDistanceKm }} KM
+
+        </span>
+
+
+        <span
+          *ngIf="property.parkDistanceKm !== undefined"
+        >
+
+          Park:
+          {{ property.parkDistanceKm }} KM
+
+        </span>
+
+
+        <span
+          *ngIf="property.stadiumDistanceKm !== undefined"
+        >
+
+          Stadium:
+          {{ property.stadiumDistanceKm }} KM
+
+        </span>
+
+      </div>
+
+
+      <!-- ================= AMENITIES ================= -->
+
+      <div
+        class="amenities"
+        *ngIf="property.amenities?.length"
+      >
+
+        <strong>
+          Amenities:
+        </strong>
+
+
+        <span
+          *ngFor="let amenity of property.amenities"
+          class="tag"
+        >
+
+          {{ amenity }}
+
+        </span>
+
+      </div>
+
+
+      <!-- ================= BUILDER PROMISES ================= -->
+
+      <div
+        class="builder-promises"
+        *ngIf="property.builderPromises?.length"
+      >
+
+        <strong>
+          Builder Promises:
+        </strong>
+
+
+        <span
+          *ngFor="let promise of property.builderPromises"
+          class="tag"
+        >
+
+          {{ promise }}
+
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= ACTION BUTTONS ================= -->
+
+    <div
+      class="action-buttons"
+    >
+
+      <button
+        type="button"
+        class="view-btn"
+        [routerLink]="[
+          '/propertydetails',
+          property._id
+        ]"
+      >
+
+        View
+
+      </button>
+
+
+      <button
+        type="button"
+        class="edit-btn"
+        (click)="editProperty(property._id)"
+      >
+
+        Edit
+
+      </button>
+
+
+      <button
+        *ngIf="userRole === 'admin'"
+        type="button"
+        class="delete-btn"
+        (click)="deleteProperty(property._id)"
+      >
+
+        Delete
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     NO RESULTS
+===================================================== -->
+
+<div
+  *ngIf="properties.length === 0"
+  class="no-results"
+>
+
+  No properties found.
+
+</div>
+
+
+<!-- =====================================================
+     PAGINATION
+===================================================== -->
+
+<div
+  class="pagination"
+  *ngIf="totalPages > 1"
+>
+
+
+  <button
+    type="button"
+    (click)="goToPage(currentPage - 1)"
+    [disabled]="currentPage === 1"
+  >
+
+    Prev
+
+  </button>
+
+
+  <span>
+
+    Page
+    {{ currentPage }}
+    of
+    {{ totalPages }}
+
+    (
+    {{ totalItems }}
+    total
+    )
+
+  </span>
+
+
+  <button
+    type="button"
+    (click)="goToPage(currentPage + 1)"
+    [disabled]="currentPage === totalPages"
+  >
+
+    Next
+
+  </button>
+
 </div>

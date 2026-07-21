@@ -23,7 +23,7 @@ export class Profile implements OnInit {
       console.log('Profile Response:', res);
 
       this.user = { ...res.data }; // 👈 Spread operator use karo
-this.cdr.detectChanges(); // 👈 force manual update
+ this.cdr.detectChanges(); // 👈 force manual update
       console.log('User:', this.user);
     }
   });

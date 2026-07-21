@@ -35,8 +35,12 @@ user: any;
         next: (res: any) => {
           console.log(res.token)
           localStorage.setItem('jwt', res.token);
-          
-          
+          // ✅ jo bhi user object mein aaya, sab store kar do
+        if (res.user) {
+          localStorage.setItem('user', JSON.stringify(res.user));
+        }
+
+        const role = res.user?.role;
            this.router.navigate(['/profile']);
           // switch (res.user?.role) {
           //   case 'admin': this.router.navigate(['/admin-dashboard']); break;

@@ -1,0 +1,243 @@
+<h2>Edit Property</h2>
+
+<form
+  [formGroup]="form"
+  (ngSubmit)="updateProperty()"
+>
+
+  <!-- Basic Information -->
+
+  <label>Title</label>
+
+  <input
+    type="text"
+    formControlName="title"
+    placeholder="Title"
+  />
+
+
+  <label>Address</label>
+
+  <input
+    type="text"
+    formControlName="address"
+    placeholder="Address"
+  />
+
+
+  <label>Area</label>
+
+  <input
+    type="text"
+    formControlName="area"
+    placeholder="Area"
+  />
+
+
+  <label>Sub Area</label>
+
+  <input
+    type="text"
+    formControlName="subArea"
+    placeholder="Sub Area"
+  />
+
+
+  <!-- Possession Status -->
+
+  <label>Possession Status</label>
+
+  <select
+    formControlName="possessionStatus"
+  >
+
+    <option value="">
+      Select Status
+    </option>
+
+    <option value="Ready-to-move">
+      Ready-to-move
+    </option>
+
+    <option value="Under-construction">
+      Under-construction
+    </option>
+
+    <option value="Upcoming">
+      Upcoming
+    </option>
+
+  </select>
+
+
+  <!-- Commission -->
+
+  <label>Commission Percentage</label>
+
+  <input
+    type="number"
+    formControlName="commissionPercentage"
+  />
+
+
+  <!-- Builder Promises -->
+
+  <h3>Builder Promises</h3>
+
+  <div formArrayName="builderPromises">
+
+    <div
+      *ngFor="
+        let promise of builderPromises.controls;
+        let i = index
+      "
+    >
+
+      <input
+        [formControlName]="i"
+        placeholder="Builder Promise"
+      />
+
+    </div>
+
+    <button
+      type="button"
+      (click)="addBuilderPromise()"
+    >
+
+      Add Promise
+
+    </button>
+
+  </div>
+
+
+  <!-- Amenities -->
+
+  <h3>Amenities</h3>
+
+  <div formArrayName="amenities">
+
+    <div
+      *ngFor="
+        let amenity of amenities.controls;
+        let i = index
+      "
+    >
+
+      <input
+        [formControlName]="i"
+        placeholder="Amenity"
+      />
+
+    </div>
+
+    <button
+      type="button"
+      (click)="addAmenity()"
+    >
+
+      Add Amenity
+
+    </button>
+
+  </div>
+
+
+  <!-- Variants -->
+
+  <h3>Variants</h3>
+
+  <div formArrayName="variants">
+
+    <div
+      *ngFor="
+        let variant of variants.controls;
+        let i = index
+      "
+      [formGroupName]="i"
+    >
+
+      <label>Carpet Size</label>
+
+      <input
+        type="number"
+        formControlName="carpetSize"
+      />
+
+
+      <label>Super Built Up Area</label>
+
+      <input
+        type="number"
+        formControlName="superBuiltUpArea"
+      />
+
+
+      <label>Price</label>
+
+      <input
+        type="number"
+        formControlName="price"
+      />
+
+
+      <label>Floor</label>
+
+      <input
+        type="number"
+        formControlName="floor"
+      />
+
+
+      <label>
+
+        <input
+          type="checkbox"
+          formControlName="masterBedroom"
+        />
+
+        Master Bedroom
+
+      </label>
+
+
+      <label>
+
+        <input
+          type="checkbox"
+          formControlName="modularKitchen"
+        />
+
+        Modular Kitchen
+
+      </label>
+
+    </div>
+
+
+    <button
+      type="button"
+      (click)="addVariant()"
+    >
+
+      Add Variant
+
+    </button>
+
+  </div>
+
+
+  <br />
+
+
+  <button
+    type="submit"
+    [disabled]="form.invalid"
+  >
+
+    Update Property
+
+  </button>
+
+</form>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RealEstate, Property } from '../property';
 import { CommonModule } from '@angular/common';
@@ -16,14 +16,18 @@ export class PropertyDetail implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private propertyService: Property
+    private propertyService: Property,
+    private cdr:ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.propertyService.getPropertyById(id).subscribe({
-        next: (res) => this.property = res,
+        next: (res) => {this.property = res
+          console.log(res)
+          this.cdr.detectChanges();
+        },
         error: (err) => alert(err.error?.message || 'Failed to load property')
       });
     }
