@@ -1,0 +1,48 @@
+<h2>Edit Client</h2>
+<form [formGroup]="form" (ngSubmit)="updateClient()">
+  <label>Name:</label>
+  <input formControlName="name" readonly/>
+
+  <label>Phone:</label>
+  <input formControlName="phone" readonly />
+
+  <label>Email:</label>
+  <input formControlName="email" readonly/>
+
+  <label>Budget:</label>
+  <input formControlName="budget" type="number" />
+
+  <label>Requirement:</label>
+  <input formControlName="requirement" />
+
+  <label>Interested Project:</label>
+  <input formControlName="interestedProject" />
+
+  <label>Preferred Location:</label>
+  <input formControlName="preferredLocation" />
+
+  <label>Timeline:</label>
+  <input formControlName="timeline" />
+
+  <label>Follow Up Notes:</label>
+  <textarea formControlName="followUpNotes"></textarea>
+
+  <label>Lead Source:</label>
+  <input formControlName="leadSource" />
+
+  <label>Priority:</label>
+  <select formControlName="priority">
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+  </select>
+
+  <label>Communication Preference:</label>
+  <select formControlName="communicationPreference">
+    <option value="Call">Call</option>
+    <option value="WhatsApp">WhatsApp</option>
+    <option value="Email">Email</option>
+  </select>
+
+  <button type="submit">Update Client</button>
+</form>

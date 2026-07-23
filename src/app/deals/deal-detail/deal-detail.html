@@ -1,1 +1,535 @@
-<p>deal-detail works!</p>
+<div class="deal-detail-page">
+
+  <!-- HEADER -->
+
+  <div class="page-header">
+
+```
+<div class="header-left">
+
+  <button
+    class="back-btn"
+    routerLink="/deals">
+
+    ← Back
+
+  </button>
+
+  <div>
+
+    <span class="eyebrow">
+      DEAL DETAILS
+    </span>
+
+    <h1>
+      Deal Details
+    </h1>
+
+    <p>
+      Complete information about this real estate deal
+    </p>
+
+  </div>
+
+</div>
+
+
+<div
+  class="header-actions"
+  *ngIf="deal">
+
+  <button
+    class="edit-btn"
+    [routerLink]="['/deals/edit', deal._id]">
+
+    ✏️ Edit Deal
+
+  </button>
+
+</div>
+```
+
+  </div>
+
+  <!-- LOADING -->
+
+  <div
+    class="loading-state"
+    *ngIf="loading">
+
+```
+<div class="loader"></div>
+
+<p>
+  Loading deal details...
+</p>
+```
+
+  </div>
+
+  <!-- ERROR -->
+
+  <div
+    class="error-state"
+    *ngIf="!loading && errorMessage">
+
+```
+<h3>
+  ⚠️ Unable to load deal
+</h3>
+
+<p>
+  {{ errorMessage }}
+</p>
+
+<button
+  routerLink="/deals">
+
+  Back to Deals
+
+</button>
+```
+
+  </div>
+
+  <!-- DEAL CONTENT -->
+
+<ng-container *ngIf="deal && !loading">
+
+```
+<div class="detail-grid">
+
+
+  <!-- DEAL OVERVIEW -->
+  <section class="detail-card overview-card">
+
+    <div class="card-header">
+
+      <div>
+
+        <span class="card-label">
+          DEAL OVERVIEW
+        </span>
+
+        <h2>
+          Real Estate Deal
+        </h2>
+
+      </div>
+
+
+      <span
+        class="status-badge"
+        [ngClass]="
+          deal.status?.toLowerCase()
+        ">
+
+        {{ deal.status || 'Open' }}
+
+      </span>
+
+    </div>
+
+
+    <div class="overview-content">
+
+
+      <!-- AMOUNT -->
+      <div class="amount-box">
+
+        <span>
+          DEAL AMOUNT
+        </span>
+
+        <strong>
+          ₹{{ deal.amount | number }}
+        </strong>
+
+      </div>
+
+
+      <!-- COMMISSION -->
+      <div class="amount-box">
+
+        <span>
+          COMMISSION EARNED
+        </span>
+
+        <strong>
+          ₹{{ deal.commissionEarned || 0 | number }}
+        </strong>
+
+      </div>
+
+
+      <!-- CREATED DATE -->
+      <div class="info-box">
+
+        <span>
+          CREATED DATE
+        </span>
+
+        <strong>
+
+          {{
+            deal.createdAt
+              ? (deal.createdAt | date:'dd MMM yyyy')
+              : '—'
+          }}
+
+        </strong>
+
+      </div>
+
+
+      <!-- DEAL ID -->
+      <div class="info-box">
+
+        <span>
+          DEAL ID
+        </span>
+
+        <strong class="deal-id">
+
+          #{{ deal._id || '—' }}
+
+        </strong>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- PROPERTY -->
+  <section class="detail-card">
+
+    <div class="card-title">
+
+      <div class="icon-box property-icon">
+        🏢
+      </div>
+
+      <div>
+
+        <span class="card-label">
+          PROPERTY
+        </span>
+
+        <h2>
+          Property Information
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="entity-content">
+
+      <div class="entity-avatar">
+        🏠
+      </div>
+
+
+      <div class="entity-details">
+
+        <h3>
+          Property
+        </h3>
+
+        <p>
+
+          Property ID:
+          {{ deal.propertyId || '—' }}
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CLIENT -->
+  <section class="detail-card">
+
+    <div class="card-title">
+
+      <div class="icon-box client-icon">
+        👤
+      </div>
+
+      <div>
+
+        <span class="card-label">
+          CLIENT
+        </span>
+
+        <h2>
+          Client Information
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="entity-content">
+
+      <div class="entity-avatar client-avatar">
+        👤
+      </div>
+
+
+      <div class="entity-details">
+
+        <h3>
+          Client
+        </h3>
+
+        <p>
+
+          Client ID:
+          {{ deal.clientId || '—' }}
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- DEAL INFORMATION -->
+  <section class="detail-card full-width">
+
+    <div class="card-title">
+
+      <div class="icon-box">
+        📊
+      </div>
+
+      <div>
+
+        <span class="card-label">
+          DEAL INFORMATION
+        </span>
+
+        <h2>
+          Transaction Details
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="info-grid">
+
+
+      <!-- STATUS -->
+      <div class="info-item">
+
+        <span>
+          Deal Status
+        </span>
+
+        <strong
+          class="status-text"
+          [ngClass]="
+            deal.status?.toLowerCase()
+          ">
+
+          {{ deal.status || 'Open' }}
+
+        </strong>
+
+      </div>
+
+
+      <!-- AMOUNT -->
+      <div class="info-item">
+
+        <span>
+          Deal Amount
+        </span>
+
+        <strong>
+          ₹{{ deal.amount | number }}
+        </strong>
+
+      </div>
+
+
+      <!-- COMMISSION -->
+      <div class="info-item">
+
+        <span>
+          Commission Earned
+        </span>
+
+        <strong>
+          ₹{{ deal.commissionEarned || 0 | number }}
+        </strong>
+
+      </div>
+
+
+      <!-- AGENT -->
+      <div class="info-item">
+
+        <span>
+          Agent ID
+        </span>
+
+        <strong>
+          {{ deal.agentId || '—' }}
+        </strong>
+
+      </div>
+
+
+      <!-- BUILDER -->
+      <div class="info-item">
+
+        <span>
+          Builder ID
+        </span>
+
+        <strong>
+          {{ deal.builderId || '—' }}
+        </strong>
+
+      </div>
+
+
+      <!-- SELLER -->
+      <div class="info-item">
+
+        <span>
+          Seller ID
+        </span>
+
+        <strong>
+          {{ deal.sellerId || '—' }}
+        </strong>
+
+      </div>
+
+
+      <!-- CREATED -->
+      <div class="info-item">
+
+        <span>
+          Created At
+        </span>
+
+        <strong>
+
+          {{
+            deal.createdAt
+              ? (deal.createdAt | date:'dd MMM yyyy, hh:mm a')
+              : '—'
+          }}
+
+        </strong>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- NOTES -->
+  <section
+    class="detail-card full-width"
+    *ngIf="deal.notes?.length">
+
+
+    <div class="card-title">
+
+      <div class="icon-box">
+        📝
+      </div>
+
+      <div>
+
+        <span class="card-label">
+          DEAL PROGRESS
+        </span>
+
+        <h2>
+          Notes & Activity
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="notes-list">
+
+      <div
+        class="note-item"
+        *ngFor="let note of deal.notes">
+
+
+        <div class="note-dot"></div>
+
+
+        <div class="note-content">
+
+          <p>
+            {{ note.note }}
+          </p>
+
+          <small>
+
+            {{
+              note.createdAt
+                ? (note.createdAt | date:'dd MMM yyyy, hh:mm a')
+                : '—'
+            }}
+
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- EMPTY NOTES -->
+  <section
+    class="detail-card full-width empty-notes"
+    *ngIf="!deal.notes?.length">
+
+    <div class="empty-icon">
+      📝
+    </div>
+
+    <h3>
+      No notes available
+    </h3>
+
+    <p>
+      No activity notes have been added to this deal yet.
+    </p>
+
+  </section>
+
+
+</div>
+```
+
+  </ng-container>
+
+</div>

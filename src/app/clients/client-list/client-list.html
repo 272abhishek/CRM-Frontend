@@ -1,1 +1,163 @@
-<p>client-list works!</p>
+<!-- =====================================================
+     CLIENT FILTER SECTION
+===================================================== -->
+
+<div class="filter-header">
+  <div>
+    <h2>Client Filters</h2>
+    <span>Filter clients according to your requirements</span>
+  </div>
+
+  <button
+    type="button"
+    class="filter-toggle-btn"
+    (click)="showFilters = !showFilters"
+  >
+    <span>⚙️ Filters</span>
+    <span class="arrow" [class.rotate]="showFilters">▼</span>
+  </button>
+</div>
+
+<div class="filter-panel" *ngIf="showFilters">
+  <form [formGroup]="filterForm">
+    <!-- ================= SEARCH ================= -->
+    <div class="filter-item">
+      <label>Search Client</label>
+      <input type="text" formControlName="q" placeholder="Search name, phone, email..." />
+    </div>
+
+    <!-- ================= NAME ================= -->
+    <div class="filter-item">
+      <label>Name</label>
+      <input type="text" formControlName="name" placeholder="Enter client name" />
+    </div>
+
+    <!-- ================= PHONE ================= -->
+    <div class="filter-item">
+      <label>Phone</label>
+      <input type="text" formControlName="phone" placeholder="Enter phone number" />
+    </div>
+
+    <!-- ================= EMAIL ================= -->
+    <div class="filter-item">
+      <label>Email</label>
+      <input type="text" formControlName="email" placeholder="Enter email" />
+    </div>
+
+    <!-- ================= BUDGET ================= -->
+    <div class="filter-item">
+      <label>Budget</label>
+      <div class="range-inputs">
+        <input type="number" formControlName="budgetMin" placeholder="Min Budget" />
+        <input type="number" formControlName="budgetMax" placeholder="Max Budget" />
+      </div>
+    </div>
+
+    <!-- ================= REQUIREMENT ================= -->
+    <div class="filter-item">
+      <label>Requirement</label>
+      <input type="text" formControlName="requirement" placeholder="e.g. 2BHK, Office Space" />
+    </div>
+
+    <!-- ================= PROJECT ================= -->
+    <div class="filter-item">
+      <label>Interested Project</label>
+      <input type="text" formControlName="interestedProject" placeholder="Project name" />
+    </div>
+
+    <!-- ================= LOCATION ================= -->
+    <div class="filter-item">
+      <label>Preferred Location</label>
+      <input type="text" formControlName="preferredLocation" placeholder="Location preference" />
+    </div>
+
+    <!-- ================= TIMELINE ================= -->
+    <div class="filter-item">
+      <label>Timeline</label>
+      <input type="text" formControlName="timeline" placeholder="Immediate, 6 months..." />
+    </div>
+
+    <!-- ================= LEAD SOURCE ================= -->
+    <div class="filter-item">
+      <label>Lead Source</label>
+      <input type="text" formControlName="leadSource" placeholder="Referral, Facebook..." />
+    </div>
+
+    <!-- ================= PRIORITY ================= -->
+    <div class="filter-item">
+      <label>Priority</label>
+      <select formControlName="priority">
+        <option value="">All</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+    </div>
+
+    <!-- ================= COMMUNICATION ================= -->
+    <div class="filter-item">
+      <label>Communication Preference</label>
+      <select formControlName="communicationPreference">
+        <option value="">All</option>
+        <option value="Call">Call</option>
+        <option value="WhatsApp">WhatsApp</option>
+        <option value="Email">Email</option>
+      </select>
+    </div>
+
+    <!-- ================= CLEAR ================= -->
+    <button type="button" class="clear-btn" (click)="clearFilters()">Clear All Filters</button>
+  </form>
+</div>
+
+<!-- =====================================================
+     CLIENT LIST HEADER
+===================================================== -->
+<div class="list-header">
+  <h2>Clients</h2>
+  <span *ngIf="totalItems > 0">{{ totalItems }} Clients Found</span>
+  <a routerLink="/clients/add" class="add-btn">➕ Add Client</a>
+</div>
+
+<!-- =====================================================
+     CLIENT CARDS
+===================================================== -->
+<div class="client-list">
+  <div *ngFor="let client of clients" class="card">
+    <div class="client-content">
+      <h3>{{ client.name }}</h3>
+      <p><strong>Phone:</strong> {{ client.phone }}</p>
+      <p><strong>Email:</strong> {{ client.email }}</p>
+      <!-- <p><strong>Budget:</strong> {{ client.budget }}</p>
+      <p><strong>Requirement:</strong> {{ client.requirement }}</p>
+      <p><strong>Project:</strong> {{ client.interestedProject }}</p>
+      <p><strong>Location:</strong> {{ client.preferredLocation }}</p>
+      <p><strong>Timeline:</strong> {{ client.timeline }}</p>
+      <p><strong>Lead Source:</strong> {{ client.leadSource }}</p>
+      <p><strong>Priority:</strong> {{ client.priority }}</p>
+      <p><strong>Communication:</strong> {{ client.communicationPreference }}</p> -->
+    </div>
+
+    <div class="action-buttons">
+      <button type="button" class="view-btn" [routerLink]="['/clients', client._id]">View</button>
+      <button type="button" class="edit-btn" (click)="editClient(client._id!)">Edit</button>
+      <button type="button" class="delete-btn" (click)="deleteClient(client._id!)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     NO RESULTS
+===================================================== -->
+<div *ngIf="clients.length === 0" class="no-results">
+  No clients found.
+</div>
+
+<!-- =====================================================
+     PAGINATION
+===================================================== -->
+<div class="pagination" *ngIf="totalPages > 1">
+  <button type="button" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Prev</button>
+  <span>Page {{ currentPage }} of {{ totalPages }} ({{ totalItems }} total)</span>
+  <button type="button" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+</div>

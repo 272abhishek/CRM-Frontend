@@ -6,11 +6,9 @@
   box-sizing: border-box;
 }
 
-
 html,
 body {
   margin: 0;
-
   min-height: 100%;
 
   font-family:
@@ -18,34 +16,27 @@ body {
     Arial,
     sans-serif;
 
-  background:
-    #f8fafc;
+  background: #f8fafc;
 }
 
 
 /* =====================================================
-   NAVBAR
+   MAIN APP NAVBAR
 ===================================================== */
 
-nav {
+.main-nav {
   position: sticky;
-
   top: 0;
-
   z-index: 1000;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   flex-wrap: wrap;
 
   gap: 8px;
 
   min-height: 70px;
-
   padding: 12px 25px;
 
   background:
@@ -59,25 +50,21 @@ nav {
     rgba(15, 23, 42, 0.08);
 
   backdrop-filter: blur(18px);
-
 }
 
 
 /* =====================================================
-   NAV LINKS
+   MAIN NAV LINKS
 ===================================================== */
 
-nav a {
+.main-nav a {
   position: relative;
 
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
 
   min-height: 42px;
-
   padding: 0 17px;
 
   border-radius: 12px;
@@ -85,7 +72,6 @@ nav a {
   color: #475569;
 
   font-size: 14px;
-
   font-weight: 700;
 
   text-decoration: none;
@@ -101,7 +87,7 @@ nav a {
    HOVER
 ===================================================== */
 
-nav a:hover {
+.main-nav a:hover {
   color: #833ab4;
 
   background:
@@ -111,8 +97,7 @@ nav a:hover {
       rgba(253, 29, 29, 0.08)
     );
 
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 }
 
 
@@ -120,7 +105,7 @@ nav a:hover {
    ACTIVE ROUTE
 ===================================================== */
 
-nav a.router-link-active {
+.main-nav a.router-link-active {
   color: #ffffff;
 
   background:
@@ -138,21 +123,7 @@ nav a.router-link-active {
 
 
 /* =====================================================
-   REMOVE PIPE STYLE
-===================================================== */
-
-nav {
-  font-size: 0;
-}
-
-
-nav a {
-  font-size: 14px;
-}
-
-
-/* =====================================================
-   PAGE CONTENT
+   ROUTER OUTLET
 ===================================================== */
 
 router-outlet {
@@ -166,11 +137,10 @@ router-outlet {
 
 @media (max-width: 768px) {
 
-  nav {
+  .main-nav {
     justify-content: flex-start;
 
     overflow-x: auto;
-
     flex-wrap: nowrap;
 
     padding: 10px 14px;
@@ -178,22 +148,18 @@ router-outlet {
     scrollbar-width: none;
   }
 
-
-  nav::-webkit-scrollbar {
+  .main-nav::-webkit-scrollbar {
     display: none;
   }
 
-
-  nav a {
+  .main-nav a {
     flex-shrink: 0;
 
     min-height: 40px;
-
     padding: 0 14px;
 
     font-size: 13px;
   }
-
 }
 
 
@@ -203,17 +169,15 @@ router-outlet {
 
 @media (max-width: 480px) {
 
-  nav {
+  .main-nav {
     gap: 5px;
   }
 
-
-  nav a {
+  .main-nav a {
     padding: 0 12px;
 
     border-radius: 10px;
 
     font-size: 12px;
   }
-
 }

@@ -1,0 +1,48 @@
+<h2>Add New Client</h2>
+<form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+  <label>Name:</label>
+  <input formControlName="name" />
+
+  <label>Phone:</label>
+  <input formControlName="phone" />
+
+  <label>Email:</label>
+  <input formControlName="email" />
+
+  <label>Budget:</label>
+  <input formControlName="budget" type="number" />
+
+  <label>Requirement:</label>
+  <input formControlName="requirement" />
+
+  <label>Interested Project:</label>
+  <input formControlName="interestedProject" />
+
+  <label>Preferred Location:</label>
+  <input formControlName="preferredLocation" />
+
+  <label>Timeline:</label>
+  <input formControlName="timeline" />
+
+  <label>Follow Up Notes:</label>
+  <textarea formControlName="followUpNotes"></textarea>
+
+  <label>Lead Source:</label>
+  <input formControlName="leadSource" />
+
+  <label>Priority:</label>
+  <select formControlName="priority">
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+  </select>
+
+  <label>Communication Preference:</label>
+  <select formControlName="communicationPreference">
+    <option value="Call">Call</option>
+    <option value="WhatsApp">WhatsApp</option>
+    <option value="Email">Email</option>
+  </select>
+
+  <button type="submit">Create Client</button>
+</form>

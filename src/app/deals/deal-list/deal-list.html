@@ -1,1 +1,621 @@
-<p>deal-list works!</p>
+<div class="deal-page">
+
+  <!-- PAGE HEADER -->
+
+  <div class="page-header">
+
+```
+<div>
+
+  <h2>
+    Deals
+  </h2>
+
+  <p>
+    Manage and track your real estate deals
+  </p>
+
+</div>
+
+
+<button
+  class="add-btn"
+  routerLink="/deals/add">
+
+  + Add Deal
+
+</button>
+```
+
+  </div>
+
+  <!-- TOOLBAR -->
+
+  <div class="toolbar">
+
+```
+<div class="search-box">
+
+  <span>
+    🔍
+  </span>
+
+  <input
+    type="text"
+    placeholder="Search deals..."
+    [formControl]="filterForm.controls.q">
+
+</div>
+
+
+<button
+  type="button"
+  class="filter-toggle"
+  (click)="showFilters = !showFilters">
+
+  ⚙ Filters
+
+</button>
+
+
+<button
+  type="button"
+  class="clear-btn"
+  (click)="clearFilters()">
+
+  Clear
+
+</button>
+```
+
+  </div>
+
+  <!-- FILTER PANEL -->
+
+  <form
+    *ngIf="showFilters"
+    class="filters-card"
+    [formGroup]="filterForm">
+
+```
+<!-- STATUS -->
+<div class="filter-group">
+
+  <label>
+    Status
+  </label>
+
+  <select
+    formControlName="status">
+
+    <option value="">
+      All Status
+    </option>
+
+    <option value="Open">
+      Open
+    </option>
+
+    <option value="Negotiation">
+      Negotiation
+    </option>
+
+    <option value="Closed">
+      Closed
+    </option>
+
+    <option value="Cancelled">
+      Cancelled
+    </option>
+
+  </select>
+
+</div>
+
+
+<!-- PROPERTY ID -->
+<div class="filter-group">
+
+  <label>
+    Property ID
+  </label>
+
+  <input
+    type="text"
+    formControlName="propertyId"
+    placeholder="Property ID">
+
+</div>
+
+
+<!-- CLIENT ID -->
+<div class="filter-group">
+
+  <label>
+    Client ID
+  </label>
+
+  <input
+    type="text"
+    formControlName="clientId"
+    placeholder="Client ID">
+
+</div>
+
+
+<!-- MIN AMOUNT -->
+<div class="filter-group">
+
+  <label>
+    Minimum Amount
+  </label>
+
+  <input
+    type="number"
+    formControlName="minDealAmount"
+    placeholder="₹ Minimum amount">
+
+</div>
+
+
+<!-- MAX AMOUNT -->
+<div class="filter-group">
+
+  <label>
+    Maximum Amount
+  </label>
+
+  <input
+    type="number"
+    formControlName="maxDealAmount"
+    placeholder="₹ Maximum amount">
+
+</div>
+
+
+<!-- MIN COMMISSION -->
+<div class="filter-group">
+
+  <label>
+    Minimum Commission
+  </label>
+
+  <input
+    type="number"
+    formControlName="minCommissionAmount"
+    placeholder="₹ Minimum commission">
+
+</div>
+
+
+<!-- MAX COMMISSION -->
+<div class="filter-group">
+
+  <label>
+    Maximum Commission
+  </label>
+
+  <input
+    type="number"
+    formControlName="maxCommissionAmount"
+    placeholder="₹ Maximum commission">
+
+</div>
+
+
+<!-- DEAL DATE -->
+<div class="filter-group">
+
+  <label>
+    Deal Date
+  </label>
+
+  <input
+    type="date"
+    formControlName="dealDate">
+
+</div>
+
+
+<!-- FROM DATE -->
+<div class="filter-group">
+
+  <label>
+    From Date
+  </label>
+
+  <input
+    type="date"
+    formControlName="fromDate">
+
+</div>
+
+
+<!-- TO DATE -->
+<div class="filter-group">
+
+  <label>
+    To Date
+  </label>
+
+  <input
+    type="date"
+    formControlName="toDate">
+
+</div>
+```
+
+  </form>
+
+  <!-- SUMMARY -->
+
+  <div class="summary-bar">
+
+```
+<span>
+
+  Total Deals:
+
+  <strong>
+    {{ totalItems }}
+  </strong>
+
+</span>
+
+
+<span>
+
+  Page
+
+  <strong>
+    {{ currentPage }}
+  </strong>
+
+  of
+
+  <strong>
+    {{ totalPages }}
+  </strong>
+
+</span>
+```
+
+  </div>
+
+  <!-- LOADING -->
+
+  <div
+    class="loading-state"
+    *ngIf="loading">
+
+```
+<div class="loader"></div>
+
+<p>
+  Loading deals...
+</p>
+```
+
+  </div>
+
+  <!-- TABLE -->
+
+  <div
+    class="table-wrapper"
+    *ngIf="!loading">
+
+```
+<table>
+
+  <thead>
+
+    <tr>
+
+      <th>
+        #
+      </th>
+
+      <th>
+        Deal ID
+      </th>
+
+      <th>
+        Property
+      </th>
+
+      <th>
+        Client
+      </th>
+
+      <th>
+        Amount
+      </th>
+
+      <th>
+        Commission
+      </th>
+
+      <th>
+        Status
+      </th>
+
+      <th>
+        Created
+      </th>
+
+      <th>
+        Actions
+      </th>
+
+    </tr>
+
+  </thead>
+
+
+  <tbody>
+
+
+    <!-- DEAL ROW -->
+    <tr
+      *ngFor="
+        let deal of deals;
+        let i = index
+      ">
+
+
+      <!-- NUMBER -->
+    <td>
+  {{
+    (currentPage - 1)
+    * pageSize
+    + i
+    + 1
+  }}
+</td>
+
+
+      <!-- DEAL ID -->
+      <td>
+
+        <div class="deal-info">
+
+          <strong>
+
+            #{{ deal._id || '—' }}
+
+          </strong>
+
+          <small>
+
+            Agent:
+            {{ deal.agentId || '—' }}
+
+          </small>
+
+        </div>
+
+      </td>
+
+
+      <!-- PROPERTY -->
+      <td>
+
+        <span class="property-name">
+
+          {{ deal.propertyId || '—' }}
+
+        </span>
+
+      </td>
+
+
+      <!-- CLIENT -->
+      <td>
+
+        <span class="client-name">
+
+          {{ deal.clientId || '—' }}
+
+        </span>
+
+      </td>
+
+
+      <!-- AMOUNT -->
+      <td>
+
+        <strong>
+
+          ₹{{ deal.amount | number }}
+
+        </strong>
+
+      </td>
+
+
+      <!-- COMMISSION -->
+      <td>
+
+        ₹{{ deal.commissionEarned || 0 | number }}
+
+      </td>
+
+
+      <!-- STATUS -->
+      <td>
+
+        <span
+          class="status-badge"
+          [ngClass]="
+            'status-' +
+            getStatusClass(deal.status)
+          ">
+
+          {{ deal.status || 'Open' }}
+
+        </span>
+
+      </td>
+
+
+      <!-- CREATED -->
+      <td>
+
+        {{
+
+          deal.createdAt
+
+            ? (
+
+              deal.createdAt
+
+              | date:'dd MMM yyyy'
+
+            )
+
+            : '—'
+
+        }}
+
+      </td>
+
+
+      <!-- ACTIONS -->
+      <td>
+
+        <div class="actions">
+
+
+          <!-- VIEW -->
+          <button
+            type="button"
+            class="view-btn"
+            *ngIf="deal._id"
+            (click)="viewDeal(deal._id)">
+
+            View
+
+          </button>
+
+
+          <!-- EDIT -->
+          <button
+            type="button"
+            class="edit-btn"
+            *ngIf="deal._id"
+            (click)="editDeal(deal._id)">
+
+            Edit
+
+          </button>
+
+
+          <!-- DELETE -->
+          <button
+            type="button"
+            class="delete-btn"
+            *ngIf="deal._id"
+            (click)="deleteDeal(deal._id)">
+
+            Delete
+
+          </button>
+
+        </div>
+
+      </td>
+
+    </tr>
+
+
+    <!-- EMPTY STATE -->
+    <tr
+      *ngIf="deals.length === 0">
+
+      <td
+        colspan="9"
+        class="empty-state">
+
+        <div>
+
+          <span class="empty-icon">
+            📂
+          </span>
+
+          <h3>
+            No Deals Found
+          </h3>
+
+          <p>
+            Try changing your filters
+            or create a new deal.
+          </p>
+
+        </div>
+
+      </td>
+
+    </tr>
+
+  </tbody>
+
+</table>
+```
+
+  </div>
+
+  <!-- PAGINATION -->
+
+  <div
+    class="pagination"
+    *ngIf="
+      totalPages > 1 &&
+      !loading
+    ">
+
+```
+<!-- PREVIOUS -->
+<button
+  type="button"
+  [disabled]="currentPage === 1"
+  (click)="
+    goToPage(currentPage - 1)
+  ">
+
+  ← Previous
+
+</button>
+
+
+<!-- PAGE NUMBERS -->
+<button
+  *ngFor="let page of pages"
+  type="button"
+  [class.active]="
+    currentPage === page
+  "
+  (click)="goToPage(page)">
+
+  {{ page }}
+
+</button>
+
+
+<!-- NEXT -->
+<button
+  type="button"
+  [disabled]="
+    currentPage === totalPages
+  "
+  (click)="
+    goToPage(currentPage + 1)
+  ">
+
+  Next →
+
+</button>
+```
+
+  </div>
+
+</div>

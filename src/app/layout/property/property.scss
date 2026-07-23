@@ -1,0 +1,248 @@
+/* =====================================
+   Property Layout
+===================================== */
+
+:host {
+  display: block;
+  min-height: 100vh;
+
+  font-family:
+    "Inter",
+    "Segoe UI",
+    sans-serif;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fafc 0%,
+      #eef2ff 100%
+    );
+
+  color: #1e293b;
+}
+
+/* =====================================
+   Main Layout
+===================================== */
+
+.property-layout {
+  min-height: 100vh;
+
+  display: flex;
+}
+
+/* =====================================
+   Sidebar
+===================================== */
+
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+
+  padding: 28px 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #111827 0%,
+      #1e1b4b 100%
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    8px 0 30px rgba(15, 23, 42, 0.12);
+
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+}
+
+/* =====================================
+   Sidebar Heading
+===================================== */
+
+.sidebar h2 {
+  margin: 0 12px 34px;
+
+  font-size: 22px;
+  font-weight: 750;
+
+  letter-spacing: -0.4px;
+
+  color: #ffffff;
+}
+
+/* =====================================
+   Navigation
+===================================== */
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* =====================================
+   Navigation Links
+===================================== */
+
+.sidebar nav a {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  min-height: 48px;
+  padding: 0 16px;
+
+  border-radius: 11px;
+
+  color: #cbd5e1;
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* Hover */
+
+.sidebar nav a:hover {
+  color: #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.1);
+
+  transform: translateX(4px);
+}
+
+/* Active Link */
+
+.sidebar nav a.active {
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #4f46e5,
+      #7c3aed
+    );
+
+  box-shadow:
+    0 8px 20px rgba(79, 70, 229, 0.3);
+}
+
+/* =====================================
+   Main Content
+===================================== */
+
+.property-content {
+  flex: 1;
+  min-width: 0;
+
+  padding: 32px;
+
+  background:
+    rgba(248, 250, 252, 0.75);
+}
+
+/* =====================================
+   Tablet
+===================================== */
+
+@media (max-width: 900px) {
+
+  .sidebar {
+    width: 220px;
+  }
+
+  .property-content {
+    padding: 24px;
+  }
+}
+
+/* =====================================
+   Mobile
+===================================== */
+
+@media (max-width: 768px) {
+
+  .property-layout {
+    display: block;
+  }
+
+  .sidebar {
+    width: auto;
+    min-height: auto;
+
+    padding: 16px 18px;
+
+    position: relative;
+  }
+
+  .sidebar h2 {
+    margin: 0 0 16px;
+
+    font-size: 20px;
+  }
+
+  .sidebar nav {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .sidebar nav a {
+    flex: 1;
+
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 0 10px;
+
+    font-size: 13px;
+  }
+
+  .sidebar nav a:hover {
+    transform: translateY(-2px);
+  }
+
+  .property-content {
+    padding: 20px 16px;
+  }
+}
+
+/* =====================================
+   Small Mobile
+===================================== */
+
+@media (max-width: 480px) {
+
+  .sidebar {
+    padding: 14px 12px;
+  }
+
+  .sidebar h2 {
+    margin-bottom: 14px;
+
+    font-size: 18px;
+  }
+
+  .sidebar nav {
+    gap: 8px;
+  }
+
+  .sidebar nav a {
+    min-height: 42px;
+
+    font-size: 12px;
+  }
+
+  .property-content {
+    padding: 16px 10px;
+  }
+}

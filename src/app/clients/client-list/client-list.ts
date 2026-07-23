@@ -1,9 +1,142 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { Client, ClientInterface, ClientQueryParams } from '../client';
 
 @Component({
   selector: 'app-client-list',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './client-list.html',
-  styleUrl: './client-list.scss',
+  styleUrls: ['./client-list.scss']
 })
-export class ClientList {}
+export class ClientList implements OnInit {
+  showFilters = false;
+  clients: ClientInterface[] = [];
+
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalItems: number = 0;
+  totalPages: number = 1;
+
+  filterForm = new FormGroup({
+    q: new FormControl(''),
+    name: new FormControl(''),
+    phone: new FormControl(''),
+    email: new FormControl(''),
+    budgetMin: new FormControl(''),
+    budgetMax: new FormControl(''),
+    requirement: new FormControl(''),
+    interestedProject: new FormControl(''),
+    preferredLocation: new FormControl(''),
+    timeline: new FormControl(''),
+    leadSource: new FormControl(''),
+    priority: new FormControl(''),
+    communicationPreference: new FormControl('')
+  });
+
+  constructor(
+    private router: Router,
+    private clientService: Client,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit() {
+    this.loadClients();
+
+    // Auto filter while typing/changing
+    this.filterForm.valueChanges.subscribe(() => {
+      this.currentPage = 1;
+      this.loadClients();
+    });
+  }
+
+  loadClients() {
+    const f = this.filterForm.value;
+
+    const params: ClientQueryParams = {
+      page: this.currentPage,
+      limit: this.pageSize,
+      q: f.q || undefined,
+      name: f.name || undefined,
+      phone: f.phone || undefined,
+      email: f.email || undefined,
+      requirement: f.requirement || undefined,
+      interestedProject: f.interestedProject || undefined,
+      preferredLocation: f.preferredLocation || undefined,
+      timeline: f.timeline || undefined,
+      leadSource: f.leadSource || undefined,
+      priority: f.priority || undefined,
+      communicationPreference: f.communicationPreference || undefined
+    };
+
+    // Range filter for budget
+    this.addRangeFilter(params, 'budget', f.budgetMin, f.budgetMax);
+
+    this.clientService.getClients(params).subscribe({
+      next: (res) => {
+        this.clients = res.data;
+        this.totalItems = res.total;
+        this.totalPages = Math.ceil(res.total / this.pageSize) || 1;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(err);
+        alert(err.error?.message || 'Failed to load clients');
+      }
+    });
+  }
+
+  private addRangeFilter(params: ClientQueryParams, field: string, min: any, max: any) {
+    if (min !== null && min !== undefined && min !== '') {
+      params[`${field}[min]`] = min;
+    }
+    if (max !== null && max !== undefined && max !== '') {
+      params[`${field}[max]`] = max;
+    }
+  }
+
+  clearFilters() {
+    this.filterForm.reset({
+      q: '',
+      name: '',
+      phone: '',
+      email: '',
+      budgetMin: '',
+      budgetMax: '',
+      requirement: '',
+      interestedProject: '',
+      preferredLocation: '',
+      timeline: '',
+      leadSource: '',
+      priority: '',
+      communicationPreference: ''
+    });
+    this.currentPage = 1;
+  }
+
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.loadClients();
+  }
+
+  editClient(id: string) {
+    this.router.navigate(['/clients/edit', id]);
+  }
+
+  deleteClient(id: string) {
+    if (!confirm('Are you sure you want to delete this client?')) return;
+    this.clientService.deleteClient(id).subscribe({
+      next: () => {
+        this.clients = this.clients.filter(c => c._id !== id);
+        this.totalItems--;
+      },
+      error: (err) => {
+        console.error(err);
+        alert(err.error?.message || 'Delete failed');
+      }
+    });
+  }
+}
