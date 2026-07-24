@@ -44,8 +44,10 @@ import {
   selector:
     'app-property-visit-detail',
 
+
   standalone:
     true,
+
 
   imports: [
 
@@ -55,8 +57,10 @@ import {
 
   ],
 
+
   templateUrl:
     './property-visit-detail.html',
+
 
   styleUrls: [
 
@@ -72,15 +76,27 @@ export class PropertyVisitDetail
 implements OnInit {
 
 
+  // =====================================================
+  // VISIT DATA
+  // =====================================================
+
   visit:
     PropertyVisit | null =
     null;
 
 
+  // =====================================================
+  // LOADING
+  // =====================================================
+
   loading:
     boolean =
     true;
 
+
+  // =====================================================
+  // CONSTRUCTOR
+  // =====================================================
 
   constructor(
 
@@ -95,6 +111,10 @@ implements OnInit {
 
   ) {}
 
+
+  // =====================================================
+  // INIT
+  // =====================================================
 
   ngOnInit(): void {
 
@@ -111,28 +131,76 @@ implements OnInit {
 
     if (!id) {
 
+
+      this.loading =
+        false;
+
+
+      alert(
+
+        'Visit ID missing'
+
+      );
+
+
       return;
 
     }
 
 
+    this.loadVisit(id);
+
+  }
+
+
+  // =====================================================
+  // LOAD VISIT
+  // =====================================================
+
+  loadVisit(
+
+    id:
+      string
+
+  ): void {
+
+
+    this.loading =
+      true;
+
+
     this.service
+
       .getVisitById(id)
+
       .subscribe({
 
         next:
-          (res) => {
+          (res: any) => {
 
+
+            console.log(
+
+              'VISIT DETAIL RESPONSE:',
+
+              res
+
+            );
+
+
+            // Backend response:
+            // { data: visit }
 
             this.visit =
-              res;
-
+              res?.data || res;
+            
 
             this.loading =
               false;
 
 
             this.cdr
+
               .detectChanges();
 
           },
@@ -140,6 +208,15 @@ implements OnInit {
 
         error:
           (err) => {
+
+
+            console.error(
+
+              'GET VISIT DETAIL ERROR:',
+
+              err
+
+            );
 
 
             this.loading =
@@ -157,6 +234,71 @@ implements OnInit {
           }
 
       });
+
+  }
+
+
+  // =====================================================
+  // CHECK POPULATED OBJECT
+  // =====================================================
+
+  isPopulatedObject(
+
+    value:
+      any
+
+  ): boolean {
+
+
+    return (
+
+      value !== null &&
+
+      typeof value === 'object' &&
+
+      '_id' in value
+
+    );
+
+  }
+
+
+  // =====================================================
+  // STATUS CLASS
+  // =====================================================
+
+  getStatusClass(
+
+    status:
+      string | undefined
+
+  ): string {
+
+
+    if (!status) {
+
+      return 'status-unknown';
+
+    }
+
+
+    return (
+
+      'status-' +
+
+      status
+
+        .toLowerCase()
+
+        .replace(
+
+          /\s+/g,
+
+          '-'
+
+        )
+
+    );
 
   }
 

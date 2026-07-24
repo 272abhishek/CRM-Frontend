@@ -1,1 +1,348 @@
-<p>property-visit-edit works!</p>
+<div
+  class="visit-edit-page">
+
+
+  <!-- HEADER -->
+
+  <div
+    class="page-header">
+
+    <div>
+
+      <span
+        class="eyebrow">
+
+        PROPERTY VISIT
+
+      </span>
+
+
+      <h2>
+
+        Edit Property Visit
+
+      </h2>
+
+
+      <p>
+
+        Update visit schedule and status
+
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+
+      routerLink="/property-visits">
+
+      ← Back
+
+    </button>
+
+  </div>
+
+
+  <!-- LOADING -->
+
+  <div
+    class="loading-state"
+
+    *ngIf="loading">
+
+    Loading visit details...
+
+  </div>
+
+
+  <!-- FORM -->
+
+  <section
+    class="form-card"
+
+    *ngIf="!loading && visit">
+
+
+    <!-- CLIENT -->
+
+    <div
+      class="readonly-section">
+
+      <h3>
+        Client
+      </h3>
+
+
+      <p>
+
+        Client information cannot be changed
+
+      </p>
+
+
+      <div
+        class="readonly-value">
+
+        Client ID:
+
+        {{ visit.clientId }}
+
+      </div>
+
+    </div>
+
+
+    <!-- PROPERTY -->
+
+    <div
+      class="readonly-section">
+
+      <h3>
+        Property
+      </h3>
+
+
+      <p>
+
+        Property information cannot be changed
+
+      </p>
+
+
+      <div
+        class="readonly-value">
+
+        Property ID:
+
+        {{ visit.propertyId }}
+
+      </div>
+
+    </div>
+
+
+    <!-- EDIT FORM -->
+
+    <form
+
+      [formGroup]="visitForm"
+
+      (ngSubmit)="submit()">
+
+
+      <!-- DATE -->
+
+      <div
+        class="form-group">
+
+        <label>
+
+          Visit Date
+
+          <span>
+            *
+          </span>
+
+        </label>
+
+
+        <input
+
+          type="date"
+
+          formControlName="visitDate">
+
+
+        <small
+
+          *ngIf="
+
+            visitForm.controls.visitDate.touched &&
+
+            visitForm.controls.visitDate.invalid
+
+          ">
+
+          Visit date is required
+
+        </small>
+
+      </div>
+
+
+      <!-- STATUS -->
+
+      <div
+        class="form-group">
+
+        <label>
+
+          Visit Status
+
+          <span>
+            *
+          </span>
+
+        </label>
+
+
+        <select
+
+          formControlName="status">
+
+
+          <option
+            value="Planned">
+
+            Planned
+
+          </option>
+
+
+          <option
+            value="Scheduled">
+
+            Scheduled
+
+          </option>
+
+
+          <option
+            value="Visited">
+
+            Visited
+
+          </option>
+
+
+          <option
+            value="Interested">
+
+            Interested
+
+          </option>
+
+
+          <option
+            value="Not Interested">
+
+            Not Interested
+
+          </option>
+
+
+          <option
+            value="Shortlisted">
+
+            Shortlisted
+
+          </option>
+
+
+          <option
+            value="Selected">
+
+            Selected
+
+          </option>
+
+
+          <option
+            value="Rejected">
+
+            Rejected
+
+          </option>
+
+
+          <option
+            value="Negotiation">
+
+            Negotiation
+
+          </option>
+
+
+          <option
+            value="Closed">
+
+            Closed
+
+          </option>
+
+
+        </select>
+
+      </div>
+
+
+      <!-- NOTES -->
+
+      <div
+        class="form-group">
+
+        <label>
+
+          Notes
+
+        </label>
+
+
+        <textarea
+
+          formControlName="notes"
+
+          rows="5"
+
+          placeholder="Add visit notes">
+
+        </textarea>
+
+      </div>
+
+
+      <!-- ACTIONS -->
+
+      <div
+        class="form-actions">
+
+
+        <button
+
+          type="button"
+
+          routerLink="/property-visits">
+
+          Cancel
+
+        </button>
+
+
+        <button
+
+          type="submit"
+
+          [disabled]="saving">
+
+
+          {{
+
+            saving
+
+              ? 'Updating...'
+
+              : 'Update Visit'
+
+          }}
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+
+</div>
