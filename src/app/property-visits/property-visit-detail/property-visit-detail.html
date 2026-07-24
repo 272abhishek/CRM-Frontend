@@ -1,0 +1,184 @@
+<div
+
+  class="visit-detail-page"
+
+  *ngIf="visit">
+
+
+  <div class="page-header">
+
+
+    <div>
+
+      <button
+
+        routerLink="/property-visits">
+
+        ← Back
+
+      </button>
+
+
+      <h2>
+        Property Visit Details
+      </h2>
+
+    </div>
+
+
+    <button
+
+      *ngIf="visit._id"
+
+      [routerLink]="[
+
+        '/property-visits/edit',
+
+        visit._id
+
+      ]">
+
+      Edit Visit
+
+    </button>
+
+  </div>
+
+
+  <div class="detail-grid">
+
+
+    <div class="detail-card">
+
+
+      <h3>
+        Visit Status
+      </h3>
+
+
+      <span
+
+        class="status-badge"
+
+        [ngClass]="
+
+          'status-' +
+
+          visit.status
+
+            ?.toLowerCase()
+
+        ">
+
+        {{ visit.status }}
+
+      </span>
+
+
+      <p>
+
+        Visit Date:
+
+        {{
+
+          visit.visitDate
+
+            ? (
+
+                visit.visitDate
+
+                | date:'dd MMM yyyy'
+
+              )
+
+            : '—'
+
+        }}
+
+      </p>
+
+    </div>
+
+
+    <div class="detail-card">
+
+
+      <h3>
+        Client
+      </h3>
+
+
+      <p>
+        Client ID:
+        {{ visit.clientId }}
+      </p>
+
+    </div>
+
+
+    <div class="detail-card">
+
+
+      <h3>
+        Property
+      </h3>
+
+
+      <p>
+        Property ID:
+        {{ visit.propertyId }}
+      </p>
+
+    </div>
+
+
+    <div class="detail-card">
+
+
+      <h3>
+        Final Deal
+      </h3>
+
+
+      <p
+
+        *ngIf="visit.dealId">
+
+        ✅ Final Deal Created
+
+      </p>
+
+
+      <p
+
+        *ngIf="!visit.dealId">
+
+        No final deal yet
+
+      </p>
+
+    </div>
+
+
+    <div
+
+      class="detail-card full-width">
+
+
+      <h3>
+        Notes
+      </h3>
+
+
+      <p>
+
+        {{ visit.notes || 'No notes' }}
+
+      </p>
+
+    </div>
+
+
+  </div>
+
+</div>

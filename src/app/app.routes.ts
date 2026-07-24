@@ -17,6 +17,10 @@ import { ClientList } from './clients/client-list/client-list';
 import { ClientAdd } from './clients/client-add/client-add';
 import { ClientEdit } from './clients/client-edit/client-edit';
 import { ClientDetail } from './clients/client-detail/client-detail';
+import { PropertyVisitList } from './property-visits/property-visit-list/property-visit-list';
+import { PropertyVisitAdd } from './property-visits/property-visit-add/property-visit-add';
+import { PropertyVisitEdit } from './property-visits/property-visit-edit/property-visit-edit';
+import { PropertyVisitDetail } from './property-visits/property-visit-detail/property-visit-detail';
 
 
 export const routes: Routes = [
@@ -51,7 +55,25 @@ export const routes: Routes = [
     component: Profile
   },
 
+       {
+    path: 'property-visits',
+    component: PropertyVisitList
+  },
 
+  {
+    path: 'property-visits/add',
+    component: PropertyVisitAdd
+  },
+
+  {
+    path: 'property-visits/edit/:id',
+    component: PropertyVisitEdit
+  },
+
+  {
+    path: 'property-visits/:id',
+    component: PropertyVisitDetail
+  },
   // =========================
   // Client Layout
   // =========================

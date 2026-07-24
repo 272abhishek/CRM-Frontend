@@ -1,0 +1,468 @@
+<div class="visit-page">
+
+
+  <div class="page-header">
+
+    <div>
+
+      <h2>
+        Property Visits
+      </h2>
+
+      <p>
+        Track client property visits
+      </p>
+
+    </div>
+
+
+    <button
+
+      class="add-btn"
+
+      routerLink="/property-visits/add">
+
+      + Add Visit
+
+    </button>
+
+  </div>
+
+
+  <div class="toolbar">
+
+
+    <input
+
+      type="text"
+
+      placeholder="Search visits..."
+
+      [formControl]="
+        filterForm.controls.q
+      ">
+
+
+    <button
+
+      type="button"
+
+      (click)="
+        showFilters = !showFilters
+      ">
+
+      ⚙ Filters
+
+    </button>
+
+
+    <button
+
+      type="button"
+
+      (click)="clearFilters()">
+
+      Clear
+
+    </button>
+
+  </div>
+
+
+  <form
+
+    *ngIf="showFilters"
+
+    [formGroup]="filterForm"
+
+    class="filters-card">
+
+
+    <input
+
+      type="text"
+
+      placeholder="Client ID"
+
+      formControlName="clientId">
+
+
+    <input
+
+      type="text"
+
+      placeholder="Property ID"
+
+      formControlName="propertyId">
+
+
+    <select
+
+      formControlName="status">
+
+
+      <option value="">
+        All Status
+      </option>
+
+
+      <option value="Planned">
+        Planned
+      </option>
+
+
+      <option value="Scheduled">
+        Scheduled
+      </option>
+
+
+      <option value="Visited">
+        Visited
+      </option>
+
+
+      <option value="Negotiation">
+        Negotiation
+      </option>
+
+
+      <option value="Closed">
+        Closed
+      </option>
+
+
+      <option value="Cancelled">
+        Cancelled
+      </option>
+
+
+    </select>
+
+
+    <input
+
+      type="date"
+
+      formControlName="visitDate">
+
+  </form>
+
+
+  <div class="summary">
+
+    Total Visits:
+
+    <strong>
+      {{ totalItems }}
+    </strong>
+
+
+    <span>
+
+      Page
+
+      <strong>
+        {{ currentPage }}
+      </strong>
+
+      of
+
+      <strong>
+        {{ totalPages }}
+      </strong>
+
+    </span>
+
+  </div>
+
+
+  <div class="table-wrapper">
+
+
+    <table>
+
+
+      <thead>
+
+        <tr>
+
+          <th>#</th>
+
+          <th>Client</th>
+
+          <th>Property</th>
+
+          <th>Visit Date</th>
+
+          <th>Status</th>
+
+          <th>Deal</th>
+
+          <th>Actions</th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+
+        <tr
+
+          *ngFor="
+
+            let visit of visits;
+
+            let i = index
+
+          ">
+
+
+          <td>
+
+            {{
+
+              (currentPage - 1)
+
+              * pageSize
+
+              + i + 1
+
+            }}
+
+          </td>
+
+
+          <td>
+
+            {{ visit.clientId }}
+
+          </td>
+
+
+          <td>
+
+            {{ visit.propertyId }}
+
+          </td>
+
+
+          <td>
+
+            {{
+
+              visit.visitDate
+
+                ? (
+
+                    visit.visitDate
+
+                    | date:'dd MMM yyyy'
+
+                  )
+
+                : '—'
+
+            }}
+
+          </td>
+
+
+          <td>
+
+            <span
+
+              class="status-badge"
+
+              [ngClass]="
+
+                'status-' +
+
+                visit.status
+
+                  ?.toLowerCase()
+
+              ">
+
+              {{ visit.status }}
+
+            </span>
+
+          </td>
+
+
+          <td>
+
+
+            <span
+
+              *ngIf="visit.dealId"
+
+              class="deal-created">
+
+              ✅ Deal Created
+
+            </span>
+
+
+            <span
+
+              *ngIf="!visit.dealId">
+
+              —
+
+            </span>
+
+
+          </td>
+
+
+          <td>
+
+            <button
+
+              [routerLink]="[
+
+                '/property-visits',
+
+                visit._id
+
+              ]">
+
+              View
+
+            </button>
+
+
+            <button
+
+              *ngIf="visit._id"
+
+              (click)="
+
+                editVisit(visit._id)
+
+              ">
+
+              Edit
+
+            </button>
+
+
+            <button
+
+              *ngIf="visit._id"
+
+              (click)="
+
+                deleteVisit(visit._id)
+
+              ">
+
+              Delete
+
+            </button>
+
+          </td>
+
+
+        </tr>
+
+
+        <tr
+
+          *ngIf="visits.length === 0">
+
+
+          <td
+
+            colspan="7"
+
+            class="empty">
+
+            No property visits found
+
+          </td>
+
+        </tr>
+
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <div
+
+    class="pagination"
+
+    *ngIf="totalPages > 1">
+
+
+    <button
+
+      [disabled]="currentPage === 1"
+
+      (click)="
+
+        goToPage(currentPage - 1)
+
+      ">
+
+      ← Previous
+
+    </button>
+
+
+    <button
+
+      *ngFor="
+
+        let page of [].constructor(totalPages);
+
+        let i = index
+
+      "
+
+      [class.active]="
+
+        currentPage === i + 1
+
+      "
+
+      (click)="
+
+        goToPage(i + 1)
+
+      ">
+
+      {{ i + 1 }}
+
+    </button>
+
+
+    <button
+
+      [disabled]="
+
+        currentPage === totalPages
+
+      "
+
+      (click)="
+
+        goToPage(currentPage + 1)
+
+      ">
+
+      Next →
+
+    </button>
+
+  </div>
+
+
+</div>
