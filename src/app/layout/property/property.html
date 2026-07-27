@@ -1,21 +1,171 @@
 <div class="property-layout">
 
-  <aside class="sidebar">
-    <h2>Properties</h2>
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
 
-    <nav>
-      <a routerLink="/properties">
-        Property List
+  <aside class="property-sidebar">
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        🏢
+      </div>
+
+      <div>
+
+        <h2>
+          Properties
+        </h2>
+
+        <span>
+          CRM Management
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="property-nav">
+
+
+      <!-- PROPERTY LIST -->
+
+      <a
+        routerLink="/properties"
+        routerLinkActive="active">
+
+        <span>
+          🏢
+        </span>
+
+        <span>
+          All Properties
+        </span>
+
       </a>
 
-      <a routerLink="/properties/add">
-        Add Property
+
+      <!-- ADD PROPERTY -->
+
+      <a
+        routerLink="/properties/add"
+        routerLinkActive="active">
+
+        <span>
+          ➕
+        </span>
+
+        <span>
+          Add Property
+        </span>
+
       </a>
+
+
+      <!-- ANALYTICS -->
+
+      <a
+        routerLink="/properties/analytics"
+        routerLinkActive="active">
+
+        <span>
+          📊
+        </span>
+
+        <span>
+          Property Analytics
+        </span>
+
+      </a>
+
+
     </nav>
+
+
+    <!-- SIDEBAR FOOTER -->
+
+    <div class="sidebar-footer">
+
+      <a routerLink="/profile">
+
+        <span>
+          👤
+        </span>
+
+        Profile
+
+      </a>
+
+    </div>
+
   </aside>
 
-  <main class="property-content">
-    <router-outlet></router-outlet>
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
+  <main class="property-main">
+
+
+    <!-- HEADER -->
+
+    <header class="property-header">
+
+
+      <div>
+
+        <span class="eyebrow">
+          CRM / PROPERTIES
+        </span>
+
+        <h1>
+          Property Management
+        </h1>
+
+        <p>
+          Manage properties and view property analytics.
+        </p>
+
+      </div>
+
+
+      <!-- ACTION -->
+
+      <div class="header-actions">
+
+        <a
+          routerLink="/properties/add"
+          class="add-property-btn">
+
+          <span>
+            ＋
+          </span>
+
+          Add Property
+
+        </a>
+
+      </div>
+
+
+    </header>
+
+
+    <!-- CHILD COMPONENT -->
+
+    <section class="property-content">
+
+      <router-outlet></router-outlet>
+
+    </section>
+
+
   </main>
+
 
 </div>

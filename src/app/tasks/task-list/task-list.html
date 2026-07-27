@@ -1,1 +1,567 @@
-<p>task-list works!</p>
+<div class="task-page">
+
+  <!-- ================= HEADER ================= -->
+
+  <div class="page-header">
+
+    <div class="header-content">
+
+      <span class="eyebrow">
+        WORK MANAGEMENT
+      </span>
+
+      <h1>
+        Tasks
+      </h1>
+
+      <p>
+        Manage, track and monitor all your tasks
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="add-task-btn"
+      routerLink="/tasks/add">
+
+      <span class="plus-icon">
+        +
+      </span>
+
+      Add Task
+
+    </button>
+
+  </div>
+
+
+  <!-- ================= ERROR ================= -->
+
+  <div
+    *ngIf="error"
+    class="alert error-alert">
+
+    <span>
+      ⚠️
+    </span>
+
+    <span>
+      {{ error }}
+    </span>
+
+    <button
+      type="button"
+      (click)="loadTasks()">
+
+      Retry
+
+    </button>
+
+  </div>
+
+
+  <!-- ================= LOADING ================= -->
+
+  <div
+    *ngIf="loading"
+    class="loading-state">
+
+    <div class="loader"></div>
+
+    <p>
+      Loading tasks...
+    </p>
+
+  </div>
+
+
+  <!-- ================= CONTENT ================= -->
+
+  <div
+    *ngIf="!loading"
+    class="task-content">
+
+
+    <!-- ================= STATS ================= -->
+
+    <div class="task-stats">
+
+
+      <!-- TOTAL -->
+
+      <div class="stat-card">
+
+        <div class="stat-icon total">
+          📋
+        </div>
+
+        <div class="stat-info">
+
+          <span>
+            Total Tasks
+          </span>
+
+          <strong>
+            {{ totalTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- PENDING -->
+
+      <div class="stat-card">
+
+        <div class="stat-icon pending">
+          ⏳
+        </div>
+
+        <div class="stat-info">
+
+          <span>
+            Pending
+          </span>
+
+          <strong>
+            {{ pendingTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- IN PROGRESS -->
+
+      <div class="stat-card">
+
+        <div class="stat-icon progress">
+          ⚡
+        </div>
+
+        <div class="stat-info">
+
+          <span>
+            In Progress
+          </span>
+
+          <strong>
+            {{ inProgressTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- COMPLETED -->
+
+      <div class="stat-card">
+
+        <div class="stat-icon completed">
+          ✓
+        </div>
+
+        <div class="stat-info">
+
+          <span>
+            Completed
+          </span>
+
+          <strong>
+            {{ completedTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= EMPTY STATE ================= -->
+
+    <div
+      *ngIf="
+        tasks.length === 0 &&
+        !error
+      "
+
+      class="empty-state">
+
+      <div class="empty-icon">
+        📋
+      </div>
+
+      <h2>
+        No Tasks Found
+      </h2>
+
+      <p>
+        Create your first task to get started.
+      </p>
+
+      <button
+        type="button"
+        class="empty-add-btn"
+        routerLink="/tasks/add">
+
+        + Create Task
+
+      </button>
+
+    </div>
+
+
+    <!-- ================= TASK TABLE ================= -->
+
+    <div
+      *ngIf="
+        tasks.length > 0
+      "
+
+      class="task-table-card">
+
+
+      <!-- TABLE HEADER -->
+
+      <div class="table-header">
+
+        <div>
+
+          <h2>
+            All Tasks
+          </h2>
+
+          <span>
+            {{ tasks.length }} tasks
+          </span>
+
+        </div>
+
+        <button
+          type="button"
+          class="refresh-btn"
+          (click)="loadTasks()">
+
+          ↻ Refresh
+
+        </button>
+
+      </div>
+
+
+      <!-- TABLE -->
+
+      <div class="table-wrapper">
+
+        <table>
+
+
+          <!-- ================= HEAD ================= -->
+
+          <thead>
+
+            <tr>
+
+              <th>
+                TASK
+              </th>
+
+              <th>
+                DUE DATE
+              </th>
+
+              <th>
+                CLIENT
+              </th>
+
+              <th>
+                PROPERTY
+              </th>
+
+              <th>
+                PRIORITY
+              </th>
+
+              <th>
+                STATUS
+              </th>
+
+              <th>
+                ACTIONS
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <!-- ================= BODY ================= -->
+
+          <tbody>
+
+            <tr
+              *ngFor="
+                let task of tasks;
+                trackBy: trackByTask
+              ">
+
+
+              <!-- TASK -->
+
+              <td>
+
+                <div class="task-title-wrapper">
+
+                  <div class="task-icon">
+                    📋
+                  </div>
+
+                  <div class="task-main-info">
+
+                    <strong>
+                      {{ task.title }}
+                    </strong>
+
+                    <small
+                      *ngIf="
+                        task.description
+                      ">
+
+                      {{ task.description }}
+
+                    </small>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- DUE DATE -->
+
+              <td>
+
+                <div
+                  *ngIf="
+                    task.dueDate
+                  "
+
+                  class="date-info">
+
+                  <strong>
+
+                    {{
+                      task.dueDate
+                        | date:'dd MMM yyyy'
+                    }}
+
+                  </strong>
+
+                  <small>
+
+                    {{
+                      task.dueDate
+                        | date:'shortTime'
+                    }}
+
+                  </small>
+
+                </div>
+
+                <span
+                  *ngIf="
+                    !task.dueDate
+                  ">
+
+                  —
+
+                </span>
+
+              </td>
+
+
+              <!-- CLIENT -->
+
+              <td>
+
+                <div class="related-info">
+
+                  <span class="info-icon">
+                    👤
+                  </span>
+
+                  <span>
+
+                    {{
+                      getClientName(
+                        task.relatedClient
+                      )
+                    }}
+
+                  </span>
+
+                </div>
+
+              </td>
+
+
+              <!-- PROPERTY -->
+
+              <td>
+
+                <div class="related-info">
+
+                  <span class="info-icon">
+                    🏠
+                  </span>
+
+                  <span>
+
+                    {{
+                      getPropertyName(
+                        task.relatedProperty
+                      )
+                    }}
+
+                  </span>
+
+                </div>
+
+              </td>
+
+
+              <!-- PRIORITY -->
+
+              <td>
+
+                <span
+                  class="priority-badge"
+
+                  [ngClass]="
+                    getPriorityClass(
+                      task.priority
+                    )
+                  ">
+
+                  <span
+                    class="priority-dot">
+
+                  </span>
+
+                  {{
+                    task.priority ||
+                    'Medium'
+                  }}
+
+                </span>
+
+              </td>
+
+
+              <!-- STATUS -->
+
+              <td>
+
+                <span
+                  class="status-badge"
+
+                  [ngClass]="
+                    getStatusClass(
+                      task.status
+                    )
+                  ">
+
+                  {{
+                    task.status ||
+                    'Pending'
+                  }}
+
+                </span>
+
+              </td>
+
+
+              <!-- ACTIONS -->
+
+              <td>
+
+                <div class="action-buttons">
+
+
+                  <!-- VIEW -->
+
+                  <button
+                    type="button"
+
+                    class="action-btn view"
+
+                    title="View Task"
+
+                    (click)="
+                      viewTask(task)
+                    ">
+
+                    👁
+
+                  </button>
+
+
+                  <!-- EDIT -->
+
+                  <button
+                    type="button"
+
+                    class="action-btn edit"
+
+                    title="Edit Task"
+
+                    (click)="
+                      editTask(task)
+                    ">
+
+                    ✏️
+
+                  </button>
+
+
+                  <!-- DELETE -->
+
+                  <button
+                    type="button"
+
+                    class="action-btn delete"
+
+                    title="Delete Task"
+
+                    (click)="
+                      deleteTask(task)
+                    ">
+
+                    🗑️
+
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

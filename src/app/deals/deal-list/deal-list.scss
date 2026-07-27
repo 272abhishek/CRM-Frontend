@@ -1,0 +1,471 @@
+// =====================================================================
+// AbhiHomes CRM — Deals List
+// -----------------------------------------------------------------------
+// Your filter dropdown gives the real status enum (Open, Negotiation,
+// Closed, Cancelled) and getStatusClass(deal.status) presumably returns
+// those lowercased — so the badge colors below are wired to the exact
+// four values this time, not a guess: Open = blue, Negotiation = amber,
+// Closed = emerald, Cancelled = red.
+//
+// The table itself stays a real <table> (best for this much tabular
+// data) but scrolls horizontally on narrow screens rather than trying
+// to reflow cells into cards — safer without `data-label` attributes
+// on each <td>, and still fully usable with a swipe.
+// =====================================================================
+
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
+
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
+
+$hues: #ff6b47, #2e90fa, #8b5cf6, #12b76a, #f79009, #ee46bc;
+
+$blue: #2e90fa;   $blue-bg: #e5f2ff;   $blue-deep: #155ea8;
+$violet: #8b5cf6; $violet-bg: #f1ecff; $violet-deep: #6425c7;
+$amber: #f79009;  $amber-bg: #fff3d9;  $amber-deep: #b54708;
+$emerald: #12b76a; $emerald-bg: #e3f9ec; $emerald-deep: #027a48;
+$danger: #e0334f; $danger-bg: #fde8ea; $danger-deep: #b0223a;
+
+$radius-lg: 22px;
+$radius-md: 12px;
+$radius-sm: 9px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin tablet { @media (max-width: 960px) { @content; } }
+
+.deal-page {
+  font-family: $font-body;
+  color: $ink;
+  padding: clamp(20px, 4vw, 36px);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+// =======================================================================
+// HEADER
+// =======================================================================
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+
+  @include mobile { flex-direction: column; }
+}
+
+.page-title {
+  .eyebrow {
+    display: inline-flex;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $emerald-deep;
+    background: $emerald-bg;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: $font-display;
+    font-size: clamp(1.35rem, 3vw, 1.8rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+  }
+
+  p { margin: 0; color: $ink-faint; font-size: 0.92rem; }
+}
+
+.filter-toggle {
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: $ink;
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: 999px;
+  padding: 11px 22px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.25s $ease, background 0.25s $ease, transform 0.25s $ease;
+
+  &:hover { border-color: $violet; background: $violet-bg; color: $violet-deep; transform: translateY(-2px); }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
+}
+
+// =======================================================================
+// FILTERS
+// =======================================================================
+
+.filter-card {
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  padding: clamp(20px, 3vw, 28px);
+  margin-bottom: 22px;
+  animation: reveal 0.3s $ease both;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) { .filter-card { animation: none; } }
+
+.filter-card form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px 18px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: $ink-soft;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  }
+
+  input, select {
+    font-family: $font-body;
+    font-size: 0.9rem;
+    color: $ink;
+    background: $canvas;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-sm;
+    padding: 10px 12px;
+    width: 100%;
+    transition: border-color 0.25s $ease, box-shadow 0.25s $ease, background 0.25s $ease;
+
+    &::placeholder { color: $ink-faint; }
+    &:hover { border-color: darken($hairline, 8%); }
+    &:focus { outline: none; background: $white; }
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B6357' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+}
+
+// cycle each filter field's own hue (15 fields, 6-hue repeat)
+@for $i from 1 through 15 {
+  $hue: nth($hues, (($i - 1) % 6) + 1);
+
+  .filter-group:nth-of-type(#{$i}) {
+    label::before { background: $hue; }
+    input:focus, select:focus { border-color: $hue; box-shadow: 0 0 0 3px rgba($hue, 0.15); }
+  }
+}
+
+.filter-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.clear-btn {
+  background: none;
+  border: none;
+  color: $danger;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+  padding: 8px 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.25s $ease;
+
+  &:hover { text-decoration-color: $danger; }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+}
+
+// =======================================================================
+// LOADING / EMPTY
+// =======================================================================
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 20px;
+  color: $ink-faint;
+}
+
+.loader {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: conic-gradient($emerald, $blue, $violet, nth($hues, 1), $emerald);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .loader { animation: spin 2.4s linear infinite; } }
+
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  background: $white;
+  border: 1.5px dashed $hairline;
+  border-radius: $radius-lg;
+
+  .empty-icon { font-size: 2.4rem; margin-bottom: 12px; opacity: 0.7; }
+
+  h3 { font-family: $font-display; font-size: 1.15rem; margin: 0 0 6px; color: $ink; }
+  p { margin: 0; color: $ink-faint; font-size: 0.92rem; }
+}
+
+// =======================================================================
+// TABLE CARD
+// =======================================================================
+
+.table-card {
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px clamp(18px, 3vw, 26px);
+  border-bottom: 1.5px solid $hairline;
+
+  h3 {
+    font-family: $font-display;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  p { margin: 2px 0 0; font-size: 0.84rem; color: $ink-faint; }
+}
+
+.page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: $ink-soft;
+
+  select {
+    font-family: $font-body;
+    font-size: 0.86rem;
+    color: $ink;
+    background: $canvas;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-sm;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+thead {
+  background: $canvas;
+
+  th {
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $ink-faint;
+    padding: 14px clamp(14px, 2vw, 20px);
+    border-bottom: 1.5px solid $hairline;
+    white-space: nowrap;
+  }
+}
+
+tbody {
+  tr {
+    transition: background 0.2s $ease;
+    &:hover { background: $canvas; }
+    &:not(:last-child) td { border-bottom: 1px solid $hairline; }
+  }
+
+  td {
+    padding: 16px clamp(14px, 2vw, 20px);
+    vertical-align: top;
+    font-size: 0.9rem;
+  }
+}
+
+.client-cell, .property-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+
+  strong { font-size: 0.94rem; color: $ink; }
+
+  span {
+    font-size: 0.82rem;
+    color: $ink-soft;
+  }
+
+  small { font-size: 0.78rem; color: $ink-faint; }
+
+  .record-id { margin-top: 2px; font-family: monospace; }
+}
+
+.amount-cell strong, .commission-cell strong {
+  font-family: $font-display;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.amount-cell strong { color: $ink; }
+.commission-cell strong { color: $emerald-deep; }
+
+// --- status badge, wired to the real enum -------------------------------
+
+.status-badge {
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: $hairline;
+  color: $ink-soft;
+  white-space: nowrap;
+
+  &.open { background: $blue-bg; color: $blue-deep; }
+  &.negotiation { background: $amber-bg; color: $amber-deep; }
+  &.closed { background: $emerald-bg; color: $emerald-deep; }
+  &.cancelled { background: $danger-bg; color: $danger-deep; }
+}
+
+// --- row actions ---------------------------------------------------------
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+
+  button {
+    font-family: $font-body;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 7px 12px;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    white-space: nowrap;
+    transition: transform 0.2s $ease, background 0.2s $ease, border-color 0.2s $ease, color 0.2s $ease;
+
+    &:hover { transform: translateY(-1px); }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
+  }
+}
+
+.view-btn { background: $blue-bg; color: $blue-deep; &:hover { background: $blue; color: $white; } }
+.edit-btn { background: $amber-bg; color: $amber-deep; &:hover { background: $amber; color: $white; } }
+.delete-btn { background: $white; color: $danger; border-color: $danger-bg; &:hover { background: $danger; color: $white; border-color: $danger; } }
+
+// =======================================================================
+// PAGINATION
+// =======================================================================
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.pagination-btn, .page-number {
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: $ink;
+  background: $white;
+  border: 1.5px solid $hairline;
+  padding: 9px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.25s $ease, background 0.25s $ease, color 0.25s $ease;
+
+  &:hover:not(:disabled) { border-color: $violet; background: $violet-bg; color: $violet-deep; }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.page-number {
+  padding: 9px 14px;
+  min-width: 40px;
+  text-align: center;
+
+  &.active {
+    background: linear-gradient(135deg, $emerald, $violet);
+    border-color: transparent;
+    color: $white;
+  }
+}
+
+.pagination-summary {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 0.86rem;
+  color: $ink-faint;
+
+  strong { color: $ink; font-weight: 700; }
+}

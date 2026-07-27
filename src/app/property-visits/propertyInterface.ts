@@ -1,16 +1,29 @@
 // src/app/property-visits/propertyInterface.ts
 
+
 // =====================================================
 // VISIT STATUS
 // =====================================================
 
 export type VisitStatus =
+
+  | 'Scheduled'
+
   | 'Planned'
+
   | 'Visited'
-  | 'Interested'
+
   | 'Not Interested'
-  | 'Shortlisted'
-  | 'Closed';
+
+  | 'Selected'
+
+  | 'Rejected'
+
+  | 'Negotiation'
+
+  | 'Closed'
+
+  | 'Cancelled';
 
 
 // =====================================================
@@ -64,6 +77,38 @@ export interface VisitProperty {
 
 
 // =====================================================
+// USER
+// =====================================================
+
+export interface VisitUser {
+
+  _id?: string;
+
+  name?: string;
+
+  email?: string;
+
+  phone?: string;
+
+}
+
+
+// =====================================================
+// DEAL
+// =====================================================
+
+export interface VisitDeal {
+
+  _id?: string;
+
+  amount?: number;
+
+  status?: string;
+
+}
+
+
+// =====================================================
 // PROPERTY VISIT
 // =====================================================
 
@@ -71,25 +116,80 @@ export interface PropertyVisit {
 
   _id?: string;
 
-  clientId: string;
 
-  propertyId: string;
+  // Can be ID OR populated client object
+
+  clientId:
+
+    string |
+
+    VisitClient;
+
+
+  // Can be ID OR populated property object
+
+  propertyId:
+
+    string |
+
+    VisitProperty;
+
 
   visitDate?: string;
 
+
   status?: VisitStatus;
+
 
   notes?: string;
 
-  dealId?: string;
 
-  agentId?: string;
+  // Can be ID OR populated deal object
 
-  builderId?: string;
+  dealId?:
 
-  sellerId?: string;
+    string |
+
+    VisitDeal;
+
+
+  agentId?:
+
+    string |
+
+    VisitUser;
+
+
+  builderId?:
+
+    string |
+
+    VisitUser;
+
+
+  sellerId?:
+
+    string |
+
+    VisitUser;
+
+
+  createdBy?:
+
+    string |
+
+    VisitUser;
+
+
+  dealCreatedBy?:
+
+    string |
+
+    VisitUser;
+
 
   createdAt?: string;
+
 
   updatedAt?: string;
 

@@ -1,21 +1,121 @@
 <div class="client-layout">
 
-  <aside class="sidebar">
-    <h2>CRM</h2>
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
 
-    <nav>
-      <a routerLink="/clients">
-        Clients
+  <aside class="client-sidebar">
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        👥
+      </div>
+
+      <div>
+        <h2>Clients</h2>
+        <span>CRM Management</span>
+      </div>
+
+    </div>
+
+
+    <nav class="client-nav">
+
+      <a
+        routerLink="/clients"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+
+        <span>📋</span>
+        <span>All Clients</span>
+
       </a>
 
-      <a routerLink="/clients/add">
-        Add Client
+
+      <a
+        routerLink="/clients/add"
+        routerLinkActive="active">
+
+        <span>➕</span>
+        <span>Add Client</span>
+
       </a>
+
+
+      <a
+        routerLink="/clients/analytics"
+        routerLinkActive="active">
+
+        <span>📊</span>
+        <span>Client Analytics</span>
+
+      </a>
+
     </nav>
+
+
+    <div class="sidebar-footer">
+
+      <a routerLink="/profile">
+
+        <span>👤</span>
+        Profile
+
+      </a>
+
+    </div>
+
   </aside>
 
-  <main class="client-content">
-    <router-outlet></router-outlet>
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
+  <main class="client-main">
+
+    <!-- TOP HEADER -->
+
+    <header class="client-header">
+
+      <div>
+
+        <span class="eyebrow">
+          CRM / CLIENTS
+        </span>
+
+        <h1>
+          Client Management
+        </h1>
+
+      </div>
+
+
+      <div class="header-actions">
+
+        <a
+          routerLink="/clients/add"
+          class="add-client-btn">
+
+          <span>＋</span>
+          Add Client
+
+        </a>
+
+      </div>
+
+    </header>
+
+
+    <!-- CHILD COMPONENT WILL LOAD HERE -->
+
+    <section class="client-content">
+
+      <router-outlet></router-outlet>
+
+    </section>
+
   </main>
 
 </div>

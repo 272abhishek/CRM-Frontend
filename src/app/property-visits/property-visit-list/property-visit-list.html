@@ -1,20 +1,30 @@
 <div class="visit-page">
 
 
+  <!-- ================= HEADER ================= -->
+
   <div class="page-header">
+
 
     <div>
 
       <h2>
+
         Property Visits
+
       </h2>
 
+
       <p>
+
         Track client property visits
+
       </p>
 
     </div>
-
+<a routerLink="/deals">
+ deals
+</a>
 
     <button
 
@@ -29,6 +39,8 @@
   </div>
 
 
+  <!-- ================= TOOLBAR ================= -->
+
   <div class="toolbar">
 
 
@@ -39,7 +51,9 @@
       placeholder="Search visits..."
 
       [formControl]="
+
         filterForm.controls.q
+
       ">
 
 
@@ -48,7 +62,9 @@
       type="button"
 
       (click)="
+
         showFilters = !showFilters
+
       ">
 
       ⚙ Filters
@@ -60,7 +76,11 @@
 
       type="button"
 
-      (click)="clearFilters()">
+      (click)="
+
+        clearFilters()
+
+      ">
 
       Clear
 
@@ -68,6 +88,8 @@
 
   </div>
 
+
+  <!-- ================= FILTERS ================= -->
 
   <form
 
@@ -102,59 +124,103 @@
 
 
       <option value="">
+
         All Status
+
       </option>
 
 
       <option value="Planned">
+
         Planned
+
       </option>
 
 
       <option value="Scheduled">
+
         Scheduled
+
       </option>
 
 
       <option value="Visited">
+
         Visited
+
+      </option>
+
+
+      <option value="Interested">
+
+        Interested
+
+      </option>
+
+
+      <option value="Not Interested">
+
+        Not Interested
+
+      </option>
+
+
+      <option value="Selected">
+
+        Selected
+
+      </option>
+
+
+      <option value="Rejected">
+
+        Rejected
+
       </option>
 
 
       <option value="Negotiation">
+
         Negotiation
+
       </option>
 
 
       <option value="Closed">
+
         Closed
+
       </option>
 
 
       <option value="Cancelled">
+
         Cancelled
+
       </option>
 
 
     </select>
 
-
-    <input
-
-      type="date"
-
-      formControlName="visitDate">
-
   </form>
 
 
+  <!-- ================= SUMMARY ================= -->
+
   <div class="summary">
 
-    Total Visits:
 
-    <strong>
-      {{ totalItems }}
-    </strong>
+    <span>
+
+      Total Visits:
+
+      <strong>
+
+        {{ totalItems }}
+
+      </strong>
+
+    </span>
 
 
     <span>
@@ -162,13 +228,17 @@
       Page
 
       <strong>
+
         {{ currentPage }}
+
       </strong>
 
       of
 
       <strong>
+
         {{ totalPages }}
+
       </strong>
 
     </span>
@@ -176,7 +246,26 @@
   </div>
 
 
-  <div class="table-wrapper">
+  <!-- ================= LOADING ================= -->
+
+  <div
+
+    class="loading"
+
+    *ngIf="loading">
+
+    Loading visits...
+
+  </div>
+
+
+  <!-- ================= TABLE ================= -->
+
+  <div
+
+    class="table-wrapper"
+
+    *ngIf="!loading">
 
 
     <table>
@@ -219,6 +308,8 @@
           ">
 
 
+          <!-- INDEX -->
+
           <td>
 
             {{
@@ -234,21 +325,84 @@
           </td>
 
 
+          <!-- CLIENT -->
+
           <td>
 
-            {{ visit.clientId }}
+
+            <div
+
+              class="client-info">
+
+
+              <strong>
+
+                {{ getClientName(visit) }}
+
+              </strong>
+
+
+              <small
+
+                *ngIf="
+
+                  getClientPhone(visit)
+
+                ">
+
+                📞
+
+                {{ getClientPhone(visit) }}
+
+              </small>
+
+
+            </div>
 
           </td>
 
 
+          <!-- PROPERTY -->
+
           <td>
 
-            {{ visit.propertyId }}
+
+            <div
+
+              class="property-info">
+
+
+              <strong>
+
+                {{ getPropertyTitle(visit) }}
+
+              </strong>
+
+
+              <small
+
+                *ngIf="
+
+                  getPropertyArea(visit)
+
+                ">
+
+                📍
+
+                {{ getPropertyArea(visit) }}
+
+              </small>
+
+
+            </div>
 
           </td>
 
 
+          <!-- DATE -->
+
           <td>
+
 
             {{
 
@@ -269,7 +423,10 @@
           </td>
 
 
+          <!-- STATUS -->
+
           <td>
+
 
             <span
 
@@ -279,18 +436,34 @@
 
                 'status-' +
 
-                visit.status
+                (
 
-                  ?.toLowerCase()
+                  visit.status
+
+                    ?.toLowerCase()
+
+                    ?.replaceAll(
+
+                      ' ',
+
+                      '-'
+
+                    )
+
+                )
 
               ">
 
-              {{ visit.status }}
+
+              {{ visit.status || '—' }}
+
 
             </span>
 
           </td>
 
+
+          <!-- DEAL -->
 
           <td>
 
@@ -314,55 +487,79 @@
 
             </span>
 
-
           </td>
 
 
+          <!-- ACTIONS -->
+
           <td>
 
-            <button
 
-              [routerLink]="[
+            <div
 
-                '/property-visits',
-
-                visit._id
-
-              ]">
-
-              View
-
-            </button>
+              class="action-buttons">
 
 
-            <button
+              <button
 
-              *ngIf="visit._id"
+                type="button"
 
-              (click)="
+                [routerLink]="[
 
-                editVisit(visit._id)
+                  '/property-visits',
 
-              ">
+                  visit._id
 
-              Edit
+                ]">
 
-            </button>
+                View
+
+              </button>
 
 
-            <button
+              <button
 
-              *ngIf="visit._id"
+                type="button"
 
-              (click)="
+                *ngIf="visit._id"
 
-                deleteVisit(visit._id)
+                (click)="
 
-              ">
+                  editVisit(
 
-              Delete
+                    visit._id
 
-            </button>
+                  )
+
+                ">
+
+                Edit
+
+              </button>
+
+
+              <button
+
+                type="button"
+
+                *ngIf="visit._id"
+
+                (click)="
+
+                  deleteVisit(
+
+                    visit._id
+
+                  )
+
+                ">
+
+                Delete
+
+              </button>
+
+
+            </div>
 
           </td>
 
@@ -370,9 +567,15 @@
         </tr>
 
 
+        <!-- EMPTY -->
+
         <tr
 
-          *ngIf="visits.length === 0">
+          *ngIf="
+
+            visits.length === 0
+
+          ">
 
 
           <td
@@ -381,7 +584,9 @@
 
             class="empty">
 
+
             No property visits found
+
 
           </td>
 
@@ -390,25 +595,42 @@
 
       </tbody>
 
+
     </table>
 
   </div>
 
 
+  <!-- ================= PAGINATION ================= -->
+
   <div
 
     class="pagination"
 
-    *ngIf="totalPages > 1">
+    *ngIf="
+
+      !loading &&
+
+      totalPages > 1
+
+    ">
 
 
     <button
 
-      [disabled]="currentPage === 1"
+      [disabled]="
+
+        currentPage === 1
+
+      "
 
       (click)="
 
-        goToPage(currentPage - 1)
+        goToPage(
+
+          currentPage - 1
+
+        )
 
       ">
 
@@ -421,11 +643,18 @@
 
       *ngFor="
 
-        let page of [].constructor(totalPages);
+        let page of
+
+        [].constructor(
+
+          totalPages
+
+        );
 
         let i = index
 
       "
+
 
       [class.active]="
 
@@ -433,13 +662,20 @@
 
       "
 
+
       (click)="
 
-        goToPage(i + 1)
+        goToPage(
+
+          i + 1
+
+        )
 
       ">
 
+
       {{ i + 1 }}
+
 
     </button>
 
@@ -452,9 +688,14 @@
 
       "
 
+
       (click)="
 
-        goToPage(currentPage + 1)
+        goToPage(
+
+          currentPage + 1
+
+        )
 
       ">
 

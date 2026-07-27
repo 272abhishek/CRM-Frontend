@@ -1,0 +1,540 @@
+<div class="task-page">
+
+  <!-- ========================================= -->
+  <!-- HEADER -->
+  <!-- ========================================= -->
+
+  <div class="page-header">
+
+    <div class="header-content">
+
+      <div>
+
+        <span class="eyebrow">
+          TASK MANAGEMENT
+        </span>
+
+        <h1>
+          Create New Task
+        </h1>
+
+        <p>
+          Create a task and set its reminder.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="cancel()">
+
+        <span>←</span>
+
+        Back to Tasks
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================= -->
+  <!-- ALERTS -->
+  <!-- ========================================= -->
+
+  <div
+    *ngIf="error"
+    class="alert alert-error">
+
+    <span>⚠</span>
+
+    {{ error }}
+
+  </div>
+
+
+  <div
+    *ngIf="success"
+    class="alert alert-success">
+
+    <span>✓</span>
+
+    {{ success }}
+
+  </div>
+
+
+  <!-- ========================================= -->
+  <!-- FORM -->
+  <!-- ========================================= -->
+
+  <form
+    [formGroup]="taskForm"
+    (ngSubmit)="submitTask()"
+    class="task-form">
+
+
+    <!-- ======================================= -->
+    <!-- BASIC INFORMATION -->
+    <!-- ======================================= -->
+
+    <section class="form-card">
+
+      <div class="section-header">
+
+        <div class="section-icon">
+          📝
+        </div>
+
+        <div>
+
+          <h2>
+            Basic Information
+          </h2>
+
+          <p>
+            Add the main details of your task.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-grid">
+
+
+        <!-- TITLE -->
+
+        <div class="form-group full-width">
+
+          <label for="title">
+
+            Task Title
+
+            <span class="required">
+              *
+            </span>
+
+          </label>
+
+
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            placeholder="Enter task title"
+            [class.invalid]="
+              hasError('title', 'required') ||
+              hasError('title', 'minlength')
+            " />
+
+
+          <small
+            class="error-text"
+            *ngIf="hasError('title', 'required')">
+
+            Task title is required.
+
+          </small>
+
+
+          <small
+            class="error-text"
+            *ngIf="hasError('title', 'minlength')">
+
+            Task title must be at least 3 characters.
+
+          </small>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-group full-width">
+
+          <label for="description">
+
+            Description
+
+          </label>
+
+
+          <textarea
+            id="description"
+            rows="4"
+            formControlName="description"
+            placeholder="Describe the task...">
+          </textarea>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- RELATED INFORMATION -->
+    <!-- ========================================= -->
+
+    <section class="form-card">
+
+      <div class="section-header">
+
+        <div class="section-icon">
+          🔗
+        </div>
+
+        <div>
+
+          <h2>
+            Related Information
+          </h2>
+
+          <p>
+            Link this task with a client or property.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-grid">
+
+
+        <!-- CLIENT -->
+
+        <div class="form-group">
+
+          <label for="relatedClient">
+
+            Related Client
+
+          </label>
+
+
+          <select
+            id="relatedClient"
+            formControlName="relatedClient">
+
+            <option value="">
+
+              Select Client
+
+            </option>
+
+
+            <option
+              *ngFor="let client of clients"
+              [value]="client._id">
+
+              {{ client.name }}
+
+              <ng-container *ngIf="client.phone">
+
+                - {{ client.phone }}
+
+              </ng-container>
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- PROPERTY -->
+
+        <div class="form-group">
+
+          <label for="relatedProperty">
+
+            Related Property
+
+          </label>
+
+
+          <select
+            id="relatedProperty"
+            formControlName="relatedProperty">
+
+            <option value="">
+
+              Select Property
+
+            </option>
+
+
+            <option
+              *ngFor="let property of properties"
+              [value]="property._id">
+
+              {{ property.title }}
+
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- TASK SCHEDULE -->
+    <!-- ========================================= -->
+
+    <section class="form-card">
+
+      <div class="section-header">
+
+        <div class="section-icon">
+          📅
+        </div>
+
+        <div>
+
+          <h2>
+            Schedule & Status
+          </h2>
+
+          <p>
+            Set the due date, priority and status.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-grid">
+
+
+        <!-- DUE DATE -->
+
+        <div class="form-group">
+
+          <label for="dueDate">
+
+            Due Date & Time
+
+            <span class="required">
+              *
+            </span>
+
+          </label>
+
+
+          <input
+            id="dueDate"
+            type="datetime-local"
+            formControlName="dueDate"
+            [class.invalid]="
+              hasError('dueDate', 'required')
+            " />
+
+
+          <small
+            class="error-text"
+            *ngIf="hasError('dueDate', 'required')">
+
+            Due date is required.
+
+          </small>
+
+        </div>
+
+
+        <!-- REMINDER -->
+
+        <div class="form-group">
+
+          <label for="reminder">
+
+            Reminder Date & Time
+
+          </label>
+
+
+          <input
+            id="reminder"
+            type="datetime-local"
+            formControlName="reminder" />
+
+
+          <small class="field-hint">
+
+            Reminder email will be sent automatically.
+
+          </small>
+
+        </div>
+
+
+        <!-- PRIORITY -->
+
+        <div class="form-group">
+
+          <label for="priority">
+
+            Priority
+
+          </label>
+
+
+          <select
+            id="priority"
+            formControlName="priority">
+
+            <option value="High">
+              High
+            </option>
+
+            <option value="Medium">
+              Medium
+            </option>
+
+            <option value="Low">
+              Low
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="form-group">
+
+          <label for="status">
+
+            Status
+
+          </label>
+
+
+          <select
+            id="status"
+            formControlName="status">
+
+            <option value="Pending">
+              Pending
+            </option>
+
+            <option value="In Progress">
+              In Progress
+            </option>
+
+            <option value="Completed">
+              Completed
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- NOTES -->
+    <!-- ========================================= -->
+
+    <section class="form-card">
+
+      <div class="section-header">
+
+        <div class="section-icon">
+          📌
+        </div>
+
+        <div>
+
+          <h2>
+            Additional Notes
+          </h2>
+
+          <p>
+            Add any additional information.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="notes">
+
+          Notes
+
+        </label>
+
+
+        <textarea
+          id="notes"
+          rows="5"
+          formControlName="notes"
+          placeholder="Write additional notes here...">
+        </textarea>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- FORM ACTIONS -->
+    <!-- ========================================= -->
+
+    <div class="form-actions">
+
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="cancel()"
+        [disabled]="saving">
+
+        Cancel
+
+      </button>
+
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="saving">
+
+        <span
+          *ngIf="saving"
+          class="spinner">
+        </span>
+
+
+        <span *ngIf="!saving">
+          ✓
+        </span>
+
+
+        {{ saving ? 'Creating Task...' : 'Create Task' }}
+
+      </button>
+
+    </div>
+
+
+  </form>
+
+</div>

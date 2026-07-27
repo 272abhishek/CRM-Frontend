@@ -38,45 +38,14 @@ export interface DealProperty {
 
   address?: string;
 
+  area?: string;
+
 }
 
 
 // =====================================================
 // NOTE TYPE
 // =====================================================
-
-export interface Deal {
-
-  _id?: string;
-
-  propertyId: string;
-
-  clientId: string;
-
-  agentId: string;
-
-  builderId?: string;
-
-  sellerId?: string;
-
-  amount: number;
-
-  commissionEarned?: number;
-
-  status?:
-    | 'Open'
-    | 'Negotiation'
-    | 'Closed'
-    | 'Cancelled';
-
-  notes?: DealNote[];
-
-  createdAt?: string;
-
-  updatedAt?: string;
-
-}
-
 
 export interface DealNote {
 
@@ -88,10 +57,126 @@ export interface DealNote {
 
 }
 
+
 // =====================================================
-// DEAL INTERFACE
+// DEAL TYPE
 // =====================================================
 
+export interface Deal {
+
+  _id?: string;
+
+
+  // ===================================================
+  // RELATION IDS
+  // ===================================================
+
+  propertyId:
+    | string
+    | DealProperty;
+
+
+  clientId:
+    | string
+    | DealClient;
+
+
+  agentId:
+    | string
+    | any;
+
+
+  builderId?:
+    | string
+    | any;
+
+
+  sellerId?:
+    | string
+    | any;
+
+
+  // ===================================================
+  // DEAL AMOUNTS
+  // ===================================================
+
+  amount:
+    number;
+
+
+  tokenAmount?:
+    number;
+
+
+  // ===================================================
+  // COMMISSION
+  // ===================================================
+
+  commissionEarned?:
+    number;
+
+
+  commissionPercentage?:
+    number;
+
+
+  commissionAmount?:
+    number;
+
+
+  commissionStatus?:
+    | 'Pending'
+    | 'Approved'
+    | 'Paid'
+    | 'Rejected';
+
+
+  // ===================================================
+  // PAYMENT
+  // ===================================================
+
+  paymentStatus?:
+    | 'Pending'
+    | 'Partial'
+    | 'Paid'
+    | 'Completed';
+
+
+  // ===================================================
+  // DEAL STATUS
+  // ===================================================
+
+  status?:
+    | 'Open'
+    | 'Negotiation'
+    | 'Closed'
+    | 'Cancelled';
+
+
+  // ===================================================
+  // DATE
+  // ===================================================
+
+  dealDate?:
+    string;
+
+
+  createdAt?:
+    string;
+
+
+  updatedAt?:
+    string;
+
+
+  // ===================================================
+  // NOTES
+  // ===================================================
+
+  notes?:
+    DealNote[];
+
+}
 
 
 // =====================================================
@@ -100,19 +185,48 @@ export interface DealNote {
 
 export interface DealResponse {
 
-  total: number;
+  total:
+    number;
 
-  page: number;
 
-  limit: number;
+  page?:
+    number;
 
-  sort: string;
 
-  order: string;
+  limit?:
+    number;
 
-  filters: any;
 
-  data: Deal[];
+  totalItems?:
+    number;
+
+
+  totalPages?:
+    number;
+
+
+  currentPage?:
+    number;
+
+
+  pageSize?:
+    number;
+
+
+  sort?:
+    string;
+
+
+  order?:
+    string;
+
+
+  filters?:
+    any;
+
+
+  data:
+    Deal[];
 
 }
 
@@ -123,17 +237,62 @@ export interface DealResponse {
 
 export interface DealQueryParams {
 
-  page?: number;
+  page?:
+    number;
 
-  limit?: number;
 
-  sort?: string;
+  limit?:
+    number;
 
-  order?: string;
 
-  q?: string;
+  sort?:
+    string;
 
-  [key: string]: any;
+
+  order?:
+    string;
+
+
+  q?:
+    string;
+
+
+  name?:
+    string;
+
+
+  status?:
+    string;
+
+
+  paymentStatus?:
+    | 'Pending'
+    | 'Partial'
+    | 'Paid'
+    | 'Completed';
+
+
+  commissionStatus?:
+    | 'Pending'
+    | 'Approved'
+    | 'Paid'
+    | 'Rejected';
+
+
+  propertyId?:
+    string;
+
+
+  clientId?:
+    string;
+
+
+  dealDate?:
+    string;
+
+
+  [key: string]:
+    any;
 
 }
 
@@ -144,9 +303,11 @@ export interface DealQueryParams {
 
 @Injectable({
 
-  providedIn: 'root'
+  providedIn:
+    'root'
 
 })
+
 
 export class DealService {
 
@@ -163,16 +324,23 @@ export class DealService {
   ) {}
 
 
+
   // =====================================================
   // GET ROLE
   // =====================================================
 
   private getRole():
+
     string | null {
 
 
     const raw =
-      localStorage.getItem('user');
+
+      localStorage.getItem(
+
+        'user'
+
+      );
 
 
     if (!raw) {
@@ -184,7 +352,16 @@ export class DealService {
 
     try {
 
-      return JSON.parse(raw).role;
+      const user =
+
+        JSON.parse(
+
+          raw
+
+        );
+
+
+      return user?.role || null;
 
     }
 
@@ -197,15 +374,18 @@ export class DealService {
   }
 
 
+
   // =====================================================
   // ROLE BASED ENDPOINT
   // =====================================================
 
   private getEndpointForRole():
+
     string {
 
 
     const role =
+
       this.getRole();
 
 
@@ -246,16 +426,23 @@ export class DealService {
   }
 
 
+
   // =====================================================
   // AUTH HEADERS
   // =====================================================
 
   private getAuthHeaders():
+
     HttpHeaders {
 
 
     const token =
-      localStorage.getItem('jwt');
+
+      localStorage.getItem(
+
+        'jwt'
+
+      );
 
 
     return new HttpHeaders({
@@ -271,8 +458,9 @@ export class DealService {
   }
 
 
+
   // =====================================================
-  // GET DEALS
+  // GET ALL DEALS
   // =====================================================
 
   getDeals(
@@ -281,44 +469,51 @@ export class DealService {
       DealQueryParams = {}
 
   ):
+
     Observable<DealResponse> {
 
 
     let params =
+
       new HttpParams();
 
 
-    Object.keys(queryParams)
-      .forEach(key => {
+    Object.keys(
+
+      queryParams
+
+    ).forEach(key => {
 
 
-        const value =
-          queryParams[key];
+      const value =
+
+        queryParams[key];
 
 
-        if (
+      if (
 
-          value !== null &&
+        value !== null &&
 
-          value !== undefined &&
+        value !== undefined &&
 
-          value !== ''
+        value !== ''
 
-        ) {
+      ) {
 
 
-          params =
-            params.set(
+        params =
 
-              key,
+          params.set(
 
-              value.toString()
+            key,
 
-            );
+            String(value)
 
-        }
+          );
 
-      });
+      }
+
+    });
 
 
     return this.http.get<DealResponse>(
@@ -339,15 +534,18 @@ export class DealService {
   }
 
 
+
   // =====================================================
   // GET DEAL BY ID
   // =====================================================
 
   getDealById(
 
-    id: string
+    id:
+      string
 
   ):
+
     Observable<Deal> {
 
 
@@ -367,8 +565,9 @@ export class DealService {
   }
 
 
+
   // =====================================================
-  // CREATE
+  // CREATE DEAL
   // =====================================================
 
   createDeal(
@@ -377,10 +576,11 @@ export class DealService {
       Partial<Deal>
 
   ):
-    Observable<Deal> {
+
+    Observable<any> {
 
 
-    return this.http.post<Deal>(
+    return this.http.post<any>(
 
       this.getEndpointForRole(),
 
@@ -398,26 +598,31 @@ export class DealService {
   }
 
 
+
   // =====================================================
-  // UPDATE
+  // UPDATE DEAL
   // =====================================================
 
   updateDeal(
 
-    id: string,
+    id:
+      string,
 
     data:
       Partial<Deal>
 
   ):
-    Observable<Deal> {
+
+    Observable<any> {
 
 
     const role =
+
       this.getRole();
 
 
     let url =
+
       `${this.baseUrl}/${id}`;
 
 
@@ -428,6 +633,7 @@ export class DealService {
     ) {
 
       url =
+
         `${this.baseUrl}/${id}/builder`;
 
     }
@@ -440,12 +646,13 @@ export class DealService {
     ) {
 
       url =
+
         `${this.baseUrl}/${id}/seller`;
 
     }
 
 
-    return this.http.put<Deal>(
+    return this.http.put<any>(
 
       url,
 
@@ -463,23 +670,28 @@ export class DealService {
   }
 
 
+
   // =====================================================
-  // DELETE
+  // DELETE DEAL
   // =====================================================
 
   deleteDeal(
 
-    id: string
+    id:
+      string
 
   ):
+
     Observable<any> {
 
 
     const role =
+
       this.getRole();
 
 
     let url =
+
       `${this.baseUrl}/${id}`;
 
 
@@ -490,6 +702,7 @@ export class DealService {
     ) {
 
       url =
+
         `${this.baseUrl}/${id}/builder`;
 
     }
@@ -502,6 +715,7 @@ export class DealService {
     ) {
 
       url =
+
         `${this.baseUrl}/${id}/seller`;
 
     }
@@ -523,6 +737,7 @@ export class DealService {
   }
 
 
+
   // =====================================================
   // SALES REPORT
   // =====================================================
@@ -533,44 +748,51 @@ export class DealService {
       any = {}
 
   ):
+
     Observable<any> {
 
 
     let params =
+
       new HttpParams();
 
 
-    Object.keys(queryParams)
-      .forEach(key => {
+    Object.keys(
+
+      queryParams
+
+    ).forEach(key => {
 
 
-        const value =
-          queryParams[key];
+      const value =
+
+        queryParams[key];
 
 
-        if (
+      if (
 
-          value !== null &&
+        value !== null &&
 
-          value !== undefined &&
+        value !== undefined &&
 
-          value !== ''
+        value !== ''
 
-        ) {
+      ) {
 
 
-          params =
-            params.set(
+        params =
 
-              key,
+          params.set(
 
-              value.toString()
+            key,
 
-            );
+            String(value)
 
-        }
+          );
 
-      });
+      }
+
+    });
 
 
     return this.http.get(

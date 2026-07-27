@@ -1,0 +1,176 @@
+<div class="deal-close-layout">
+
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+
+  <aside class="deal-close-sidebar">
+
+
+    <!-- BRAND -->
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        🤝
+      </div>
+
+      <div>
+
+        <h2>
+          Deal Close
+        </h2>
+
+        <span>
+          CRM Management
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="deal-close-nav">
+
+
+      <!-- DEAL CLOSE LIST -->
+
+      <a
+        routerLink="/deal-close"
+        routerLinkActive="active">
+
+        <span>
+          📋
+        </span>
+
+        <span>
+          All Deal Closes
+        </span>
+
+      </a>
+
+
+      <!-- ADD DEAL CLOSE -->
+
+      <a
+        routerLink="/deal-close/add"
+        routerLinkActive="active">
+
+        <span>
+          ➕
+        </span>
+
+        <span>
+          Add Deal Close
+        </span>
+
+      </a>
+
+
+      <!-- ANALYTICS -->
+
+      <a
+        routerLink="/deal-close/analytics"
+        routerLinkActive="active">
+
+        <span>
+          📊
+        </span>
+
+        <span>
+          Deal Analytics
+        </span>
+
+      </a>
+
+
+    </nav>
+
+
+    <!-- FOOTER -->
+
+    <div class="sidebar-footer">
+
+      <a routerLink="/profile">
+
+        <span>
+          👤
+        </span>
+
+        Profile
+
+      </a>
+
+    </div>
+
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN
+  ========================== -->
+
+  <main class="deal-close-main">
+
+
+    <!-- HEADER -->
+
+    <header class="deal-close-header">
+
+
+      <div>
+
+        <span class="eyebrow">
+          CRM / DEAL CLOSE
+        </span>
+
+        <h1>
+          Deal Closing Management
+        </h1>
+
+        <p>
+          Manage successful deals and closing activities.
+        </p>
+
+      </div>
+
+
+      <!-- ACTION -->
+
+      <div class="header-actions">
+
+        <a
+          routerLink="/deal-close/add"
+          class="add-deal-close-btn">
+
+          <span>
+            ＋
+          </span>
+
+          Add Deal Close
+
+        </a>
+
+      </div>
+
+
+    </header>
+
+
+    <!-- CHILD COMPONENT -->
+
+    <section class="deal-close-content">
+
+      <router-outlet></router-outlet>
+
+    </section>
+
+
+  </main>
+
+
+</div>

@@ -1,0 +1,403 @@
+<div class="visual-deal-page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+
+    <div>
+      <span class="eyebrow">DEAL ANALYTICS</span>
+
+      <h1>
+        Deal Performance
+      </h1>
+
+      <p>
+        Visual overview of sales, commissions and payment performance
+      </p>
+    </div>
+
+    <button
+      class="refresh-btn"
+      type="button"
+      (click)="loadDeals()">
+
+      ↻ Refresh Data
+
+    </button>
+
+  </div>
+
+
+  <!-- LOADING -->
+  <div
+    class="loading-state"
+    *ngIf="loading">
+
+    <div class="loader"></div>
+
+    <p>
+      Loading deal analytics...
+    </p>
+
+  </div>
+
+
+  <!-- ERROR -->
+  <div
+    class="error-state"
+    *ngIf="!loading && errorMessage">
+
+    ⚠️ {{ errorMessage }}
+
+  </div>
+
+
+  <ng-container *ngIf="!loading && !errorMessage">
+
+
+    <!-- KPI CARDS -->
+
+    <div class="kpi-grid">
+
+
+      <!-- TOTAL DEALS -->
+
+      <div class="kpi-card">
+
+        <div class="kpi-icon deals-icon">
+          📊
+        </div>
+
+        <div class="kpi-content">
+
+          <span>
+            Total Deals
+          </span>
+
+          <strong>
+            {{ totalDeals }}
+          </strong>
+
+          <small>
+            All transactions
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- TOTAL DEAL VALUE -->
+
+      <div class="kpi-card">
+
+        <div class="kpi-icon amount-icon">
+          ₹
+        </div>
+
+        <div class="kpi-content">
+
+          <span>
+            Total Deal Value
+          </span>
+
+          <strong>
+            ₹{{ totalDealAmount | number:'1.0-0' }}
+          </strong>
+
+          <small>
+            Gross transaction value
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- COMMISSION -->
+
+      <div class="kpi-card">
+
+        <div class="kpi-icon commission-icon">
+          💰
+        </div>
+
+        <div class="kpi-content">
+
+          <span>
+            Total Commission
+          </span>
+
+          <strong>
+            ₹{{ totalCommission | number:'1.0-0' }}
+          </strong>
+
+          <small>
+            Earned commission
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- CLOSED DEALS -->
+
+      <div class="kpi-card">
+
+        <div class="kpi-icon closed-icon">
+          ✓
+        </div>
+
+        <div class="kpi-content">
+
+          <span>
+            Closed Deals
+          </span>
+
+          <strong>
+            {{ closedDeals }}
+          </strong>
+
+          <small>
+            Successfully completed
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- MAIN CHART GRID -->
+
+    <div class="chart-grid">
+
+
+      <!-- DEAL STATUS -->
+
+      <section class="chart-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-eyebrow">
+              DEAL STATUS
+            </span>
+
+            <h2>
+              Deal Distribution
+            </h2>
+
+          </div>
+
+          <span class="chart-icon">
+            📈
+          </span>
+
+        </div>
+
+
+        <div class="chart-container doughnut-container">
+
+          <canvas #statusChart></canvas>
+
+        </div>
+
+      </section>
+
+
+      <!-- PAYMENT STATUS -->
+
+      <section class="chart-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-eyebrow">
+              PAYMENT ANALYTICS
+            </span>
+
+            <h2>
+              Payment Status
+            </h2>
+
+          </div>
+
+          <span class="chart-icon">
+            💳
+          </span>
+
+        </div>
+
+
+        <div class="chart-container doughnut-container">
+
+          <canvas #paymentChart></canvas>
+
+        </div>
+
+      </section>
+
+
+      <!-- DEAL AMOUNT TREND -->
+
+      <section class="chart-card wide-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-eyebrow">
+              PERFORMANCE TREND
+            </span>
+
+            <h2>
+              Deal Value Over Time
+            </h2>
+
+          </div>
+
+          <span class="chart-icon">
+            📊
+          </span>
+
+        </div>
+
+
+        <div class="chart-container">
+
+          <canvas #amountChart></canvas>
+
+        </div>
+
+      </section>
+
+
+      <!-- COMMISSION CHART -->
+
+      <section class="chart-card wide-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-eyebrow">
+              COMMISSION PERFORMANCE
+            </span>
+
+            <h2>
+              Commission by Deal
+            </h2>
+
+          </div>
+
+          <span class="chart-icon">
+            💰
+          </span>
+
+        </div>
+
+
+        <div class="chart-container">
+
+          <canvas #commissionChart></canvas>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- RECENT DEALS -->
+
+    <section class="recent-deals-card">
+
+      <div class="section-header">
+
+        <div>
+
+          <span class="chart-eyebrow">
+            TRANSACTIONS
+          </span>
+
+          <h2>
+            Recent Deals
+          </h2>
+
+        </div>
+
+        <span class="deal-count">
+          {{ deals.length }} Deals
+        </span>
+
+      </div>
+
+
+      <div class="recent-deals-list">
+
+        <div
+          class="recent-deal"
+          *ngFor="let deal of deals.slice(0, 8)">
+
+
+          <div class="deal-avatar">
+            🏢
+          </div>
+
+
+          <div class="deal-info">
+
+            <strong>
+              {{ getClientName(deal) }}
+            </strong>
+
+            <span>
+              {{ getPropertyName(deal) }}
+            </span>
+
+          </div>
+
+
+          <div class="deal-amount">
+
+            <strong>
+              ₹{{ deal.amount || 0 | number:'1.0-0' }}
+            </strong>
+
+            <small>
+              Commission:
+              ₹{{ deal.commissionEarned || 0 | number:'1.0-0' }}
+            </small>
+
+          </div>
+
+
+          <span
+            class="status-badge"
+            [ngClass]="getStatusClass(deal.status)">
+
+            {{ deal.status || 'Open' }}
+
+          </span>
+
+
+          <div class="deal-date">
+
+            {{ deal.createdAt | date:'dd MMM yyyy' }}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+  </ng-container>
+
+</div>

@@ -1,776 +1,378 @@
+// src/app/deals/deal-list/deal-list.ts
+
 import {
   ChangeDetectorRef,
   Component,
-  OnInit
+  DestroyRef,
+  OnInit,
+  inject
 } from '@angular/core';
-
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule
-} from '@angular/forms';
-
-import {
-  DealService,
-  Deal,
-  DealQueryParams
-} from '../deal';
-
 import { CommonModule } from '@angular/common';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import {
-  Router,
-  RouterModule
-} from '@angular/router';
-
+import { DealService, Deal, DealQueryParams } from '../deal';
 
 @Component({
-
-  selector:
-    'app-deal-list',
-
-  standalone:
-    true,
-
-  imports: [
-
-    CommonModule,
-
-    ReactiveFormsModule,
-
-    RouterModule
-
-  ],
-
-  templateUrl:
-    './deal-list.html',
-
-  styleUrls:
-    ['./deal-list.scss']
-
+  selector: 'app-deal-list',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  templateUrl: './deal-list.html',
+  styleUrls: ['./deal-list.scss']
 })
+export class DealList implements OnInit {
+  // ===================================================
+  // DESTROY REF
+  // ===================================================
+  private destroyRef = inject(DestroyRef);
 
-
-export class DealList
-implements OnInit {
-
-
-  // =====================================================
+  // ===================================================
   // UI STATE
-  // =====================================================
+  // ===================================================
+  showFilters = false;
+  loading = false;
 
-  showFilters =
-    false;
+  // ===================================================
+  // DEAL DATA
+  // ===================================================
+  deals: Deal[] = [];
+  userRole: string | null = null;
 
+  // ===================================================
+  // PAGINATION
+  // ===================================================
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 1;
 
-  loading =
-    false;
-
-
-  deals:
-    Deal[] = [];
-
-
-  userRole:
-    string | null = null;
-
-
-  currentPage:
-    number = 1;
-
-
-  pageSize:
-    number = 10;
-
-
-  totalItems:
-    number = 0;
-
-
-  totalPages:
-    number = 1;
-
-
-  // =====================================================
+  // ===================================================
   // FILTER FORM
-  // =====================================================
-
-  filterForm =
-    new FormGroup({
-
-      q:
-        new FormControl(''),
-
-      name:
-        new FormControl(''),
-
-      status:
-        new FormControl(''),
-
-      paymentStatus:
-        new FormControl(''),
-
-      propertyId:
-        new FormControl(''),
-
-      clientId:
-        new FormControl(''),
-
-      minDealAmount:
-        new FormControl(''),
-
-      maxDealAmount:
-        new FormControl(''),
-
-      minCommissionAmount:
-        new FormControl(''),
-
-      maxCommissionAmount:
-        new FormControl(''),
-
-      minCommissionPercentage:
-        new FormControl(''),
-
-      maxCommissionPercentage:
-        new FormControl(''),
-
-      dealDate:
-        new FormControl(''),
-
-      fromDate:
-        new FormControl(''),
-
-      toDate:
-        new FormControl('')
-
-    });
-
-
-  // =====================================================
-  // CONSTRUCTOR
-  // =====================================================
+  // ===================================================
+  filterForm = new FormGroup({
+    q: new FormControl<string>('', { nonNullable: true }),
+    name: new FormControl<string>('', { nonNullable: true }),
+    status: new FormControl<string>('', { nonNullable: true }),
+    paymentStatus: new FormControl<string>('', { nonNullable: true }),
+    propertyId: new FormControl<string>('', { nonNullable: true }),
+    clientId: new FormControl<string>('', { nonNullable: true }),
+    minDealAmount: new FormControl<string>('', { nonNullable: true }),
+    maxDealAmount: new FormControl<string>('', { nonNullable: true }),
+    minCommissionAmount: new FormControl<string>('', { nonNullable: true }),
+    maxCommissionAmount: new FormControl<string>('', { nonNullable: true }),
+    minCommissionPercentage: new FormControl<string>('', { nonNullable: true }),
+    maxCommissionPercentage: new FormControl<string>('', { nonNullable: true }),
+    dealDate: new FormControl<string>('', { nonNullable: true }),
+    fromDate: new FormControl<string>('', { nonNullable: true }),
+    toDate: new FormControl<string>('', { nonNullable: true })
+  });
 
   constructor(
-
-    private router:
-      Router,
-
-    private dealService:
-      DealService,
-
-    private cdr:
-      ChangeDetectorRef
-
+    private router: Router,
+    private dealService: DealService,
+    private cdr: ChangeDetectorRef
   ) {}
 
-
-  // =====================================================
+  // ===================================================
   // INIT
-  // =====================================================
-
-  ngOnInit() {
-
-
-    const rawUser =
-      localStorage.getItem('user');
-
-
-    if (rawUser) {
-
-      try {
-
-        const user =
-          JSON.parse(rawUser);
-
-
-        this.userRole =
-          user.role;
-
-      }
-
-      catch (error) {
-
-        console.error(
-          'Invalid user data',
-          error
-        );
-
-      }
-
-    }
-
-
+  // ===================================================
+  ngOnInit(): void {
+    this.loadUser();
     this.loadDeals();
 
-
-    // Auto filter
-
+    // AUTO FILTER
     this.filterForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-
-
-        this.currentPage =
-          1;
-
-
+        this.currentPage = 1;
         this.loadDeals();
-
       });
-
   }
 
+  // ===================================================
+  // LOAD USER
+  // ===================================================
+  private loadUser(): void {
+    const rawUser = localStorage.getItem('user');
 
-  // =====================================================
+    if (!rawUser) {
+      return;
+    }
+
+    try {
+      const user = JSON.parse(rawUser);
+      this.userRole = user?.role || null;
+    } catch (error) {
+      console.error('Invalid user data', error);
+      this.userRole = null;
+    }
+  }
+
+  // ===================================================
+  // CLIENT DISPLAY
+  // ===================================================
+  getClientName(deal: Deal): string {
+    if (typeof deal.clientId === 'object' && deal.clientId !== null) {
+      return deal.clientId.name || 'Unknown Client';
+    }
+    return deal.clientId || '—';
+  }
+
+  getClientPhone(deal: Deal): string {
+    if (typeof deal.clientId === 'object' && deal.clientId !== null) {
+      return deal.clientId.phone || '—';
+    }
+    return '—';
+  }
+
+  getClientEmail(deal: Deal): string {
+    if (typeof deal.clientId === 'object' && deal.clientId !== null) {
+      return deal.clientId.email || '—';
+    }
+    return '—';
+  }
+
+  getClientId(deal: Deal): string {
+    if (typeof deal.clientId === 'object' && deal.clientId !== null) {
+      return deal.clientId._id || '—';
+    }
+    return deal.clientId || '—';
+  }
+
+  // ===================================================
+  // PROPERTY DISPLAY
+  // ===================================================
+  getPropertyTitle(deal: Deal): string {
+    if (typeof deal.propertyId === 'object' && deal.propertyId !== null) {
+      return deal.propertyId.title || 'Unknown Property';
+    }
+    return deal.propertyId || '—';
+  }
+
+  getPropertyAddress(deal: Deal): string {
+    if (typeof deal.propertyId === 'object' && deal.propertyId !== null) {
+      return deal.propertyId.address || '—';
+    }
+    return '—';
+  }
+
+  getPropertyId(deal: Deal): string {
+    if (typeof deal.propertyId === 'object' && deal.propertyId !== null) {
+      return deal.propertyId._id || '—';
+    }
+    return deal.propertyId || '—';
+  }
+
+  // ===================================================
   // LOAD DEALS
-  // =====================================================
+  // ===================================================
+  loadDeals(): void {
+    this.loading = true;
 
-  loadDeals() {
+    const f = this.filterForm.getRawValue();
 
+    const params: DealQueryParams = {
+      page: this.currentPage,
+      limit: this.pageSize,
+      q: this.getValue(f.q),
+      name: this.getValue(f.name),
+      status: this.getValue(f.status),
 
-    this.loading =
-      true;
+      // `paymentStatus` on DealQueryParams is a literal union, but the
+      // form control is a plain string (bound to a <select> whose options
+      // are already constrained to those literal values in the template).
+      // Cast here, at the single point it enters the typed params object,
+      // rather than weakening the control or query-params type everywhere.
+      paymentStatus: this.getValue(f.paymentStatus) as DealQueryParams['paymentStatus'],
 
-
-    const f =
-      this.filterForm.value;
-
-
-    const params:
-      DealQueryParams = {
-
-
-      page:
-        this.currentPage,
-
-
-      limit:
-        this.pageSize,
-
-
-      q:
-        f.q || undefined,
-
-
-      name:
-        f.name || undefined,
-
-
-      status:
-        f.status || undefined,
-
-
-      paymentStatus:
-        f.paymentStatus || undefined,
-
-
-      propertyId:
-        f.propertyId || undefined,
-
-
-      clientId:
-        f.clientId || undefined
-
+      propertyId: this.getValue(f.propertyId),
+      clientId: this.getValue(f.clientId)
     };
 
+    // DEAL AMOUNT
+    this.addRangeFilter(params, 'dealAmount', f.minDealAmount, f.maxDealAmount);
 
-    // =====================================================
-    // DEAL AMOUNT RANGE
-    // =====================================================
+    // COMMISSION AMOUNT
+    this.addRangeFilter(params, 'commissionAmount', f.minCommissionAmount, f.maxCommissionAmount);
 
+    // COMMISSION PERCENTAGE
     this.addRangeFilter(
-
       params,
-
-      'dealAmount',
-
-      f.minDealAmount,
-
-      f.maxDealAmount
-
-    );
-
-
-    // =====================================================
-    // COMMISSION AMOUNT RANGE
-    // =====================================================
-
-    this.addRangeFilter(
-
-      params,
-
-      'commissionAmount',
-
-      f.minCommissionAmount,
-
-      f.maxCommissionAmount
-
-    );
-
-
-    // =====================================================
-    // COMMISSION PERCENTAGE RANGE
-    // =====================================================
-
-    this.addRangeFilter(
-
-      params,
-
       'commissionPercentage',
-
       f.minCommissionPercentage,
-
       f.maxCommissionPercentage
-
     );
 
-
-    // =====================================================
-    // DEAL DATE
-    // =====================================================
-
+    // EXACT DEAL DATE
     if (f.dealDate) {
-
-      params['dealDate'] =
-        f.dealDate;
-
+      params['dealDate'] = f.dealDate;
     }
 
-
-    // =====================================================
     // DATE RANGE
-    // =====================================================
-
     if (f.fromDate) {
-
-      params['dealDate[min]'] =
-        f.fromDate;
-
+      params['dealDate[min]'] = f.fromDate;
     }
-
 
     if (f.toDate) {
-
-      params['dealDate[max]'] =
-        f.toDate;
-
+      params['dealDate[max]'] = f.toDate;
     }
 
-
-    // =====================================================
-    // API CALL
-    // =====================================================
-
-    this.dealService
-      .getDeals(params)
+    // API
+    this.dealService.getDeals(params)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-
         next: (res) => {
-
-
-          this.deals =
-            res.data;
-
-
-          this.totalItems =
-            res.total;
-
-
-          this.totalPages =
-            Math.ceil(
-
-              res.total /
-              this.pageSize
-
-            ) || 1;
-
-
-          this.loading =
-            false;
-
-
+          this.deals = res?.data || [];
+          this.totalItems = res?.total ?? this.deals.length;
+          this.totalPages = Math.ceil(this.totalItems / this.pageSize) || 1;
+          this.loading = false;
           this.cdr.detectChanges();
-
         },
-
-
         error: (err) => {
-
-
-          console.error(
-            'Failed to load deals',
-            err
-          );
-
-
-          this.loading =
-            false;
-
-
-          alert(
-
-            err.error?.message ||
-
-            err.error?.error ||
-
-            'Failed to load deals'
-
-          );
-
+          console.error('FAILED TO LOAD DEALS:', err);
+          this.deals = [];
+          this.totalItems = 0;
+          this.totalPages = 1;
+          this.loading = false;
+          this.cdr.detectChanges();
+          alert(err?.error?.message || err?.error?.error || 'Failed to load deals');
         }
-
       });
-
   }
 
+  // ===================================================
+  // STRING VALUE HELPER
+  // ===================================================
+  private getValue(value: string | null | undefined): string | undefined {
+    if (value === null || value === undefined || value.trim() === '') {
+      return undefined;
+    }
+    return value.trim();
+  }
 
-  // =====================================================
+  // ===================================================
   // RANGE FILTER HELPER
-  // =====================================================
-
+  // ===================================================
   private addRangeFilter(
-
-    params:
-      DealQueryParams,
-
-    field:
-      string,
-
-    min:
-      any,
-
-    max:
-      any
-
+    params: DealQueryParams,
+    field: string,
+    min: string | null | undefined,
+    max: string | null | undefined
   ) {
-
-
-    if (
-
-      min !== null &&
-
-      min !== undefined &&
-
-      min !== ''
-
-    ) {
-
-      params[`${field}[min]`] =
-        min;
-
+    if (min !== null && min !== undefined && min !== '') {
+      params[`${field}[min]`] = min;
     }
 
-
-    if (
-
-      max !== null &&
-
-      max !== undefined &&
-
-      max !== ''
-
-    ) {
-
-      params[`${field}[max]`] =
-        max;
-
+    if (max !== null && max !== undefined && max !== '') {
+      params[`${field}[max]`] = max;
     }
-
   }
 
-
-  // =====================================================
+  // ===================================================
   // CLEAR FILTERS
-  // =====================================================
-
-  clearFilters() {
-
-
+  // ===================================================
+  clearFilters(): void {
     this.filterForm.reset({
-
-      q:
-        '',
-
-      name:
-        '',
-
-      status:
-        '',
-
-      paymentStatus:
-        '',
-
-      propertyId:
-        '',
-
-      clientId:
-        '',
-
-      minDealAmount:
-        '',
-
-      maxDealAmount:
-        '',
-
-      minCommissionAmount:
-        '',
-
-      maxCommissionAmount:
-        '',
-
-      minCommissionPercentage:
-        '',
-
-      maxCommissionPercentage:
-        '',
-
-      dealDate:
-        '',
-
-      fromDate:
-        '',
-
-      toDate:
-        ''
-
+      q: '',
+      name: '',
+      status: '',
+      paymentStatus: '',
+      propertyId: '',
+      clientId: '',
+      minDealAmount: '',
+      maxDealAmount: '',
+      minCommissionAmount: '',
+      maxCommissionAmount: '',
+      minCommissionPercentage: '',
+      maxCommissionPercentage: '',
+      dealDate: '',
+      fromDate: '',
+      toDate: ''
     });
 
-
-    this.currentPage =
-      1;
-
-
-    this.loadDeals();
-
+    this.currentPage = 1;
   }
 
+  // ===================================================
+  // PAGE SIZE
+  // ===================================================
+  changePageSize(size: number): void {
+    this.pageSize = Number(size) || 10;
+    this.currentPage = 1;
+    this.loadDeals();
+  }
 
-  // =====================================================
+  // ===================================================
   // PAGINATION
-  // =====================================================
-
-  goToPage(
-
-    page:
-      number
-
-  ) {
-
-
-    if (
-
-      page < 1 ||
-
-      page > this.totalPages
-
-    ) {
-
+  // ===================================================
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
       return;
-
     }
-
-
-    this.currentPage =
-      page;
-
-
+    this.currentPage = page;
     this.loadDeals();
-
   }
 
-
-  // =====================================================
+  // ===================================================
   // EDIT DEAL
-  // =====================================================
-
-  editDeal(
-
-    id:
-      string
-
-  ) {
-
-
-    this.router.navigate([
-
-      '/deals/edit',
-
-      id
-
-    ]);
-
+  // ===================================================
+  editDeal(id: string): void {
+    this.router.navigate(['/deals/edit', id]);
   }
 
-
-  // =====================================================
+  // ===================================================
   // VIEW DEAL
-  // =====================================================
-
-  viewDeal(
-
-    id:
-      string
-
-  ) {
-
-
-    this.router.navigate([
-
-      '/deals',
-
-      id
-
-    ]);
-
+  // ===================================================
+  viewDeal(id: string): void {
+    this.router.navigate(['/deals', id]);
   }
 
-
-  // =====================================================
+  // ===================================================
   // DELETE DEAL
-  // =====================================================
+  // ===================================================
+  deleteDeal(id: string): void {
+    const confirmed = confirm('Are you sure you want to delete this deal?');
 
-  deleteDeal(
-
-    id:
-      string
-
-  ) {
-
-
-    if (
-
-      !confirm(
-
-        'Are you sure you want to delete this deal?'
-
-      )
-
-    ) {
-
+    if (!confirmed) {
       return;
-
     }
 
-
-    this.dealService
-      .deleteDeal(id)
+    this.dealService.deleteDeal(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-
         next: () => {
+          this.deals = this.deals.filter(deal => deal._id !== id);
+          this.totalItems = Math.max(0, this.totalItems - 1);
+          this.totalPages = Math.ceil(this.totalItems / this.pageSize) || 1;
 
-
-          this.deals =
-            this.deals.filter(
-
-              deal =>
-                deal._id !== id
-
-            );
-
-
-          this.totalItems--;
-
-
-          // Agar current page empty ho jaye
-
-          if (
-
-            this.deals.length === 0 &&
-
-            this.currentPage > 1
-
-          ) {
-
+          // Current page empty
+          if (this.deals.length === 0 && this.currentPage > 1) {
             this.currentPage--;
-
-
             this.loadDeals();
-
           }
-
         },
-
-
         error: (err) => {
-
-
-          console.error(
-            'Delete failed',
-            err
-          );
-
-
-          alert(
-
-            err.error?.message ||
-
-            err.error?.error ||
-
-            'Delete failed'
-
-          );
-
+          console.error('DELETE DEAL ERROR:', err);
+          alert(err?.error?.message || err?.error?.error || 'Delete failed');
         }
-
       });
-
   }
 
-
-  // =====================================================
+  // ===================================================
   // STATUS CLASS
-  // =====================================================
-
-  getStatusClass(
-
-    status:
-      string | undefined
-
-  ) {
-
-
+  // ===================================================
+  getStatusClass(status: string | undefined): string {
     if (!status) {
-
       return 'default';
-
     }
-
-
-    return status
-
-      .toLowerCase()
-
-      .replace(
-
-        /\s+/g,
-
-        '-'
-
-      );
-
+    return status.toLowerCase().replace(/\s+/g, '-');
   }
 
-
-  // =====================================================
+  // ===================================================
   // PAGE NUMBERS
-  // =====================================================
-
+  // ===================================================
   get pages(): number[] {
-
-
-    return Array.from(
-
-      {
-
-        length:
-          this.totalPages
-
-      },
-
-      (_, index) =>
-        index + 1
-
-    );
-
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
   }
-
 }

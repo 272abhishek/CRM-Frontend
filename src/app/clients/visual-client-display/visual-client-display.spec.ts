@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Add } from './add';
+import { VisualClientDisplay } from './visual-client-display';
 
-describe('Add', () => {
-  let component: Add;
-  let fixture: ComponentFixture<Add>;
+describe('VisualClientDisplay', () => {
+  let component: VisualClientDisplay;
+  let fixture: ComponentFixture<VisualClientDisplay>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Add],
+      imports: [VisualClientDisplay],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Add);
+    fixture = TestBed.createComponent(VisualClientDisplay);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

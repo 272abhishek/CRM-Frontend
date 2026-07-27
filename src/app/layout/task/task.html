@@ -1,0 +1,107 @@
+<div class="task-layout">
+
+  <!-- =========================
+       TASK HEADER
+  ========================== -->
+
+  <header class="task-header">
+
+    <div class="task-brand">
+
+      <div class="task-logo">
+        ✓
+      </div>
+
+      <div>
+        <h2>Task Management</h2>
+
+        <span>
+          Manage your daily work
+        </span>
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         NAVIGATION BUTTONS
+    ========================== -->
+
+    <nav class="task-nav">
+
+      <!-- TASK LIST -->
+
+      <a
+        routerLink="/tasks"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+
+        <span>📋</span>
+
+        <span>
+          All Tasks
+        </span>
+
+      </a>
+
+
+      <!-- ADD TASK -->
+
+      <a
+        routerLink="/tasks/add"
+        routerLinkActive="active">
+
+        <span>➕</span>
+
+        <span>
+          Add Task
+        </span>
+
+      </a>
+
+
+      <!-- CALENDAR -->
+
+      <a
+        routerLink="/tasks/calendar"
+        routerLinkActive="active">
+
+        <span>📅</span>
+
+        <span>
+          Calendar
+        </span>
+
+      </a>
+
+
+      <!-- ANALYTICS -->
+
+      <a
+        routerLink="/tasks/analytics"
+        routerLinkActive="active">
+
+        <span>📊</span>
+
+        <span>
+          Analytics
+        </span>
+
+      </a>
+
+    </nav>
+
+  </header>
+
+
+  <!-- =========================
+       CHILD COMPONENT CONTENT
+  ========================== -->
+
+  <main class="task-content">
+
+    <router-outlet></router-outlet>
+
+  </main>
+
+</div>

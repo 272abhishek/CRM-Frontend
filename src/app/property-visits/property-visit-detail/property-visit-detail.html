@@ -1,17 +1,18 @@
 <div
-
   class="visit-detail-page"
-
   *ngIf="visit">
 
 
-  <div class="page-header">
+  <!-- HEADER -->
+
+  <div
+    class="page-header">
 
 
     <div>
 
       <button
-
+        type="button"
         routerLink="/property-visits">
 
         ← Back
@@ -20,7 +21,9 @@
 
 
       <h2>
+
         Property Visit Details
+
       </h2>
 
     </div>
@@ -45,14 +48,22 @@
   </div>
 
 
-  <div class="detail-grid">
+  <!-- DETAILS -->
+
+  <div
+    class="detail-grid">
 
 
-    <div class="detail-card">
+    <!-- STATUS -->
+
+    <div
+      class="detail-card">
 
 
       <h3>
+
         Visit Status
+
       </h3>
 
 
@@ -62,22 +73,27 @@
 
         [ngClass]="
 
-          'status-' +
+          getStatusClass(
 
-          visit.status
+            visit.status
 
-            ?.toLowerCase()
+          )
 
         ">
 
-        {{ visit.status }}
+        {{ visit.status || '—' }}
 
       </span>
 
 
       <p>
 
-        Visit Date:
+        <strong>
+
+          Visit Date:
+
+        </strong>
+
 
         {{
 
@@ -100,58 +116,304 @@
     </div>
 
 
-    <div class="detail-card">
+    <!-- CLIENT -->
+
+    <div
+      class="detail-card">
 
 
       <h3>
+
         Client
+
       </h3>
 
 
-      <p>
-        Client ID:
-        {{visit.clientId}}
+      <ng-container
+
+        *ngIf="getClient() as client">
+
+
+        <p>
+
+          <strong>
+
+            Name:
+
+          </strong>
+
+
+          {{ client.name || '—' }}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+
+            Phone:
+
+          </strong>
+
+
+          {{ client.phone || '—' }}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+
+            Email:
+
+          </strong>
+
+
+          {{ client.email || '—' }}
+
+        </p>
+
+
+      </ng-container>
+
+
+      <p
+
+        *ngIf="!getClient()">
+
+        Client information unavailable
+
       </p>
 
     </div>
 
 
-    <div class="detail-card">
+    <!-- PROPERTY -->
+
+    <div
+      class="detail-card">
 
 
       <h3>
+
         Property
+
       </h3>
 
 
-      <p>
-        Property ID:
-        {{ visit.propertyId }}
+      <ng-container
+
+        *ngIf="getProperty() as property">
+
+
+        <p>
+
+          <strong>
+
+            Title:
+
+          </strong>
+
+
+          {{ property.title || '—' }}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+
+            Address:
+
+          </strong>
+
+
+          {{ property.address || '—' }}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+
+            Area:
+
+          </strong>
+
+
+          {{ property.area || '—' }}
+
+        </p>
+
+
+        <p
+
+          *ngIf="property.subArea">
+
+
+          <strong>
+
+            Sub Area:
+
+          </strong>
+
+
+          {{ property.subArea }}
+
+        </p>
+
+
+      </ng-container>
+
+
+      <p
+
+        *ngIf="!getProperty()">
+
+        Property information unavailable
+
       </p>
 
     </div>
 
 
-    <div class="detail-card">
+    <!-- SELLER -->
+
+    <div
+      class="detail-card">
 
 
       <h3>
-        Final Deal
+
+        Seller
+
       </h3>
 
 
+      <ng-container
+
+        *ngIf="getSeller() as seller">
+
+
+        <p>
+
+          <strong>
+
+            Name:
+
+          </strong>
+
+
+          {{ seller.name || '—' }}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+
+            Phone:
+
+          </strong>
+
+
+          {{ seller.phone || '—' }}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+
+            Email:
+
+          </strong>
+
+
+          {{ seller.email || '—' }}
+
+        </p>
+
+
+      </ng-container>
+
+
       <p
 
-        *ngIf="visit.dealId">
+        *ngIf="!getSeller()">
 
-        ✅ Final Deal Created
+        Seller information unavailable
 
       </p>
 
+    </div>
+
+
+    <!-- DEAL -->
+
+    <div
+      class="detail-card">
+
+
+      <h3>
+
+        Final Deal
+
+      </h3>
+
+
+      <ng-container
+
+        *ngIf="getDeal() as deal">
+
+
+        <p>
+
+          ✅ Final Deal Created
+
+        </p>
+
+
+        <p>
+
+          <strong>
+
+            Amount:
+
+          </strong>
+
+
+          ₹{{ deal.amount || 0 }}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+
+            Status:
+
+          </strong>
+
+
+          {{ deal.status || '—' }}
+
+        </p>
+
+
+      </ng-container>
+
 
       <p
 
-        *ngIf="!visit.dealId">
+        *ngIf="!getDeal()">
 
         No final deal yet
 
@@ -160,13 +422,17 @@
     </div>
 
 
+    <!-- NOTES -->
+
     <div
 
       class="detail-card full-width">
 
 
       <h3>
+
         Notes
+
       </h3>
 
 

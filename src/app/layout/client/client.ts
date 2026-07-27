@@ -3,18 +3,35 @@ import {
 } from '@angular/core';
 
 import {
-  RouterOutlet,
-  RouterLink
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet
 } from '@angular/router';
 
+
 @Component({
+
   selector: 'app-client',
+
   standalone: true,
+
   imports: [
-    RouterOutlet,
-    RouterLink
+
+    RouterLink,
+
+    RouterLinkActive,
+
+    RouterOutlet
+
   ],
+
   templateUrl: './client.html',
+
   styleUrl: './client.scss'
+
 })
-export class Client {}
+
+
+export class Client {
+
+}

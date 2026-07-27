@@ -7,6 +7,7 @@
   <div
     class="page-header">
 
+
     <div>
 
       <span
@@ -34,6 +35,7 @@
 
 
     <button
+
       type="button"
 
       routerLink="/property-visits">
@@ -48,6 +50,7 @@
   <!-- LOADING -->
 
   <div
+
     class="loading-state"
 
     *ngIf="loading">
@@ -60,6 +63,7 @@
   <!-- FORM -->
 
   <section
+
     class="form-card"
 
     *ngIf="!loading && visit">
@@ -68,10 +72,14 @@
     <!-- CLIENT -->
 
     <div
+
       class="readonly-section">
 
+
       <h3>
+
         Client
+
       </h3>
 
 
@@ -82,12 +90,71 @@
       </p>
 
 
+      <ng-container
+
+        *ngIf="getClient() as client">
+
+
+        <div
+
+          class="readonly-value">
+
+
+          <div>
+
+            <strong>
+
+              Name:
+
+            </strong>
+
+
+            {{ client.name || '—' }}
+
+          </div>
+
+
+          <div>
+
+            <strong>
+
+              Phone:
+
+            </strong>
+
+
+            {{ client.phone || '—' }}
+
+          </div>
+
+
+          <div>
+
+            <strong>
+
+              Email:
+
+            </strong>
+
+
+            {{ client.email || '—' }}
+
+          </div>
+
+
+        </div>
+
+      </ng-container>
+
+
       <div
-        class="readonly-value">
 
-        Client ID:
+        class="readonly-value"
 
-        {{ visit.clientId }}
+        *ngIf="!getClient()">
+
+
+        Client information unavailable
 
       </div>
 
@@ -97,10 +164,14 @@
     <!-- PROPERTY -->
 
     <div
+
       class="readonly-section">
 
+
       <h3>
+
         Property
+
       </h3>
 
 
@@ -111,12 +182,71 @@
       </p>
 
 
+      <ng-container
+
+        *ngIf="getProperty() as property">
+
+
+        <div
+
+          class="readonly-value">
+
+
+          <div>
+
+            <strong>
+
+              Title:
+
+            </strong>
+
+
+            {{ property.title || '—' }}
+
+          </div>
+
+
+          <div>
+
+            <strong>
+
+              Address:
+
+            </strong>
+
+
+            {{ property.address || '—' }}
+
+          </div>
+
+
+          <div>
+
+            <strong>
+
+              Area:
+
+            </strong>
+
+
+            {{ property.area || '—' }}
+
+          </div>
+
+
+        </div>
+
+      </ng-container>
+
+
       <div
-        class="readonly-value">
 
-        Property ID:
+        class="readonly-value"
 
-        {{ visit.propertyId }}
+        *ngIf="!getProperty()">
+
+
+        Property information unavailable
 
       </div>
 
@@ -135,14 +265,18 @@
       <!-- DATE -->
 
       <div
+
         class="form-group">
+
 
         <label>
 
           Visit Date
 
           <span>
+
             *
+
           </span>
 
         </label>
@@ -152,7 +286,7 @@
 
           type="date"
 
-          formControlName="visitDate">
+          formControlName="visitDate" [min]="today">
 
 
         <small
@@ -165,7 +299,9 @@
 
           ">
 
+
           Visit date is required
+
 
         </small>
 
@@ -175,14 +311,18 @@
       <!-- STATUS -->
 
       <div
+
         class="form-group">
+
 
         <label>
 
           Visit Status
 
           <span>
+
             *
+
           </span>
 
         </label>
@@ -194,6 +334,7 @@
 
 
           <option
+
             value="Planned">
 
             Planned
@@ -202,6 +343,7 @@
 
 
           <option
+
             value="Scheduled">
 
             Scheduled
@@ -210,6 +352,7 @@
 
 
           <option
+
             value="Visited">
 
             Visited
@@ -218,6 +361,7 @@
 
 
           <option
+
             value="Interested">
 
             Interested
@@ -226,6 +370,7 @@
 
 
           <option
+
             value="Not Interested">
 
             Not Interested
@@ -234,6 +379,7 @@
 
 
           <option
+
             value="Shortlisted">
 
             Shortlisted
@@ -242,6 +388,7 @@
 
 
           <option
+
             value="Selected">
 
             Selected
@@ -250,6 +397,7 @@
 
 
           <option
+
             value="Rejected">
 
             Rejected
@@ -258,6 +406,7 @@
 
 
           <option
+
             value="Negotiation">
 
             Negotiation
@@ -266,9 +415,19 @@
 
 
           <option
+
             value="Closed">
 
             Closed
+
+          </option>
+
+
+          <option
+
+            value="Cancelled">
+
+            Cancelled
 
           </option>
 
@@ -278,10 +437,63 @@
       </div>
 
 
+      <!-- TOKEN AMOUNT -->
+
+      <div
+
+        class="form-group">
+
+
+        <label>
+
+          Token Amount
+
+        </label>
+
+
+        <input
+
+          type="number"
+
+          formControlName="tokenAmount"
+
+          min="0"
+
+          placeholder="Enter token amount">
+
+
+      </div>
+
+
+      <!-- FINAL DEAL AMOUNT -->
+
+      <div
+
+        class="form-group">
+
+
+        <label>
+
+          Final Deal Amount
+
+        </label>
+
+<input
+  type="number"
+  formControlName="amount"
+  min="0"
+  placeholder="Enter final deal amount">
+
+
+      </div>
+
+
       <!-- NOTES -->
 
       <div
+
         class="form-group">
+
 
         <label>
 
@@ -306,6 +518,7 @@
       <!-- ACTIONS -->
 
       <div
+
         class="form-actions">
 
 
@@ -315,7 +528,9 @@
 
           routerLink="/property-visits">
 
+
           Cancel
+
 
         </button>
 
@@ -324,22 +539,35 @@
 
           type="submit"
 
-          [disabled]="saving">
+          [disabled]="saving || visitForm.invalid">
 
 
-          {{
+          <span
 
-            saving
+            *ngIf="!saving">
 
-              ? 'Updating...'
 
-              : 'Update Visit'
+            Update Visit
 
-          }}
+
+          </span>
+
+
+          <span
+
+            *ngIf="saving">
+
+
+            Updating...
+
+
+          </span>
+
 
         </button>
 
       </div>
+
 
     </form>
 

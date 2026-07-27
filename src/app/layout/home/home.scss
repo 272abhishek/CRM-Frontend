@@ -1,0 +1,801 @@
+// =====================================================================
+// AbhiHomes CRM — Home Dashboard Styles
+// -----------------------------------------------------------------------
+// Design language: "light, airy, Instagram-Explore energy" — a warm paper
+// canvas, six pastel module colors (one per CRM module, like Instagram's
+// pastel story-highlight covers), a rotating icon-ring hero (the page's
+// signature element, standing in for the CRM pulling every module into
+// one center), and rounded, soft-shadowed cards throughout.
+//
+// Fonts: Sora (display — geometric, confident, app-like) + Inter (body).
+// Add to index.html <head>, or uncomment the @import fallback below:
+// <link rel="preconnect" href="https://fonts.googleapis.com">
+// <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+// =====================================================================
+
+// @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+// ---------------------------------------------------------------------
+// 1. Tokens
+// ---------------------------------------------------------------------
+
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
+
+$canvas: #fbf9f5;
+$canvas-alt: #f4f1ea;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
+
+// One pastel bg + accent pair per CRM module — the "Instagram highlight
+// cover" palette. Every module keeps its color everywhere it reappears
+// (icons, borders, hovers) so the eye learns the system fast.
+$modules: (
+  client: (bg: #ffede4, accent: #ff6b47, deep: #d84315),
+  property: (bg: #e5f2ff, accent: #2e90fa, deep: #155ea8),
+  visit: (bg: #f1ecff, accent: #8b5cf6, deep: #6425c7),
+  deal: (bg: #e3f9ec, accent: #12b76a, deep: #027a48),
+  task: (bg: #fff3d9, accent: #f79009, deep: #b54708),
+  analytics: (bg: #fde7f3, accent: #ee46bc, deep: #a3106e),
+);
+
+$radius-sm: 12px;
+$radius-md: 18px;
+$radius-lg: 28px;
+$radius-pill: 999px;
+
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$shadow-lift: 0 10px 20px -6px rgba(24, 20, 15, 0.10), 0 24px 48px -16px rgba(24, 20, 15, 0.16);
+
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+// ---------------------------------------------------------------------
+// 2. Mixins
+// ---------------------------------------------------------------------
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin tablet { @media (max-width: 1023px) { @content; } }
+@mixin desktop { @media (min-width: 1024px) { @content; } }
+@mixin wide { @media (min-width: 1280px) { @content; } }
+
+@mixin container {
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 64px);
+}
+
+@mixin eyebrow-base {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $font-body;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@mixin card-lift {
+  transition: transform 0.35s $ease, box-shadow 0.35s $ease, border-color 0.35s $ease;
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: $shadow-lift;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &:hover { transform: none; }
+  }
+}
+
+@function mod($name, $key) {
+  @return map-get(map-get($modules, $name), $key);
+}
+
+// ---------------------------------------------------------------------
+// 3. Base canvas
+// ---------------------------------------------------------------------
+
+.crm-home {
+  font-family: $font-body;
+  color: $ink;
+  background: $canvas;
+  overflow-x: clip;
+
+  h1, h2, h3 {
+    font-family: $font-display;
+    color: $ink;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  p { margin: 0; color: $ink-soft; line-height: 1.6; }
+
+  a { text-decoration: none; color: inherit; }
+
+  section { padding-block: clamp(56px, 9vw, 120px); }
+
+  // shared focus ring for accessibility
+  a:focus-visible, button:focus-visible {
+    outline: 2.5px solid $ink;
+    outline-offset: 3px;
+    border-radius: $radius-sm;
+  }
+}
+
+.section-heading {
+  @include container;
+  text-align: center;
+  max-width: 620px;
+  margin-inline: auto;
+  margin-bottom: clamp(36px, 6vw, 64px);
+
+  > span {
+    @include eyebrow-base;
+    color: mod(deal, deep);
+    margin-bottom: 14px;
+
+    &::before {
+      content: '';
+      width: 18px;
+      height: 2px;
+      background: mod(deal, accent);
+      border-radius: 2px;
+    }
+  }
+
+  h2 {
+    font-size: clamp(1.6rem, 3.4vw, 2.35rem);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  p { font-size: 1.02rem; }
+}
+
+// buttons -------------------------------------------------------------
+
+.primary-btn, .secondary-btn, .outline-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.98rem;
+  padding: 14px 26px;
+  border-radius: $radius-pill;
+  transition: transform 0.25s $ease, box-shadow 0.25s $ease, background 0.25s $ease;
+  white-space: nowrap;
+
+  &:hover { transform: translateY(-2px); }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, mod(client, accent), mod(visit, accent));
+  color: $white;
+  box-shadow: 0 12px 24px -10px rgba(255, 107, 71, 0.55);
+
+  &:hover { box-shadow: 0 16px 30px -8px rgba(255, 107, 71, 0.6); }
+}
+
+.secondary-btn {
+  background: $white;
+  color: $ink;
+  border: 1.5px solid $hairline;
+
+  &:hover { border-color: mod(property, accent); color: mod(property, deep); }
+}
+
+.outline-btn {
+  background: transparent;
+  color: $white;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+
+  &:hover { background: rgba(255, 255, 255, 0.14); }
+}
+
+// =======================================================================
+// 4. HERO
+// =======================================================================
+
+.hero-section {
+  @include container;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: clamp(32px, 6vw, 72px);
+  padding-top: clamp(48px, 8vw, 88px);
+
+  @include tablet {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.hero-content {
+  .eyebrow {
+    @include eyebrow-base;
+    background: mod(property, bg);
+    color: mod(property, deep);
+    padding: 8px 16px;
+    border-radius: $radius-pill;
+    margin-bottom: 22px;
+  }
+
+  h1 {
+    font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.12;
+
+    span {
+      display: inline;
+      background: linear-gradient(100deg, mod(client, accent), mod(analytics, accent) 55%, mod(visit, accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+
+  p {
+    font-size: clamp(1rem, 1.6vw, 1.14rem);
+    max-width: 46ch;
+    margin-block: 20px 32px;
+
+    @include tablet { margin-inline: auto; }
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+
+    @include tablet { justify-content: center; }
+    @include mobile { flex-direction: column; align-items: stretch; }
+  }
+}
+
+// --- hero visual: the signature "orbit" element -----------------------
+
+.hero-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+
+  @include mobile { min-height: 320px; transform: scale(0.85); }
+}
+
+.dashboard-orbit {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, $white 0%, $canvas-alt 72%, transparent 73%);
+  box-shadow: $shadow-soft;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -14px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      mod(client, accent),
+      mod(property, accent),
+      mod(deal, accent),
+      mod(analytics, accent),
+      mod(client, accent)
+    );
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+    animation: spin 14s linear infinite;
+  }
+
+  @include mobile { width: 260px; height: 260px; }
+}
+
+.center-logo {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: $ink;
+  color: $white;
+  font-family: $font-display;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $shadow-lift;
+  z-index: 2;
+}
+
+.orbit-icon {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  background: $white;
+  box-shadow: $shadow-soft;
+  animation: counter-spin 14s linear infinite;
+
+  @include mobile { width: 46px; height: 46px; font-size: 1.1rem; }
+}
+
+// four icons placed at N / E / S / W of the ring, each keeping its
+// module color as a soft halo
+.icon-one   { top: -6px; left: 50%; transform: translateX(-50%); background: mod(client, bg); color: mod(client, deep); }
+.icon-two   { top: 50%; right: -6px; transform: translateY(-50%); background: mod(property, bg); color: mod(property, deep); }
+.icon-three { bottom: -6px; left: 50%; transform: translateX(-50%); background: mod(deal, bg); color: mod(deal, deep); }
+.icon-four  { top: 50%; left: -6px; transform: translateY(-50%); background: mod(analytics, bg); color: mod(analytics, deep); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes counter-spin {
+  from { transform: rotate(0deg) translateY(0); }
+  to { transform: rotate(-360deg) translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-orbit::before, .orbit-icon { animation: none; }
+}
+
+.floating-card {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $white;
+  padding: 12px 16px;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lift;
+  animation: bob 5s ease-in-out infinite;
+  z-index: 3;
+
+  span {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  strong { display: block; font-size: 0.86rem; font-family: $font-display; }
+  small { color: $ink-faint; font-size: 0.74rem; }
+
+  @include mobile { padding: 9px 12px; strong { font-size: 0.78rem; } small { font-size: 0.68rem; } }
+}
+
+.card-one {
+  top: 6%;
+  left: -8%;
+  animation-delay: 0s;
+  span { background: mod(client, bg); color: mod(client, deep); }
+  @include tablet { left: 2%; }
+}
+
+.card-two {
+  bottom: 8%;
+  right: -8%;
+  animation-delay: 1.4s;
+  span { background: mod(visit, bg); color: mod(visit, deep); }
+  @include tablet { right: 2%; }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@media (prefers-reduced-motion: reduce) { .floating-card { animation: none; } }
+
+// =======================================================================
+// 5. QUICK ACCESS — Instagram-Explore style module grid
+// =======================================================================
+
+.quick-section { background: $canvas; }
+
+.module-grid {
+  @include container;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+
+  @include tablet { grid-template-columns: repeat(2, 1fr); }
+  @include mobile { grid-template-columns: 1fr; gap: 16px; }
+}
+
+.module-card {
+  @include card-lift;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  border-radius: $radius-lg;
+  background: $white;
+  border: 1.5px solid $hairline;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.35s $ease;
+    pointer-events: none;
+  }
+  &:hover::after { opacity: 1; }
+
+  .module-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.18rem;
+    font-weight: 700;
+  }
+
+  p { font-size: 0.93rem; margin-top: 4px; }
+
+  .module-content span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 0.86rem;
+    transition: gap 0.25s $ease;
+  }
+
+  &:hover .module-content span { gap: 10px; }
+}
+
+// one @each loop wires every module's color into its card, its icon
+// bubble, its hover border, and its label — single source of truth
+@each $name, $vals in $modules {
+  .module-card.#{$name}-module {
+    &:hover { border-color: map-get($vals, accent); }
+    &::after {
+      background: linear-gradient(180deg, transparent 60%, rgba(map-get($vals, accent), 0.06));
+    }
+    .module-icon { background: map-get($vals, bg); color: map-get($vals, deep); }
+    .module-content span { color: map-get($vals, deep); }
+  }
+}
+
+// =======================================================================
+// 6. WORKFLOW — story-progress inspired steps
+// =======================================================================
+
+.workflow-section { background: $canvas-alt; }
+
+.workflow-container {
+  @include container;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+
+  @include tablet { flex-direction: column; align-items: stretch; gap: 28px; }
+}
+
+$workflow-colors: client, property, visit, deal;
+
+.workflow-step {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+
+  @include tablet {
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .step-number {
+    font-family: $font-display;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $ink-faint;
+    letter-spacing: 0.05em;
+  }
+
+  .step-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: $shadow-soft;
+    border: 2px solid transparent;
+    flex-shrink: 0;
+  }
+
+  h3 { font-size: 1.05rem; font-weight: 700; margin-top: 2px; }
+  p { font-size: 0.88rem; max-width: 22ch; }
+
+  @include tablet { p { max-width: none; } }
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i * 2 - 1}) {
+      $c: nth($workflow-colors, $i);
+      .step-icon { border-color: mod($c, accent); background: mod($c, bg); color: mod($c, deep); }
+      .step-number { color: mod($c, deep); }
+    }
+  }
+}
+
+.workflow-line {
+  flex: 0 0 auto;
+  align-self: center;
+  width: clamp(20px, 4vw, 56px);
+  height: 2px;
+  margin-top: 32px;
+  background: repeating-linear-gradient(
+    90deg, $ink-faint 0 6px, transparent 6px 12px
+  );
+  opacity: 0.5;
+
+  @include tablet { display: none; }
+}
+
+// =======================================================================
+// 7. SECURITY
+// =======================================================================
+
+.security-section {
+  @include container;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: clamp(32px, 6vw, 72px);
+  align-items: center;
+
+  @include tablet { grid-template-columns: 1fr; }
+}
+
+.security-content {
+  .eyebrow {
+    @include eyebrow-base;
+    background: mod(deal, bg);
+    color: mod(deal, deep);
+    padding: 8px 16px;
+    border-radius: $radius-pill;
+    margin-bottom: 18px;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    font-weight: 700;
+    line-height: 1.2;
+
+    span {
+      display: block;
+      background: linear-gradient(100deg, mod(deal, accent), mod(property, accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+
+  > p { margin-block: 16px 32px; font-size: 1.02rem; max-width: 52ch; }
+}
+
+.security-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @include mobile { grid-template-columns: 1fr; }
+}
+
+$security-colors: deal, property, visit, task;
+
+.security-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+
+  .security-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  h3 { font-size: 0.98rem; font-weight: 700; margin-bottom: 4px; }
+  p { font-size: 0.86rem; }
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      $c: nth($security-colors, $i);
+      .security-icon { background: mod($c, bg); color: mod($c, deep); }
+    }
+  }
+}
+
+.security-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.security-shield {
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1;
+  border-radius: $radius-lg;
+  background: linear-gradient(150deg, $ink 0%, #302a20 100%);
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  box-shadow: $shadow-lift;
+
+  .shield-icon {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+  }
+
+  strong { font-family: $font-display; letter-spacing: 0.04em; font-size: 1rem; }
+  small { color: rgba(255, 255, 255, 0.6); font-size: 0.82rem; }
+}
+
+// =======================================================================
+// 8. USER ROLES
+// =======================================================================
+
+.roles-section { background: $canvas-alt; }
+
+.roles-grid {
+  @include container;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  @include tablet { grid-template-columns: repeat(2, 1fr); }
+  @include mobile { grid-template-columns: 1fr; }
+}
+
+$role-colors: analytics, client, property, deal;
+
+.role-card {
+  @include card-lift;
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  padding: 30px 24px;
+  text-align: center;
+
+  .role-icon {
+    width: 64px;
+    height: 64px;
+    margin-inline: auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    margin-bottom: 16px;
+  }
+
+  h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+  p { font-size: 0.88rem; }
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      $c: nth($role-colors, $i);
+      &:hover { border-color: mod($c, accent); }
+      .role-icon { background: mod($c, bg); color: mod($c, deep); }
+    }
+  }
+}
+
+// =======================================================================
+// 9. FINAL CTA
+// =======================================================================
+
+.final-cta {
+  @include container;
+  border-radius: $radius-lg;
+  margin-inline: clamp(0px, 4vw, 24px);
+  padding: clamp(48px, 8vw, 80px) clamp(24px, 6vw, 64px);
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255, 107, 71, 0.35), transparent 55%),
+    radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.35), transparent 55%),
+    $ink;
+  color: $white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+
+  > div:first-child {
+    max-width: 560px;
+
+    span {
+      @include eyebrow-base;
+      color: rgba(255, 255, 255, 0.7);
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    h2 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); font-weight: 800; margin-bottom: 12px; }
+    p { color: rgba(255, 255, 255, 0.72); font-size: 1rem; }
+  }
+}
+
+.cta-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  .primary-btn { box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.35); }
+
+  @include mobile { flex-direction: column; width: 100%; }
+}
+
+// =======================================================================
+// 10. FOOTER
+// =======================================================================
+
+.home-footer {
+  @include container;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 32px 48px;
+  border-top: 1px solid $hairline;
+  gap: 16px;
+
+  strong {
+    font-family: $font-display;
+    font-size: 1rem;
+    display: block;
+  }
+
+  p, span { color: $ink-faint; font-size: 0.86rem; margin-top: 2px; }
+
+  @include mobile { flex-direction: column; text-align: center; gap: 6px; }
+}

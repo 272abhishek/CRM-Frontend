@@ -1,248 +1,283 @@
-/* =====================================
-   Property Layout
-===================================== */
+// =====================================================================
+// AbhiHomes CRM — Properties Module Shell (Sidebar + Header + Outlet)
+// -----------------------------------------------------------------------
+// Same structural system as the Clients and Deal Close shells (real
+// sidebar on desktop, sticky-top horizontal tab strip below ~960px) —
+// this one carries the Property module's own identity: blue → violet,
+// matching the Properties card on the home dashboard.
+// =====================================================================
 
-:host {
-  display: block;
-  min-height: 100vh;
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
 
-  font-family:
-    "Inter",
-    "Segoe UI",
-    sans-serif;
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
 
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc 0%,
-      #eef2ff 100%
-    );
+$blue: #2e90fa; $blue-bg: #e5f2ff; $blue-deep: #155ea8;
+$violet: #8b5cf6;
 
-  color: #1e293b;
-}
+$radius-lg: 20px;
+$radius-md: 12px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-/* =====================================
-   Main Layout
-===================================== */
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin desktop { @media (min-width: 960px) { @content; } }
+
+// ---------------------------------------------------------------------
+// Layout shell
+// ---------------------------------------------------------------------
 
 .property-layout {
-  min-height: 100vh;
-
-  display: flex;
-}
-
-/* =====================================
-   Sidebar
-===================================== */
-
-.sidebar {
-  width: 250px;
-  min-height: 100vh;
-
-  padding: 28px 18px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #111827 0%,
-      #1e1b4b 100%
-    );
-
-  color: #ffffff;
-
-  box-shadow:
-    8px 0 30px rgba(15, 23, 42, 0.12);
-
-  position: sticky;
-  top: 0;
-  align-self: flex-start;
-}
-
-/* =====================================
-   Sidebar Heading
-===================================== */
-
-.sidebar h2 {
-  margin: 0 12px 34px;
-
-  font-size: 22px;
-  font-weight: 750;
-
-  letter-spacing: -0.4px;
-
-  color: #ffffff;
-}
-
-/* =====================================
-   Navigation
-===================================== */
-
-.sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  min-height: 100dvh;
+  background: $canvas;
+  font-family: $font-body;
+  color: $ink;
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: 264px 1fr;
+    align-items: start;
+  }
 }
 
-/* =====================================
-   Navigation Links
-===================================== */
+// =======================================================================
+// SIDEBAR
+// =======================================================================
 
-.sidebar nav a {
-  position: relative;
-
+.property-sidebar {
   display: flex;
   align-items: center;
+  gap: 8px;
+  background: $white;
+  border-bottom: 1.5px solid $hairline;
+  padding: 12px clamp(12px, 4vw, 20px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 
-  min-height: 48px;
-  padding: 0 16px;
+  @include desktop {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    height: 100dvh;
+    position: sticky;
+    top: 0;
+    border-bottom: none;
+    border-right: 1.5px solid $hairline;
+    padding: 24px 18px;
+    overflow: visible;
+  }
+}
 
-  border-radius: 11px;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding-right: 14px;
+  margin-right: 6px;
+  border-right: 1.5px solid $hairline;
 
-  color: #cbd5e1;
+  @include desktop {
+    padding: 0 0 22px;
+    margin: 0 0 20px;
+    border-right: none;
+    border-bottom: 1.5px solid $hairline;
+  }
+
+  .brand-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, $blue, $violet);
+    color: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: $font-display;
+    font-size: 1.02rem;
+    font-weight: 800;
+    margin: 0;
+    color: $ink;
+    white-space: nowrap;
+  }
+
+  span {
+    display: block;
+    font-size: 0.72rem;
+    color: $ink-faint;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @include mobile {
+    > div { display: none; } // icon only on very small screens
+  }
+}
+
+.property-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+
+  @include desktop {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $ink-soft;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.25s $ease, color 0.25s $ease;
+
+    span:first-child { font-size: 1.05rem; }
+
+    &:hover { background: $blue-bg; color: $blue-deep; }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+
+    &.active {
+      background: linear-gradient(135deg, $blue, $violet);
+      color: $white;
+      box-shadow: 0 8px 16px -8px rgba($blue, 0.5);
+    }
+
+    @include desktop {
+      border-radius: $radius-md;
+      padding: 12px 14px;
+    }
+  }
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
+  padding-left: 14px;
+  margin-left: 6px;
+  border-left: 1.5px solid $hairline;
+
+  @include desktop {
+    padding: 18px 0 0;
+    margin: 20px 0 0;
+    border-left: none;
+    border-top: 1.5px solid $hairline;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $ink-soft;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.25s $ease, color 0.25s $ease;
+
+    &:hover { background: $canvas; color: $ink; }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+
+    @include desktop { border-radius: $radius-md; padding: 10px 14px; }
+  }
+}
+
+// =======================================================================
+// MAIN AREA
+// =======================================================================
+
+.property-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.property-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px clamp(16px, 4vw, 32px);
+  background: $white;
+  border-bottom: 1.5px solid $hairline;
+
+  @include mobile { flex-direction: column; align-items: stretch; }
+
+  .eyebrow {
+    display: inline-flex;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $blue-deep;
+    background: $blue-bg;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: $font-display;
+    font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+  }
+
+  p { margin: 0; color: $ink-faint; font-size: 0.9rem; }
+}
+
+.header-actions { flex-shrink: 0; @include mobile { width: 100%; } }
+
+.add-property-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: $white;
+  background: linear-gradient(135deg, $blue, $violet);
+  padding: 12px 22px;
+  border-radius: 999px;
   text-decoration: none;
+  box-shadow: 0 12px 22px -10px rgba($violet, 0.5);
+  transition: transform 0.25s $ease, box-shadow 0.25s $ease;
 
-  font-size: 14px;
-  font-weight: 600;
+  span:first-child { font-size: 1.1rem; line-height: 1; }
 
-  transition:
-    color 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease;
+  &:hover { transform: translateY(-2px); box-shadow: 0 16px 28px -8px rgba($violet, 0.58); }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
+
+  @include mobile { width: 100%; justify-content: center; }
 }
-
-/* Hover */
-
-.sidebar nav a:hover {
-  color: #ffffff;
-
-  background:
-    rgba(255, 255, 255, 0.1);
-
-  transform: translateX(4px);
-}
-
-/* Active Link */
-
-.sidebar nav a.active {
-  color: #ffffff;
-
-  background:
-    linear-gradient(
-      135deg,
-      #4f46e5,
-      #7c3aed
-    );
-
-  box-shadow:
-    0 8px 20px rgba(79, 70, 229, 0.3);
-}
-
-/* =====================================
-   Main Content
-===================================== */
 
 .property-content {
   flex: 1;
-  min-width: 0;
-
-  padding: 32px;
-
-  background:
-    rgba(248, 250, 252, 0.75);
-}
-
-/* =====================================
-   Tablet
-===================================== */
-
-@media (max-width: 900px) {
-
-  .sidebar {
-    width: 220px;
-  }
-
-  .property-content {
-    padding: 24px;
-  }
-}
-
-/* =====================================
-   Mobile
-===================================== */
-
-@media (max-width: 768px) {
-
-  .property-layout {
-    display: block;
-  }
-
-  .sidebar {
-    width: auto;
-    min-height: auto;
-
-    padding: 16px 18px;
-
-    position: relative;
-  }
-
-  .sidebar h2 {
-    margin: 0 0 16px;
-
-    font-size: 20px;
-  }
-
-  .sidebar nav {
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  .sidebar nav a {
-    flex: 1;
-
-    justify-content: center;
-
-    min-height: 44px;
-    padding: 0 10px;
-
-    font-size: 13px;
-  }
-
-  .sidebar nav a:hover {
-    transform: translateY(-2px);
-  }
-
-  .property-content {
-    padding: 20px 16px;
-  }
-}
-
-/* =====================================
-   Small Mobile
-===================================== */
-
-@media (max-width: 480px) {
-
-  .sidebar {
-    padding: 14px 12px;
-  }
-
-  .sidebar h2 {
-    margin-bottom: 14px;
-
-    font-size: 18px;
-  }
-
-  .sidebar nav {
-    gap: 8px;
-  }
-
-  .sidebar nav a {
-    min-height: 42px;
-
-    font-size: 12px;
-  }
-
-  .property-content {
-    padding: 16px 10px;
-  }
+  padding: clamp(16px, 4vw, 32px);
 }

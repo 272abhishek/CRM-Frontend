@@ -1,17 +1,38 @@
-import { Component } from '@angular/core';
 import {
-  RouterOutlet,
-  RouterLink
+  Component
+} from '@angular/core';
+
+import {
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet
 } from '@angular/router';
 
+
 @Component({
+
   selector: 'app-property',
+
   standalone: true,
+
   imports: [
-    RouterOutlet,
-    RouterLink
+
+    RouterLink,
+
+    RouterLinkActive,
+
+    RouterOutlet
+
   ],
+
   templateUrl: './property.html',
+
   styleUrl: './property.scss'
+
 })
-export class Property {}
+
+
+export class Property {
+
+
+}

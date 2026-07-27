@@ -1,0 +1,749 @@
+<div class="visual-property-page">
+
+  <!-- =========================
+       PAGE HEADER
+  ========================== -->
+
+  <div class="page-header">
+
+    <div class="header-content">
+
+      <div>
+
+        <span class="eyebrow">
+          PROPERTY ANALYTICS
+        </span>
+
+        <h1>
+          Property Visual Dashboard
+        </h1>
+
+        <p>
+          Visual insights and analytics for your real estate portfolio
+        </p>
+
+      </div>
+
+      <div class="header-actions">
+
+        <button
+          type="button"
+          class="refresh-btn"
+          (click)="loadPropertyData()">
+
+          ↻ Refresh Data
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       LOADING
+  ========================== -->
+
+  <div
+    class="loading-state"
+    *ngIf="loading">
+
+    <div class="loader"></div>
+
+    <p>
+      Loading property analytics...
+    </p>
+
+  </div>
+
+
+  <!-- =========================
+       ERROR
+  ========================== -->
+
+  <div
+    class="error-state"
+    *ngIf="!loading && error">
+
+    <div class="error-icon">
+      ⚠️
+    </div>
+
+    <h3>
+      Unable to load property data
+    </h3>
+
+    <p>
+      {{ error }}
+    </p>
+
+    <button
+      type="button"
+      (click)="loadPropertyData()">
+
+      Try Again
+
+    </button>
+
+  </div>
+
+
+  <!-- =========================
+       DASHBOARD
+  ========================== -->
+
+  <ng-container
+    *ngIf="!loading && !error">
+
+
+    <!-- =========================
+         KPI CARDS
+    ========================== -->
+
+    <div class="kpi-grid">
+
+
+      <!-- TOTAL PROPERTIES -->
+
+      <div class="kpi-card properties-card">
+
+        <div class="kpi-icon">
+          🏢
+        </div>
+
+        <div class="kpi-content">
+
+          <span>
+            Total Properties
+          </span>
+
+          <strong>
+            {{ properties.length }}
+          </strong>
+
+          <small>
+            Active property listings
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- TOTAL VARIANTS -->
+
+      <div class="kpi-card variants-card">
+
+        <div class="kpi-icon">
+          🏘️
+        </div>
+
+        <div class="kpi-content">
+
+          <span>
+            Total Variants
+          </span>
+
+          <strong>
+            {{ totalVariants }}
+          </strong>
+
+          <small>
+            Available configurations
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- AVERAGE PRICE -->
+
+      <div class="kpi-card price-card">
+
+        <div class="kpi-icon">
+          💰
+        </div>
+
+        <div class="kpi-content">
+
+          <span>
+            Average Property Price
+          </span>
+
+          <strong>
+            ₹{{ averagePrice | number:'1.0-0' }}
+          </strong>
+
+          <small>
+            Across all variants
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- AVERAGE COMMISSION -->
+
+      <div class="kpi-card commission-card">
+
+        <div class="kpi-icon">
+          📈
+        </div>
+
+        <div class="kpi-content">
+
+          <span>
+            Average Commission
+          </span>
+
+          <strong>
+            {{ averageCommission | number:'1.0-2' }}%
+          </strong>
+
+          <small>
+            Property commission rate
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         MAIN CHART GRID
+    ========================== -->
+
+    <div class="chart-grid">
+
+
+      <!-- PROPERTY BY AREA -->
+
+      <section class="chart-card large-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-label">
+              LOCATION ANALYTICS
+            </span>
+
+            <h2>
+              Properties by Area
+            </h2>
+
+            <p>
+              Distribution of properties across different areas
+            </p>
+
+          </div>
+
+          <div class="chart-icon">
+            📍
+          </div>
+
+        </div>
+
+
+        <div class="chart-container">
+
+          <canvas
+            id="areaChart">
+
+          </canvas>
+
+        </div>
+
+      </section>
+
+
+      <!-- POSSESSION STATUS -->
+
+      <section class="chart-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-label">
+              PROPERTY STATUS
+            </span>
+
+            <h2>
+              Possession Status
+            </h2>
+
+            <p>
+              Current possession distribution
+            </p>
+
+          </div>
+
+          <div class="chart-icon">
+            🏗️
+          </div>
+
+        </div>
+
+
+        <div class="chart-container doughnut-container">
+
+          <canvas
+            id="possessionChart">
+
+          </canvas>
+
+        </div>
+
+      </section>
+
+
+      <!-- PROPERTY PRICE ANALYTICS -->
+
+      <section class="chart-card large-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-label">
+              PRICE ANALYTICS
+            </span>
+
+            <h2>
+              Price Distribution
+            </h2>
+
+            <p>
+              Property pricing across available variants
+            </p>
+
+          </div>
+
+          <div class="chart-icon">
+            💰
+          </div>
+
+        </div>
+
+
+        <div class="chart-container">
+
+          <canvas
+            id="priceChart">
+
+          </canvas>
+
+        </div>
+
+      </section>
+
+
+      <!-- PROPERTY VARIANTS -->
+
+      <section class="chart-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-label">
+              INVENTORY
+            </span>
+
+            <h2>
+              Variants per Property
+            </h2>
+
+            <p>
+              Number of configurations available
+            </p>
+
+          </div>
+
+          <div class="chart-icon">
+            🏠
+          </div>
+
+        </div>
+
+
+        <div class="chart-container">
+
+          <canvas
+            id="variantChart">
+
+          </canvas>
+
+        </div>
+
+      </section>
+
+
+      <!-- COMMISSION ANALYTICS -->
+
+      <section class="chart-card large-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-label">
+              REVENUE POTENTIAL
+            </span>
+
+            <h2>
+              Commission Percentage
+            </h2>
+
+            <p>
+              Commission rates across properties
+            </p>
+
+          </div>
+
+          <div class="chart-icon">
+            📊
+          </div>
+
+        </div>
+
+
+        <div class="chart-container">
+
+          <canvas
+            id="commissionChart">
+
+          </canvas>
+
+        </div>
+
+      </section>
+
+
+      <!-- AMENITIES -->
+
+      <section class="chart-card">
+
+        <div class="chart-header">
+
+          <div>
+
+            <span class="chart-label">
+              LIFESTYLE ANALYTICS
+            </span>
+
+            <h2>
+              Top Amenities
+            </h2>
+
+            <p>
+              Most common amenities in properties
+            </p>
+
+          </div>
+
+          <div class="chart-icon">
+            ✨
+          </div>
+
+        </div>
+
+
+        <div class="chart-container">
+
+          <canvas
+            id="amenitiesChart">
+
+          </canvas>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- =========================
+         CONNECTIVITY ANALYTICS
+    ========================== -->
+
+    <section class="chart-card connectivity-card">
+
+      <div class="chart-header">
+
+        <div>
+
+          <span class="chart-label">
+            CONNECTIVITY INSIGHTS
+          </span>
+
+          <h2>
+            Average Distance from Important Locations
+          </h2>
+
+          <p>
+            Average connectivity distance across all properties
+          </p>
+
+        </div>
+
+        <div class="chart-icon">
+          🚉
+        </div>
+
+      </div>
+
+
+      <div class="chart-container connectivity-chart">
+
+        <canvas
+          id="connectivityChart">
+
+        </canvas>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         PROPERTY PERFORMANCE TABLE
+    ========================== -->
+
+    <section class="property-table-card">
+
+
+      <div class="table-header">
+
+        <div>
+
+          <span class="chart-label">
+            PROPERTY PORTFOLIO
+          </span>
+
+          <h2>
+            Property Overview
+          </h2>
+
+        </div>
+
+        <span class="property-count">
+
+          {{ properties.length }} Properties
+
+        </span>
+
+      </div>
+
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Property
+              </th>
+
+              <th>
+                Location
+              </th>
+
+              <th>
+                Possession
+              </th>
+
+              <th>
+                Variants
+              </th>
+
+              <th>
+                Commission
+              </th>
+
+              <th>
+                Amenities
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            <tr
+              *ngFor="let property of properties">
+
+
+              <!-- PROPERTY -->
+
+              <td>
+
+                <div class="property-info">
+
+                  <div class="property-avatar">
+                    🏢
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      {{ property.title }}
+                    </strong>
+
+                    <small>
+                      {{ property._id }}
+                    </small>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- LOCATION -->
+
+              <td>
+
+                <div class="location-info">
+
+                  <strong>
+                    {{ property.area }}
+                  </strong>
+
+                  <small
+                    *ngIf="property.subArea">
+
+                    {{ property.subArea }}
+
+                  </small>
+
+                </div>
+
+              </td>
+
+
+              <!-- POSSESSION -->
+
+              <td>
+
+                <span
+                  class="status-badge"
+                  [ngClass]="
+                    getPossessionClass(
+                      property.possessionStatus
+                    )
+                  ">
+
+                  {{ property.possessionStatus }}
+
+                </span>
+
+              </td>
+
+
+              <!-- VARIANTS -->
+
+              <td>
+
+                <span class="variant-count">
+
+                  {{ property.variants?.length || 0 }}
+
+                </span>
+
+              </td>
+
+
+              <!-- COMMISSION -->
+
+              <td>
+
+                <strong class="commission-value">
+
+                  {{ property.commissionPercentage || 0 }}%
+
+                </strong>
+
+              </td>
+
+
+              <!-- AMENITIES -->
+
+              <td>
+
+                <div class="amenities-preview">
+
+                  <span
+                    *ngFor="
+                      let amenity
+                      of property.amenities?.slice(0, 3)
+                    "
+                    class="amenity-tag">
+
+                    {{ amenity }}
+
+                  </span>
+
+                  <span
+                    *ngIf="
+                      property.amenities?.length > 3
+                    "
+                    class="more-amenities">
+
+                    +{{ property.amenities.length - 3 }}
+
+                  </span>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         EMPTY STATE
+    ========================== -->
+
+    <div
+      class="empty-state"
+      *ngIf="properties.length === 0">
+
+      <div class="empty-icon">
+        🏢
+      </div>
+
+      <h3>
+        No Properties Found
+      </h3>
+
+      <p>
+        Property analytics will appear here once properties are available.
+      </p>
+
+    </div>
+
+  </ng-container>
+
+</div>

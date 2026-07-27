@@ -1,0 +1,615 @@
+<div class="client-dashboard">
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <div class="dashboard-header">
+
+    <div>
+
+      <span class="eyebrow">
+        CRM ANALYTICS
+      </span>
+
+      <h1>
+        Client Visual Dashboard
+      </h1>
+
+      <p>
+        Analyze client leads, priorities, sources and communication preferences.
+      </p>
+
+    </div>
+
+
+    <button
+      class="refresh-btn"
+      type="button"
+      (click)="loadClients()">
+
+      ↻ Refresh
+
+    </button>
+
+  </div>
+
+
+  <!-- =====================================================
+       LOADING
+  ====================================================== -->
+
+  <div
+    class="loading-state"
+    *ngIf="loading">
+
+    <div class="loader"></div>
+
+    <p>
+      Loading client analytics...
+    </p>
+
+  </div>
+
+
+  <!-- =====================================================
+       ERROR
+  ====================================================== -->
+
+  <div
+    class="error-state"
+    *ngIf="error && !loading">
+
+    {{ error }}
+
+  </div>
+
+
+  <!-- =====================================================
+       MAIN DASHBOARD
+  ====================================================== -->
+
+  <ng-container
+    *ngIf="!loading && !error">
+
+
+    <!-- =================================================
+         KPI CARDS
+    ================================================== -->
+
+    <div class="stats-grid">
+
+
+      <!-- TOTAL CLIENTS -->
+
+      <div
+        class="stat-card total">
+
+        <div class="stat-icon">
+          👥
+        </div>
+
+        <div>
+
+          <span>
+            Total Clients
+          </span>
+
+          <strong>
+            {{ totalClients }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- HIGH PRIORITY -->
+
+      <div
+        class="stat-card high">
+
+        <div class="stat-icon">
+          🔥
+        </div>
+
+        <div>
+
+          <span>
+            High Priority
+          </span>
+
+          <strong>
+            {{ highPriorityClients }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- MEDIUM PRIORITY -->
+
+      <div
+        class="stat-card medium">
+
+        <div class="stat-icon">
+          ⚡
+        </div>
+
+        <div>
+
+          <span>
+            Medium Priority
+          </span>
+
+          <strong>
+            {{ mediumPriorityClients }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- LOW PRIORITY -->
+
+      <div
+        class="stat-card low">
+
+        <div class="stat-icon">
+          📌
+        </div>
+
+        <div>
+
+          <span>
+            Low Priority
+          </span>
+
+          <strong>
+            {{ lowPriorityClients }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         CHART GRID
+    ================================================== -->
+
+    <div class="charts-grid">
+
+
+      <!-- =================================================
+           PRIORITY CHART
+      ================================================== -->
+
+      <section
+        class="chart-card">
+
+
+        <div
+          class="chart-header">
+
+
+          <div>
+
+            <span
+              class="chart-label">
+
+              CLIENT PRIORITY
+
+            </span>
+
+
+            <h2>
+              Priority Distribution
+            </h2>
+
+          </div>
+
+
+          <span
+            class="chart-icon">
+
+            🎯
+
+          </span>
+
+
+        </div>
+
+
+        <div
+          class="chart-container">
+
+
+          <canvas
+            id="priorityChart">
+
+          </canvas>
+
+
+        </div>
+
+
+      </section>
+
+
+      <!-- =================================================
+           LEAD SOURCE CHART
+      ================================================== -->
+
+      <section
+        class="chart-card">
+
+
+        <div
+          class="chart-header">
+
+
+          <div>
+
+            <span
+              class="chart-label">
+
+              LEAD GENERATION
+
+            </span>
+
+
+            <h2>
+              Lead Sources
+            </h2>
+
+          </div>
+
+
+          <span
+            class="chart-icon">
+
+            📈
+
+          </span>
+
+
+        </div>
+
+
+        <div
+          class="chart-container">
+
+
+          <canvas
+            id="leadSourceChart">
+
+          </canvas>
+
+
+        </div>
+
+
+      </section>
+
+
+      <!-- =================================================
+           COMMUNICATION CHART
+      ================================================== -->
+
+      <section
+        class="chart-card">
+
+
+        <div
+          class="chart-header">
+
+
+          <div>
+
+            <span
+              class="chart-label">
+
+              COMMUNICATION
+
+            </span>
+
+
+            <h2>
+              Preferred Communication
+            </h2>
+
+          </div>
+
+
+          <span
+            class="chart-icon">
+
+            💬
+
+          </span>
+
+
+        </div>
+
+
+        <div
+          class="chart-container">
+
+
+          <canvas
+            id="communicationChart">
+
+          </canvas>
+
+
+        </div>
+
+
+      </section>
+
+
+      <!-- =================================================
+           TIMELINE CHART
+      ================================================== -->
+
+      <section
+        class="chart-card">
+
+
+        <div
+          class="chart-header">
+
+
+          <div>
+
+            <span
+              class="chart-label">
+
+              CONVERSION TIMELINE
+
+            </span>
+
+
+            <h2>
+              Client Timeline
+            </h2>
+
+          </div>
+
+
+          <span
+            class="chart-icon">
+
+            ⏱️
+
+          </span>
+
+
+        </div>
+
+
+        <div
+          class="chart-container">
+
+
+          <canvas
+            id="timelineChart">
+
+          </canvas>
+
+
+        </div>
+
+
+      </section>
+
+
+    </div>
+
+
+    <!-- =================================================
+         BOTTOM INSIGHTS
+    ================================================== -->
+
+    <div class="bottom-grid">
+
+
+      <!-- =================================================
+           LOCATION ANALYTICS
+      ================================================== -->
+
+      <section
+        class="insight-card">
+
+
+        <div
+          class="insight-header">
+
+
+          <div>
+
+            <span
+              class="chart-label">
+
+              LOCATION ANALYTICS
+
+            </span>
+
+
+            <h2>
+              Preferred Locations
+            </h2>
+
+          </div>
+
+
+          <span>
+            📍
+          </span>
+
+
+        </div>
+
+
+        <div
+          class="progress-list">
+
+
+          <div
+            class="progress-item"
+            *ngFor="let item of locationStats">
+
+
+            <div
+              class="progress-info">
+
+
+              <span>
+                {{ item.name }}
+              </span>
+
+
+              <strong>
+                {{ item.count }}
+              </strong>
+
+
+            </div>
+
+
+            <div
+              class="progress-bar">
+
+
+              <span
+                [style.width.%]="item.percentage">
+
+              </span>
+
+
+            </div>
+
+
+          </div>
+
+
+          <!-- EMPTY STATE -->
+
+          <div
+            class="empty-state"
+            *ngIf="locationStats.length === 0">
+
+            No location data available.
+
+          </div>
+
+
+        </div>
+
+
+      </section>
+
+
+      <!-- =================================================
+           REQUIREMENTS
+      ================================================== -->
+
+      <section
+        class="insight-card">
+
+
+        <div
+          class="insight-header">
+
+
+          <div>
+
+            <span
+              class="chart-label">
+
+              CLIENT REQUIREMENTS
+
+            </span>
+
+
+            <h2>
+              Top Requirements
+            </h2>
+
+          </div>
+
+
+          <span>
+            🏠
+          </span>
+
+
+        </div>
+
+
+        <div
+          class="requirement-list">
+
+
+          <div
+            class="requirement-item"
+            *ngFor="let item of requirementStats">
+
+
+            <span
+              class="requirement-icon">
+
+              ✓
+
+            </span>
+
+
+            <div>
+
+
+              <strong>
+                {{ item.name }}
+              </strong>
+
+
+              <small>
+                {{ item.count }} clients
+              </small>
+
+
+            </div>
+
+
+          </div>
+
+
+          <!-- EMPTY STATE -->
+
+          <div
+            class="empty-state"
+            *ngIf="requirementStats.length === 0">
+
+            No requirement data available.
+
+          </div>
+
+
+        </div>
+
+
+      </section>
+
+
+    </div>
+
+
+  </ng-container>
+
+
+</div>

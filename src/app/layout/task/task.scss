@@ -1,0 +1,160 @@
+// =====================================================================
+// AbhiHomes CRM — Task Module Shell (Top Bar + Outlet)
+// -----------------------------------------------------------------------
+// Same top-bar + segmented-tab system as the Deals shell, carrying the
+// Task module's own identity (amber → pink, matching the Tasks card on
+// the home dashboard) instead of Deal's emerald. One difference: four
+// tabs instead of three, so the mobile icon-only fallback matters even
+// more here to keep everything on one row without crowding.
+// =====================================================================
+
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
+
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
+
+$amber: #f79009; $amber-bg: #fff3d9; $amber-deep: #b54708;
+$pink: #ee46bc;
+
+$radius-lg: 20px;
+$radius-md: 12px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin tablet { @media (max-width: 860px) { @content; } }
+
+.task-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: $canvas;
+  font-family: $font-body;
+  color: $ink;
+}
+
+// =======================================================================
+// HEADER
+// =======================================================================
+
+.task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 14px clamp(16px, 4vw, 32px);
+  background: $white;
+  border-bottom: 1.5px solid $hairline;
+  box-shadow: $shadow-soft;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  @include tablet { flex-direction: column; align-items: stretch; gap: 14px; }
+}
+
+.task-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+
+  .task-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, $amber, $pink);
+    color: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: $font-display;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0;
+    color: $ink;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  span {
+    display: block;
+    font-size: 0.78rem;
+    color: $ink-faint;
+    font-weight: 600;
+    white-space: nowrap;
+
+    @include mobile { display: none; }
+  }
+}
+
+// =======================================================================
+// NAVIGATION — segmented tab switcher (4 tabs)
+// =======================================================================
+
+.task-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: $canvas;
+  border: 1.5px solid $hairline;
+  border-radius: 999px;
+  padding: 4px;
+  flex-shrink: 0;
+
+  @include tablet { width: 100%; }
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: $ink-soft;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.25s $ease, color 0.25s $ease, box-shadow 0.25s $ease;
+
+    span:first-child { font-size: 0.98rem; }
+
+    @include tablet { flex: 1; }
+
+    @include mobile {
+      span:not(:first-child) { display: none; }
+      padding: 10px 6px;
+    }
+
+    &:hover:not(.active) { color: $ink; }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+
+    &.active {
+      background: $white;
+      color: $amber-deep;
+      box-shadow: $shadow-soft;
+    }
+  }
+}
+
+// =======================================================================
+// CONTENT
+// =======================================================================
+
+.task-content {
+  flex: 1;
+  padding: clamp(16px, 4vw, 32px);
+}

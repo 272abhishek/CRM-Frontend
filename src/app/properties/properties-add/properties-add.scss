@@ -1,487 +1,415 @@
-/* =====================================
-   Add Property - CRM Form
-===================================== */
+// =====================================================================
+// AbhiHomes CRM — Add New Property
+// -----------------------------------------------------------------------
+// Property's identity (blue → violet) carries the accents here. The
+// tricky part of this form isn't styling inputs — it's the three
+// FormArrays: Builder Promises and Amenities are simple repeating rows,
+// but Variants nests a full mini-form (6 fields incl. 2 checkboxes) per
+// item. Since the HTML gives each variant div `[formGroupName]` but no
+// visible index, I used a CSS counter to auto-number the cards
+// ("Variant 1", "Variant 2"...) — a small but very Instagram-esque
+// touch (numbered story highlights) that needed zero markup changes.
+// =====================================================================
+
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
+
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
+$danger: #e0334f;
+$danger-bg: #fde8ea;
+
+$hues: #ff6b47, #2e90fa, #8b5cf6, #12b76a, #f79009, #ee46bc;
+
+$blue: #2e90fa;    $blue-bg: #e5f2ff;    $blue-deep: #155ea8;
+$violet: #8b5cf6;  $violet-bg: #f1ecff;  $violet-deep: #6425c7;
+$emerald: #12b76a; $emerald-bg: #e3f9ec; $emerald-deep: #027a48;
+$amber: #f79009;   $amber-bg: #fff3d9;   $amber-deep: #b54708;
+
+$radius-lg: 24px;
+$radius-md: 12px;
+$radius-sm: 9px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin wide { @media (min-width: 700px) { @content; } }
+
+// ---------------------------------------------------------------------
+// Card shell
+// ---------------------------------------------------------------------
 
 :host {
   display: block;
-  min-height: 100vh;
-  padding: 32px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc 0%,
-      #eef2ff 100%
-    );
-
-  font-family:
-    "Inter",
-    "Segoe UI",
-    sans-serif;
-
-  color: #1e293b;
+  max-width: 820px;
+  margin: clamp(16px, 4vw, 40px) auto;
+  padding: clamp(24px, 4vw, 40px);
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+  font-family: $font-body;
+  color: $ink;
 }
-
-/* =====================================
-   Page Heading
-===================================== */
 
 h2 {
-  max-width: 1100px;
-  margin: 0 auto 26px;
+  font-family: $font-display;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: $ink;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px;
 
-  font-size: 30px;
-  font-weight: 750;
-  letter-spacing: -0.6px;
-
-  color: #111827;
+  &::after {
+    content: '';
+    display: block;
+    width: 42px;
+    height: 4px;
+    margin-top: 12px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, $blue, $violet);
+  }
 }
 
-/* =====================================
-   Main Form Card
-===================================== */
+// =======================================================================
+// MAIN FIELDS (Title, Address, Area, Sub Area, Possession, Commission %)
+// =======================================================================
 
 form {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 32px;
-
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 24px;
+  grid-template-columns: 1fr;
+  gap: 4px 20px;
 
-  background: rgba(255, 255, 255, 0.96);
+  @include wide {
+    grid-template-columns: repeat(2, max-content 1fr);
+    align-items: start;
+    row-gap: 16px;
+  }
 
-  border: 1px solid #e5e7eb;
-  border-radius: 22px;
+  // top-level field labels (direct children of the form)
+  > label {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: $ink-soft;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
 
-  box-shadow:
-    0 22px 50px rgba(15, 23, 42, 0.08),
-    0 5px 16px rgba(15, 23, 42, 0.04);
+    @include wide { margin-top: 8px; align-self: center; }
+
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  }
+
+  > input, > select {
+    font-family: $font-body;
+    font-size: 0.95rem;
+    color: $ink;
+    background: $canvas;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-md;
+    padding: 11px 14px;
+    width: 100%;
+    transition: border-color 0.25s $ease, box-shadow 0.25s $ease, background 0.25s $ease;
+
+    &:hover { border-color: darken($hairline, 8%); }
+    &:focus { outline: none; background: $white; }
+  }
+
+  > select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B6357' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  // field-level error text — top-level divs that are NOT one of the
+  // three FormArray wrappers
+  > div:not([formarrayname]) {
+    grid-column: 1 / -1;
+    font-size: 0.78rem;
+    color: $danger;
+    font-weight: 500;
+    margin: -4px 0 4px;
+  }
 }
 
-/* =====================================
-   Labels
-===================================== */
+// cycle a hue per main field (6 fields, one pass through the palette)
+@for $i from 1 through 6 {
+  $hue: nth($hues, $i);
 
-label {
-  display: block;
+  form > label:nth-of-type(#{$i}) {
+    &::before { background: $hue; }
 
-  margin-bottom: -10px;
-
-  font-size: 13px;
-  font-weight: 650;
-
-  color: #475569;
+    & + input:focus,
+    & + select:focus {
+      border-color: $hue;
+      box-shadow: 0 0 0 4px rgba($hue, 0.16);
+    }
+  }
 }
 
-/* =====================================
-   Inputs / Select
-===================================== */
-
-input,
-select {
-  width: 100%;
-  box-sizing: border-box;
-
-  padding: 13px 15px;
-
-  border: 1px solid #dbe1ea;
-  border-radius: 10px;
-
-  background: #ffffff;
-
-  color: #1e293b;
-
-  font-family: inherit;
-  font-size: 14px;
-
-  outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-
-input:hover,
-select:hover {
-  border-color: #a5b4fc;
-}
-
-input:focus,
-select:focus {
-  border-color: #4f46e5;
-
-  box-shadow:
-    0 0 0 4px rgba(79, 70, 229, 0.12);
-}
-
-/* =====================================
-   Validation Error
-===================================== */
-
-div[style*="color:red"],
-div[ng-reflect-ng-if] {
-  color: #dc2626 !important;
-
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/* =====================================
-   Section Headings
-===================================== */
+// =======================================================================
+// SECTION HEADINGS (Builder Promises / Amenities / Variants)
+// =======================================================================
 
 h3 {
   grid-column: 1 / -1;
-
-  margin: 20px 0 0;
-  padding-bottom: 10px;
-
-  font-size: 18px;
+  font-family: $font-display;
+  font-size: 1rem;
   font-weight: 700;
+  margin: 28px 0 14px;
+  padding-top: 20px;
+  border-top: 1.5px solid $hairline;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
-  color: #111827;
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
 
-  border-bottom: 1px solid #e5e7eb;
-
-  position: relative;
+  &:nth-of-type(1) { color: $violet-deep; &::before { background: $violet; } }
+  &:nth-of-type(2) { color: $emerald-deep; &::before { background: $emerald; } }
+  &:nth-of-type(3) { color: $amber-deep; &::before { background: $amber; } }
 }
 
-h3::before {
-  content: "";
-
-  display: inline-block;
-
-  width: 4px;
-  height: 19px;
-
-  margin-right: 9px;
-
-  vertical-align: -3px;
-
-  border-radius: 10px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #4f46e5,
-      #7c3aed
-    );
-}
-
-/* =====================================
-   Builder Promises & Amenities
-===================================== */
-
-div[formArrayName="builderPromises"],
-div[formArrayName="amenities"] {
+// generic "add row" button used for Promises / Amenities / Variants
+form button[type='button'] {
   grid-column: 1 / -1;
+  justify-self: start;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: $ink-soft;
+  background: $canvas;
+  border: 1.5px dashed $hairline;
+  border-radius: 999px;
+  padding: 9px 18px;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: border-color 0.25s $ease, color 0.25s $ease, background 0.25s $ease;
 
+  &:hover { border-color: $blue; color: $blue-deep; background: $blue-bg; border-style: solid; }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+}
+
+// =======================================================================
+// BUILDER PROMISES / AMENITIES — simple repeating rows
+// =======================================================================
+
+div[formarrayname='builderPromises'],
+div[formarrayname='amenities'] {
+  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 
-  padding: 18px;
+  // each repeated row
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-  border-radius: 14px;
+    input {
+      flex: 1;
+      font-family: $font-body;
+      font-size: 0.92rem;
+      color: $ink;
+      background: $canvas;
+      border: 1.5px solid $hairline;
+      border-radius: $radius-sm;
+      padding: 10px 14px;
+      transition: border-color 0.25s $ease, box-shadow 0.25s $ease;
 
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
+      &:hover { border-color: darken($hairline, 8%); }
+      &:focus { outline: none; background: $white; }
+    }
+  }
 }
 
-/* Dynamic Inputs */
-
-div[formArrayName="builderPromises"] input,
-div[formArrayName="amenities"] input {
-  background: #ffffff;
+div[formarrayname='builderPromises'] > div input:focus {
+  border-color: $violet;
+  box-shadow: 0 0 0 4px rgba($violet, 0.14);
 }
 
-/* =====================================
-   Add Promise / Add Amenity Buttons
-===================================== */
-
-div[formArrayName="builderPromises"] button,
-div[formArrayName="amenities"] button {
-  align-self: flex-start;
-
-  padding: 10px 15px;
-
-  border: 1px dashed #818cf8;
-  border-radius: 9px;
-
-  background: #eef2ff;
-
-  color: #4338ca;
-
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 650;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+div[formarrayname='amenities'] > div input:focus {
+  border-color: $emerald;
+  box-shadow: 0 0 0 4px rgba($emerald, 0.14);
 }
 
-div[formArrayName="builderPromises"] button:hover,
-div[formArrayName="amenities"] button:hover {
-  background: #e0e7ff;
-  transform: translateY(-2px);
+// numbered bullet in front of each promise/amenity row
+div[formarrayname='builderPromises'],
+div[formarrayname='amenities'] {
+  counter-reset: row;
+
+  > div {
+    counter-increment: row;
+
+    &::before {
+      content: counter(row);
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+  }
 }
 
-/* =====================================
-   Variants Section
-===================================== */
+div[formarrayname='builderPromises'] > div::before { background: $violet-bg; color: $violet-deep; }
+div[formarrayname='amenities'] > div::before { background: $emerald-bg; color: $emerald-deep; }
 
-div[formArrayName="variants"] {
+// =======================================================================
+// VARIANTS — auto-numbered mini-form cards
+// =======================================================================
+
+div[formarrayname='variants'] {
   grid-column: 1 / -1;
-
   display: flex;
   flex-direction: column;
   gap: 16px;
-
-  padding: 20px;
-
-  border-radius: 16px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc,
-      #eef2ff
-    );
-
-  border: 1px solid #dbeafe;
+  counter-reset: variant;
 }
 
-/* =====================================
-   Individual Variant Card
-===================================== */
-
-div[formArrayName="variants"] > div[formGroupName] {
+div[formarrayname='variants'] > div[formgroupname] {
+  counter-increment: variant;
+  position: relative;
   display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px 16px;
+  padding: 20px clamp(16px, 3vw, 24px) 18px;
+  background: $canvas;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-md;
 
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 18px;
+  @include wide { grid-template-columns: repeat(2, max-content 1fr); }
 
-  padding: 20px;
-
-  background: #ffffff;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-
-  box-shadow:
-    0 5px 15px rgba(15, 23, 42, 0.04);
-}
-
-/* Variant Labels */
-
-div[formArrayName="variants"] > div[formGroupName] label {
-  margin-bottom: -8px;
-}
-
-/* =====================================
-   Checkbox Fields
-===================================== */
-
-div[formArrayName="variants"] input[type="checkbox"] {
-  width: 19px;
-  height: 19px;
-
-  cursor: pointer;
-
-  accent-color: #4f46e5;
-}
-
-/* =====================================
-   Add Variant Button
-===================================== */
-
-div[formArrayName="variants"] > button {
-  align-self: flex-start;
-
-  padding: 11px 18px;
-
-  border: none;
-  border-radius: 10px;
-
-  background: #e0e7ff;
-
-  color: #4338ca;
-
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-div[formArrayName="variants"] > button:hover {
-  background: #c7d2fe;
-  transform: translateY(-2px);
-}
-
-/* =====================================
-   No Variant Error
-===================================== */
-
-div[formArrayName="variants"] > div[style*="color:red"] {
-  padding: 10px 12px;
-
-  border-radius: 8px;
-
-  background: #fef2f2;
-
-  color: #dc2626 !important;
-
-  font-size: 13px;
-}
-
-/* =====================================
-   Create Property Button
-===================================== */
-
-button[type="submit"] {
-  grid-column: 1 / -1;
-
-  width: 100%;
-
-  margin-top: 10px;
-  padding: 15px 20px;
-
-  border: none;
-  border-radius: 11px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #4f46e5,
-      #7c3aed
-    );
-
-  color: #ffffff;
-
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 10px 22px rgba(79, 70, 229, 0.25);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease;
-}
-
-button[type="submit"]:hover:not(:disabled) {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 14px 28px rgba(79, 70, 229, 0.32);
-
-  filter: brightness(1.05);
-}
-
-button[type="submit"]:disabled {
-  cursor: not-allowed;
-
-  opacity: 0.55;
-
-  box-shadow: none;
-}
-
-/* =====================================
-   Tablet
-===================================== */
-
-@media (max-width: 768px) {
-
-  :host {
-    padding: 24px 18px;
-  }
-
-  h2 {
-    font-size: 25px;
-  }
-
-  form {
-    grid-template-columns: 1fr;
-
-    padding: 24px;
-
-    gap: 17px;
-  }
-
-  div[formArrayName="variants"]
-  > div[formGroupName] {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* =====================================
-   Mobile
-===================================== */
-
-@media (max-width: 480px) {
-
-  :host {
-    padding: 14px 10px;
-  }
-
-  h2 {
-    margin-bottom: 18px;
-
-    font-size: 22px;
-  }
-
-  form {
-    padding: 18px 15px;
-
-    border-radius: 16px;
-
-    gap: 15px;
+  // auto-generated "Variant N" title
+  &::before {
+    content: 'Variant ' counter(variant);
+    grid-column: 1 / -1;
+    font-family: $font-display;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $blue-deep;
+    margin-bottom: 6px;
   }
 
   label {
-    font-size: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $ink-soft;
+    margin-top: 10px;
+
+    @include wide { margin-top: 0; align-self: center; }
   }
 
-  input,
-  select {
-    padding: 12px 13px;
+  input[type='number'] {
+    font-family: $font-body;
+    font-size: 0.92rem;
+    color: $ink;
+    background: $white;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-sm;
+    padding: 10px 12px;
+    width: 100%;
 
-    font-size: 14px;
+    &:hover { border-color: darken($hairline, 8%); }
+    &:focus {
+      outline: none;
+      border-color: $blue;
+      box-shadow: 0 0 0 4px rgba($blue, 0.14);
+    }
   }
 
-  h3 {
-    font-size: 16px;
+  // the two checkboxes (Master Bedroom / Modular Kitchen) — bigger,
+  // custom accent, not stretched to fill the grid cell
+  input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    justify-self: start;
+    accent-color: $violet;
+    cursor: pointer;
+    margin-top: 6px;
+
+    @include wide { margin-top: 0; }
+  }
+}
+
+// =======================================================================
+// VARIANTS — "at least one required" warning
+// =======================================================================
+
+div[formarrayname='variants'] > div:not([formgroupname]) {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: $danger !important;
+  background: $danger-bg;
+  border: 1px solid rgba($danger, 0.25);
+  border-radius: $radius-sm;
+  padding: 12px 16px;
+  margin-top: 4px;
+
+  &::before { content: '⚠️'; }
+}
+
+// =======================================================================
+// SUBMIT
+// =======================================================================
+
+form > button[type='submit'] {
+  grid-column: 1 / -1;
+  margin-top: 24px;
+  height: 50px;
+  border: none;
+  border-radius: $radius-md;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 1rem;
+  color: $white;
+  background: linear-gradient(135deg, $blue, $violet);
+  box-shadow: 0 14px 26px -10px rgba($violet, 0.5);
+  cursor: pointer;
+  transition: transform 0.25s $ease, box-shadow 0.25s $ease, opacity 0.25s $ease;
+
+  &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 18px 32px -8px rgba($violet, 0.58); }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 3px; }
+
+  &:disabled {
+    background: $hairline;
+    color: $ink-faint;
+    box-shadow: none;
+    cursor: not-allowed;
   }
 
-  div[formArrayName="builderPromises"],
-  div[formArrayName="amenities"],
-  div[formArrayName="variants"] {
-    padding: 14px;
-  }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
+}
 
-  div[formArrayName="variants"]
-  > div[formGroupName] {
-    padding: 15px;
-  }
-
-  button[type="submit"] {
-    padding: 13px;
-
-    font-size: 14px;
-  }
+@include mobile {
+  :host { margin: 0; border-radius: 0; border-inline: none; }
 }

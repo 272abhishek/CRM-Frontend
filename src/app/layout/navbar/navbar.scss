@@ -1,0 +1,157 @@
+// =====================================================================
+// AbhiHomes CRM — Main Navigation
+// -----------------------------------------------------------------------
+// Same design language as the home dashboard: warm paper canvas, one
+// pastel + accent pair per link (so Login/Register/Profile/Home each
+// carry their own color, the way Instagram gives every story ring its
+// own hue), Sora for the wordmark-weight bits, Inter for labels.
+//
+// Desktop → a floating "pill" navbar, blurred glass, centered.
+// Mobile   → converts to an Instagram-style fixed bottom tab bar with
+//            icon + label, safe-area aware.
+// =====================================================================
+
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
+
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
+
+// one pastel/accent pair per nav link, reused from the same palette
+// family as the module cards — Login↔coral, Register↔violet,
+// Profile↔blue, Home↔emerald
+$nav-links: (
+  1: (icon: '🔐', bg: #ffede4, accent: #ff6b47, deep: #d84315),
+  2: (icon: '📝', bg: #f1ecff, accent: #8b5cf6, deep: #6425c7),
+  3: (icon: '👤', bg: #e5f2ff, accent: #2e90fa, deep: #155ea8),
+  4: (icon: '🏠', bg: #e3f9ec, accent: #12b76a, deep: #027a48),
+);
+
+$radius-pill: 999px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$shadow-lift: 0 10px 20px -6px rgba(24, 20, 15, 0.10), 0 24px 48px -16px rgba(24, 20, 15, 0.16);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+
+.main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  margin: 18px auto;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1.5px solid $hairline;
+  border-radius: $radius-pill;
+  box-shadow: $shadow-soft;
+  font-family: $font-body;
+
+  a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    border-radius: $radius-pill;
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: $ink-soft;
+    text-decoration: none;
+    text-transform: capitalize;
+    white-space: nowrap;
+    transition: background 0.3s $ease, color 0.3s $ease, transform 0.25s $ease;
+
+    // decorative icon per link, matching each link's own color —
+    // content is generated so the HTML stays plain text
+    &::before {
+      font-size: 1rem;
+      line-height: 1;
+      transform: translateY(-1px);
+    }
+
+    &:hover { transform: translateY(-2px); }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+      &:hover { transform: none; }
+    }
+
+    &:focus-visible {
+      outline: 2.5px solid $ink;
+      outline-offset: 2px;
+    }
+
+    // active route (Angular's routerLinkActive default class)
+    &.router-link-active,
+    &.is-active {
+      color: $white;
+    }
+  }
+
+  // wire each link's pastel identity — hover tint, active fill, icon glyph
+  @each $i, $vals in $nav-links {
+    a:nth-of-type(#{$i}) {
+      &::before { content: map-get($vals, icon); }
+
+      &:hover {
+        background: map-get($vals, bg);
+        color: map-get($vals, deep);
+      }
+
+      &.router-link-active,
+      &.is-active {
+        background: map-get($vals, accent);
+        box-shadow: 0 8px 16px -6px rgba(map-get($vals, accent), 0.55);
+      }
+    }
+  }
+}
+
+// -----------------------------------------------------------------------
+// Mobile: Instagram-style fixed bottom tab bar
+// -----------------------------------------------------------------------
+
+@include mobile {
+  .main-nav {
+    position: fixed;
+    inset: auto 0 0 0;
+    top: auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+    border-radius: 0;
+    border: none;
+    border-top: 1.5px solid $hairline;
+    justify-content: space-around;
+    gap: 0;
+
+    a {
+      flex: 1;
+      flex-direction: column;
+      gap: 3px;
+      padding: 6px 4px;
+      border-radius: 14px;
+      font-size: 0.68rem;
+      font-weight: 700;
+
+      &::before { font-size: 1.2rem; }
+
+      &:hover { transform: none; }
+    }
+  }
+
+  // give the page room so content doesn't sit under the fixed bar
+  body { padding-bottom: 74px; }
+}

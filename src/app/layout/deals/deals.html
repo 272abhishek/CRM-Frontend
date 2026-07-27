@@ -1,0 +1,146 @@
+<div class="deal-layout">
+
+
+  <!-- =========================
+       DEAL HEADER
+  ========================== -->
+
+  <aside class="deal-sidebar">
+
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        🤝
+      </div>
+
+      <div>
+
+        <h2>
+          Deal Management
+        </h2>
+
+        <span>
+          Manage and analyze your deals
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <nav class="deal-nav">
+
+
+      <!-- DEALS -->
+
+      <a
+        routerLink="/deals"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+
+        <span>📋</span>
+
+        <span>
+          All Deals
+        </span>
+
+      </a>
+
+
+      <!-- ADD DEAL -->
+
+      <a
+        routerLink="/deals/add"
+        routerLinkActive="active">
+
+        <span>➕</span>
+
+        <span>
+          Add Deal
+        </span>
+
+      </a>
+
+
+      <!-- ANALYTICS -->
+
+      <a
+        routerLink="/deals/analytics"
+        routerLinkActive="active">
+
+        <span>📊</span>
+
+        <span>
+          Analytics
+        </span>
+
+      </a>
+<div class="sidebar-footer">
+
+      <a routerLink="/profile">
+
+        <span>👤</span>
+        Profile
+
+      </a>
+
+    </div>
+
+    </nav>
+</aside>
+
+ 
+ <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
+  <main class="client-main">
+
+    <!-- TOP HEADER -->
+
+    <header class="deal-header">
+
+      <div>
+
+        <span class="eyebrow">
+          CRM / DEALS
+        </span>
+
+        <h1>
+         Deals Management
+        </h1>
+
+      </div>
+
+
+      <div class="header-actions">
+
+        <a
+          routerLink="/deals/add"
+          class="add-client-btn">
+
+          <span>＋</span>
+          Add Client
+
+        </a>
+
+      </div>
+
+    </header>
+
+  <!-- =========================
+       CONTENT
+  ========================== -->
+
+  <main class="deal-content">
+
+    <router-outlet></router-outlet>
+
+  </main>
+
+

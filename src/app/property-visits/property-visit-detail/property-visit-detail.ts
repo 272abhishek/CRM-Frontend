@@ -1,41 +1,30 @@
+// src/app/property-visits/property-visit-detail/property-visit-detail.ts
+
 import {
-
   ChangeDetectorRef,
-
   Component,
-
   OnInit
-
 } from '@angular/core';
 
-
 import {
-
   ActivatedRoute,
-
   RouterModule
-
 } from '@angular/router';
 
-
 import {
-
   CommonModule
-
 } from '@angular/common';
 
-
 import {
-
-  PropertyVisit
-
+  PropertyVisit,
+  VisitClient,
+  VisitProperty,
+  VisitUser,
+  VisitDeal
 } from '../propertyInterface';
 
-
 import {
-
   PropertyVisitService
-
 } from '../property-visit';
 
 
@@ -44,10 +33,8 @@ import {
   selector:
     'app-property-visit-detail',
 
-
   standalone:
     true,
-
 
   imports: [
 
@@ -57,10 +44,8 @@ import {
 
   ],
 
-
   templateUrl:
     './property-visit-detail.html',
-
 
   styleUrls: [
 
@@ -118,7 +103,6 @@ implements OnInit {
 
   ngOnInit(): void {
 
-
     const id =
       this.route
 
@@ -131,17 +115,12 @@ implements OnInit {
 
     if (!id) {
 
-
       this.loading =
         false;
 
-
       alert(
-
         'Visit ID missing'
-
       );
-
 
       return;
 
@@ -164,7 +143,6 @@ implements OnInit {
 
   ): void {
 
-
     this.loading =
       true;
 
@@ -176,45 +154,43 @@ implements OnInit {
       .subscribe({
 
         next:
-          (res: any) => {
 
+          (response: any) => {
 
             console.log(
 
               'VISIT DETAIL RESPONSE:',
 
-              res
+              response
 
             );
 
 
-            // Backend response:
-            // { data: visit }
-
             this.visit =
-              res?.data || res;
-            
+
+              response?.data ||
+
+              response;
+
 
             this.loading =
               false;
 
 
-            this.cdr
-
-              .detectChanges();
+            this.cdr.detectChanges();
 
           },
 
 
         error:
-          (err) => {
 
+          (error) => {
 
             console.error(
 
               'GET VISIT DETAIL ERROR:',
 
-              err
+              error
 
             );
 
@@ -225,7 +201,7 @@ implements OnInit {
 
             alert(
 
-              err.error?.message ||
+              error.error?.message ||
 
               'Failed to load visit'
 
@@ -239,26 +215,137 @@ implements OnInit {
 
 
   // =====================================================
-  // CHECK POPULATED OBJECT
+  // CLIENT HELPERS
   // =====================================================
 
-  isPopulatedObject(
+  getClient():
 
-    value:
-      any
+    VisitClient | null {
 
-  ): boolean {
+    if (
+
+      !this.visit ||
+
+      typeof this.visit.clientId === 'string'
+
+    ) {
+
+      return null;
+
+    }
 
 
-    return (
+    return this.visit.clientId;
 
-      value !== null &&
+  }
 
-      typeof value === 'object' &&
 
-      '_id' in value
+  // =====================================================
+  // PROPERTY HELPERS
+  // =====================================================
 
-    );
+  getProperty():
+
+    VisitProperty | null {
+
+    if (
+
+      !this.visit ||
+
+      typeof this.visit.propertyId === 'string'
+
+    ) {
+
+      return null;
+
+    }
+
+
+    return this.visit.propertyId;
+
+  }
+
+
+  // =====================================================
+  // SELLER HELPERS
+  // =====================================================
+
+  getSeller():
+
+    VisitUser | null {
+
+    if (
+
+      !this.visit ||
+
+      !this.visit.sellerId ||
+
+      typeof this.visit.sellerId === 'string'
+
+    ) {
+
+      return null;
+
+    }
+
+
+    return this.visit.sellerId;
+
+  }
+
+
+  // =====================================================
+  // CREATED BY
+  // =====================================================
+
+  getCreatedBy():
+
+    VisitUser | null {
+
+    if (
+
+      !this.visit ||
+
+      !this.visit.createdBy ||
+
+      typeof this.visit.createdBy === 'string'
+
+    ) {
+
+      return null;
+
+    }
+
+
+    return this.visit.createdBy;
+
+  }
+
+
+  // =====================================================
+  // DEAL
+  // =====================================================
+
+  getDeal():
+
+    VisitDeal | null {
+
+    if (
+
+      !this.visit ||
+
+      !this.visit.dealId ||
+
+      typeof this.visit.dealId === 'string'
+
+    ) {
+
+      return null;
+
+    }
+
+
+    return this.visit.dealId;
 
   }
 
@@ -273,7 +360,6 @@ implements OnInit {
       string | undefined
 
   ): string {
-
 
     if (!status) {
 

@@ -1,615 +1,466 @@
-/* =====================================================
-   GLOBAL CONTAINER
-===================================================== */
+// =====================================================================
+// AbhiHomes CRM — Client List (Filters + Grid)
+// -----------------------------------------------------------------------
+// Two moments on this page:
+// 1. A collapsible filter panel — same six-hue field cycle as the
+//    Add/Edit Client forms, so filtering feels like the same system.
+// 2. An Instagram-Explore-style card grid for the client list itself —
+//    each card gets a small gradient initial-avatar (cycling through
+//    the palette) instead of one flat color for the whole grid.
+// =====================================================================
 
-:host {
-  display: block;
-  min-height: 100vh;
-  padding: 24px clamp(14px, 4vw, 50px);
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
 
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(99, 102, 241, 0.12),
-      transparent 32%
-    ),
-    #f6f8fc;
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
 
-  font-family:
-    Inter,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
+$hues: #ff6b47, #2e90fa, #8b5cf6, #12b76a, #f79009, #ee46bc;
 
-  color: #172033;
-}
+$blue: #2e90fa; $blue-bg: #e5f2ff; $blue-deep: #155ea8;
+$amber: #f79009; $amber-bg: #fff3d9; $amber-deep: #b54708;
+$danger: #e0334f; $danger-bg: #fde8ea;
+$violet: #8b5cf6; $coral: #ff6b47;
 
-/* =====================================================
-   FILTER HEADER
-===================================================== */
+$radius-lg: 22px;
+$radius-md: 12px;
+$radius-sm: 9px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$shadow-lift: 0 10px 20px -6px rgba(24, 20, 15, 0.10), 0 24px 48px -16px rgba(24, 20, 15, 0.16);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin tablet { @media (max-width: 900px) { @content; } }
+
+:host { display: block; font-family: $font-body; color: $ink; }
+
+// =======================================================================
+// FILTER HEADER
+// =======================================================================
 
 .filter-header {
-  max-width: 1400px;
-  margin: 0 auto 18px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
+  padding: 18px 22px;
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  margin-bottom: 16px;
 
   h2 {
-    margin: 0 0 5px;
-    font-size: clamp(1.35rem, 3vw, 2rem);
+    font-family: $font-display;
+    font-size: 1.15rem;
     font-weight: 800;
-    letter-spacing: -0.5px;
+    margin: 0;
+    letter-spacing: -0.01em;
   }
 
-  span {
-    color: #667085;
-    font-size: 0.9rem;
+  > div > span {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.84rem;
+    color: $ink-faint;
   }
+
+  @include mobile { flex-direction: column; align-items: stretch; }
 }
 
 .filter-toggle-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-
-  padding: 12px 18px;
-
-  border: 1px solid #dfe3eb;
-  border-radius: 12px;
-
-  background: #ffffff;
-  color: #344054;
-
+  gap: 10px;
+  font-family: $font-body;
   font-weight: 700;
+  font-size: 0.92rem;
+  color: $ink;
+  background: $canvas;
+  border: 1.5px solid $hairline;
+  border-radius: 999px;
+  padding: 10px 18px;
   cursor: pointer;
+  transition: border-color 0.25s $ease, background 0.25s $ease;
+  flex-shrink: 0;
 
-  transition: 0.25s ease;
-
-  &:hover {
-    border-color: #6366f1;
-    color: #4f46e5;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.12);
-  }
+  &:hover { border-color: $violet; background: rgba($violet, 0.08); }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
 
   .arrow {
     display: inline-block;
-    transition: transform 0.3s ease;
+    font-size: 0.7rem;
+    color: $ink-faint;
+    transition: transform 0.3s $ease;
 
-    &.rotate {
-      transform: rotate(180deg);
-    }
+    &.rotate { transform: rotate(180deg); }
   }
 }
 
-/* =====================================================
-   FILTER PANEL
-===================================================== */
+// =======================================================================
+// FILTER PANEL
+// =======================================================================
 
 .filter-panel {
-  max-width: 1400px;
-  margin: 0 auto 32px;
-
-  padding: clamp(18px, 3vw, 30px);
-
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #e5e7eb;
-  border-radius: 20px;
-
-  box-shadow:
-    0 15px 40px rgba(15, 23, 42, 0.07),
-    0 3px 10px rgba(15, 23, 42, 0.03);
-
-  animation: filterOpen 0.3s ease;
-
-  form {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
-  }
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  padding: clamp(20px, 3vw, 28px);
+  margin-bottom: 24px;
+  animation: reveal 0.3s $ease both;
 }
 
-@keyframes filterOpen {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+@media (prefers-reduced-motion: reduce) { .filter-panel { animation: none; } }
 
-/* =====================================================
-   FILTER ITEMS
-===================================================== */
+.filter-panel form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px 18px;
+  align-items: start;
+}
 
 .filter-item {
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 
   label {
-    display: block;
-    margin-bottom: 7px;
-
-    color: #344054;
-    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
     font-weight: 700;
-  }
+    color: $ink-soft;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 
-  input,
-  select {
-    width: 100%;
-    height: 44px;
-    box-sizing: border-box;
-
-    padding: 0 12px;
-
-    border: 1px solid #d9dee8;
-    border-radius: 10px;
-
-    background: #ffffff;
-    color: #172033;
-
-    font-family: inherit;
-    font-size: 0.9rem;
-
-    outline: none;
-
-    transition:
-      border-color 0.25s ease,
-      box-shadow 0.25s ease,
-      transform 0.2s ease;
-
-    &:focus {
-      border-color: #6366f1;
-
-      box-shadow:
-        0 0 0 4px rgba(99, 102, 241, 0.1);
-
-      transform: translateY(-1px);
+    &::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
   }
 
-  input::placeholder {
-    color: #98a2b3;
+  input, select {
+    font-family: $font-body;
+    font-size: 0.92rem;
+    color: $ink;
+    background: $canvas;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-sm;
+    padding: 10px 12px;
+    width: 100%;
+    transition: border-color 0.25s $ease, box-shadow 0.25s $ease, background 0.25s $ease;
+
+    &::placeholder { color: $ink-faint; }
+    &:hover { border-color: darken($hairline, 8%); }
+    &:focus { outline: none; background: $white; }
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B6357' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
   }
 }
 
-/* =====================================================
-   BUDGET RANGE
-===================================================== */
+// cycle each filter field's own hue (12 filter-items, 6 hues, repeats)
+@for $i from 1 through 12 {
+  $hue: nth($hues, (($i - 1) % 6) + 1);
+
+  .filter-item:nth-of-type(#{$i}) {
+    label::before { background: $hue; }
+
+    input:focus, select:focus {
+      border-color: $hue;
+      box-shadow: 0 0 0 3px rgba($hue, 0.15);
+    }
+  }
+}
 
 .range-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  align-items: center;
   gap: 8px;
-}
 
-/* =====================================================
-   CLEAR BUTTON
-===================================================== */
+  input { min-width: 0; }
 
-.clear-btn {
-  align-self: end;
-
-  min-height: 44px;
-
-  padding: 0 18px;
-
-  border: 1px solid #fecaca;
-  border-radius: 10px;
-
-  background: #fff1f2;
-  color: #dc2626;
-
-  font-weight: 700;
-  cursor: pointer;
-
-  transition: 0.25s ease;
-
-  &:hover {
-    background: #dc2626;
-    color: #ffffff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(220, 38, 38, 0.2);
+  // visual separator between min/max — generated, no HTML change
+  &::after {
+    content: '';
+    display: none;
   }
 }
 
-/* =====================================================
-   LIST HEADER
-===================================================== */
+.clear-btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-top: 6px;
+  background: none;
+  border: none;
+  color: $danger;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+  padding: 8px 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.25s $ease;
+
+  &:hover { text-decoration-color: $danger; }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+}
+
+// =======================================================================
+// LIST HEADER
+// =======================================================================
 
 .list-header {
-  max-width: 1400px;
-  margin: 0 auto 20px;
-
   display: flex;
   align-items: center;
   gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
 
   h2 {
-    margin: 0;
-    font-size: clamp(1.35rem, 3vw, 1.9rem);
+    font-family: $font-display;
+    font-size: 1.3rem;
     font-weight: 800;
+    margin: 0;
   }
 
-  span {
-    color: #667085;
-    font-size: 0.9rem;
+  > span {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: $ink-soft;
+    background: $canvas;
+    border: 1px solid $hairline;
+    padding: 5px 12px;
+    border-radius: 999px;
   }
 }
-
-/* =====================================================
-   ADD CLIENT BUTTON
-===================================================== */
 
 .add-btn {
   margin-left: auto;
-
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-
-  min-height: 44px;
-  padding: 0 18px;
-
-  border-radius: 10px;
-
-  background: linear-gradient(
-    135deg,
-    #6366f1,
-    #4f46e5
-  );
-
-  color: #ffffff;
-  text-decoration: none;
-
-  font-size: 0.9rem;
+  gap: 8px;
+  font-family: $font-body;
   font-weight: 700;
+  font-size: 0.92rem;
+  color: $white;
+  background: linear-gradient(135deg, $coral, $violet);
+  padding: 11px 20px;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 12px 22px -10px rgba($violet, 0.5);
+  transition: transform 0.25s $ease, box-shadow 0.25s $ease;
 
-  box-shadow:
-    0 8px 18px rgba(79, 70, 229, 0.2);
+  &:hover { transform: translateY(-2px); box-shadow: 0 16px 28px -8px rgba($violet, 0.58); }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
 
-  transition: 0.25s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 12px 24px rgba(79, 70, 229, 0.3);
-  }
+  @include mobile { margin-left: 0; width: 100%; justify-content: center; }
 }
 
-/* =====================================================
-   CLIENT LIST
-===================================================== */
+// =======================================================================
+// CLIENT CARD GRID — Explore-style
+// =======================================================================
 
 .client-list {
-  max-width: 1400px;
-  margin: 0 auto;
-
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
 }
-
-/* =====================================================
-   CLIENT CARD
-===================================================== */
 
 .card {
-  position: relative;
-
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-
-  min-height: 190px;
-  padding: 22px;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 18px;
-
-  background: #ffffff;
-
-  box-shadow:
-    0 10px 30px rgba(15, 23, 42, 0.06);
-
-  overflow: hidden;
-
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
-
-  &::before {
-    content: "";
-
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 4px;
-
-    background: linear-gradient(
-      90deg,
-      #6366f1,
-      #06b6d4
-    );
-  }
+  gap: 14px;
+  padding: 20px;
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+  transition: transform 0.3s $ease, box-shadow 0.3s $ease, border-color 0.3s $ease;
 
   &:hover {
-    transform: translateY(-6px);
-
-    border-color: rgba(99, 102, 241, 0.3);
-
-    box-shadow:
-      0 20px 40px rgba(15, 23, 42, 0.12);
+    transform: translateY(-5px);
+    box-shadow: $shadow-lift;
   }
+
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
 }
 
-/* =====================================================
-   CLIENT CONTENT
-===================================================== */
-
 .client-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
   h3 {
-    margin: 4px 0 14px;
+    font-family: $font-display;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: $ink;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-    color: #172033;
-
-    font-size: 1.2rem;
-    font-weight: 800;
+    // initial-letter avatar, generated from the first character of
+    // the heading text
+    &::before {
+      content: attr(data-initial);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: $white;
+      background: linear-gradient(135deg, $coral, $violet);
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
   }
 
   p {
-    margin: 7px 0;
+    margin: 0;
+    font-size: 0.88rem;
+    color: $ink-soft;
 
-    color: #667085;
-    font-size: 0.9rem;
-
-    strong {
-      color: #344054;
-      font-weight: 700;
-    }
+    strong { color: $ink-faint; font-weight: 600; margin-right: 4px; }
   }
 }
 
-/* =====================================================
-   ACTION BUTTONS
-===================================================== */
+// cycle the avatar gradient per card so the grid doesn't read as one
+// flat color, like Instagram Explore tiles
+@for $i from 1 through 6 {
+  $a: nth($hues, $i);
+  $b: nth($hues, (($i) % 6) + 1);
+
+  .card:nth-of-type(6n + #{$i}) .client-content h3::before {
+    background: linear-gradient(135deg, $a, $b);
+  }
+}
 
 .action-buttons {
   display: flex;
   gap: 8px;
-
-  margin-top: 20px;
+  margin-top: auto;
 
   button {
     flex: 1;
-
-    min-height: 38px;
-
-    border-radius: 9px;
-
-    font-size: 0.82rem;
+    font-family: $font-body;
     font-weight: 700;
-
+    font-size: 0.82rem;
+    padding: 9px 10px;
+    border-radius: $radius-sm;
     cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: transform 0.2s $ease, background 0.2s $ease, border-color 0.2s $ease, color 0.2s $ease;
 
-    transition: 0.25s ease;
-  }
-
-  .view-btn {
-    border: 1px solid #bfdbfe;
-    background: #eff6ff;
-    color: #2563eb;
-
-    &:hover {
-      background: #2563eb;
-      color: #ffffff;
-    }
-  }
-
-  .edit-btn {
-    border: 1px solid #fde68a;
-    background: #fffbeb;
-    color: #d97706;
-
-    &:hover {
-      background: #d97706;
-      color: #ffffff;
-    }
-  }
-
-  .delete-btn {
-    border: 1px solid #fecaca;
-    background: #fff1f2;
-    color: #dc2626;
-
-    &:hover {
-      background: #dc2626;
-      color: #ffffff;
-    }
+    &:hover { transform: translateY(-1px); }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
   }
 }
 
-/* =====================================================
-   NO RESULTS
-===================================================== */
+.view-btn {
+  background: $blue-bg;
+  color: $blue-deep;
+
+  &:hover { background: $blue; color: $white; }
+}
+
+.edit-btn {
+  background: $amber-bg;
+  color: $amber-deep;
+
+  &:hover { background: $amber; color: $white; }
+}
+
+.delete-btn {
+  background: $white;
+  color: $danger;
+  border-color: $danger-bg;
+
+  &:hover { background: $danger; color: $white; border-color: $danger; }
+}
+
+// =======================================================================
+// NO RESULTS
+// =======================================================================
 
 .no-results {
-  max-width: 1400px;
-  margin: 40px auto;
-
-  padding: 45px 20px;
-
-  border: 1px dashed #cbd5e1;
-  border-radius: 16px;
-
-  background: #ffffff;
-
-  color: #667085;
-
   text-align: center;
-  font-size: 1rem;
+  padding: 56px 24px;
+  color: $ink-faint;
+  font-size: 0.98rem;
+  background: $white;
+  border: 1.5px dashed $hairline;
+  border-radius: $radius-lg;
+
+  &::before {
+    content: '🔍';
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
 }
 
-/* =====================================================
-   PAGINATION
-===================================================== */
+// =======================================================================
+// PAGINATION
+// =======================================================================
 
 .pagination {
-  max-width: 1400px;
-  margin: 32px auto 10px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: 16px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+
+  span {
+    font-size: 0.86rem;
+    color: $ink-soft;
+    font-weight: 600;
+  }
 
   button {
-    min-width: 90px;
-    min-height: 40px;
-
-    padding: 0 16px;
-
-    border: 1px solid #d9dee8;
-    border-radius: 10px;
-
-    background: #ffffff;
-    color: #344054;
-
+    font-family: $font-body;
     font-weight: 700;
+    font-size: 0.88rem;
+    color: $ink;
+    background: $white;
+    border: 1.5px solid $hairline;
+    padding: 9px 18px;
+    border-radius: 999px;
     cursor: pointer;
+    transition: border-color 0.25s $ease, background 0.25s $ease, color 0.25s $ease;
 
-    transition: 0.25s ease;
-
-    &:hover:not(:disabled) {
-      border-color: #6366f1;
-      color: #4f46e5;
-      transform: translateY(-2px);
-    }
+    &:hover:not(:disabled) { border-color: $violet; background: rgba($violet, 0.08); color: $violet; }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
 
     &:disabled {
       opacity: 0.45;
       cursor: not-allowed;
-    }
-  }
-
-  span {
-    color: #667085;
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-}
-
-/* =====================================================
-   TABLET
-===================================================== */
-
-@media (max-width: 1100px) {
-  .filter-panel form {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .client-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 700px) {
-  :host {
-    padding: 18px 12px;
-  }
-
-  .filter-header {
-    align-items: flex-start;
-    flex-direction: column;
-
-    .filter-toggle-btn {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-
-  .filter-panel {
-    padding: 18px;
-
-    form {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-  }
-
-  .list-header {
-    flex-wrap: wrap;
-
-    .add-btn {
-      width: 100%;
-      margin-left: 0;
-    }
-  }
-
-  .client-list {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .card {
-    padding: 18px;
-  }
-
-  .action-buttons {
-    gap: 6px;
-
-    button {
-      font-size: 0.78rem;
-      padding: 0 6px;
-    }
-  }
-
-  .pagination {
-    flex-wrap: wrap;
-    gap: 12px;
-
-    span {
-      width: 100%;
-      order: -1;
-      text-align: center;
-    }
-  }
-}
-
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
-
-@media (max-width: 400px) {
-  .range-inputs {
-    grid-template-columns: 1fr;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-
-    button {
-      width: 100%;
-    }
-  }
-
-  .pagination {
-    button {
-      flex: 1;
     }
   }
 }

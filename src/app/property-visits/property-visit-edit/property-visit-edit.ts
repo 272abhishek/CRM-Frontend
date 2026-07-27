@@ -1,3 +1,4 @@
+
 // src/app/property-visits/property-visit-edit/property-visit-edit.ts
 
 import {
@@ -14,13 +15,15 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  
   Validators
 } from '@angular/forms';
 
 import {
   ActivatedRoute,
   Router,
-  RouterModule
+  RouterModule,
+  
 } from '@angular/router';
 
 import {
@@ -29,7 +32,9 @@ import {
 
 import {
   PropertyVisit,
-  VisitStatus
+  VisitStatus,
+  VisitClient,
+  VisitProperty
 } from '../propertyInterface';
 
 
@@ -61,6 +66,7 @@ import {
 
 
 export class PropertyVisitEdit
+
 implements OnInit {
 
 
@@ -85,13 +91,16 @@ implements OnInit {
   saving:
     boolean =
     false;
-
+    today = new Date()
+  .toISOString()
+  .split('T')[0];
 
   // =====================================================
-  // VISIT FORM
+  // FORM
   // =====================================================
 
   visitForm =
+
     new FormGroup({
 
       visitDate:
@@ -151,6 +160,44 @@ implements OnInit {
 
           }
 
+        ),
+
+
+      // =================================================
+      // TOKEN AMOUNT
+      // =================================================
+
+      tokenAmount:
+
+        new FormControl<number | null>(
+
+          null,
+
+          [
+
+            Validators.min(0)
+
+          ]
+
+        ),
+
+
+      // =================================================
+      // FINAL DEAL AMOUNT
+      // =================================================
+
+      amount:
+
+        new FormControl<number | null>(
+
+          null,
+
+          [
+
+            Validators.min(0)
+
+          ]
+
         )
 
     });
@@ -183,8 +230,8 @@ implements OnInit {
 
   ngOnInit(): void {
 
-
     const id =
+
       this.route
 
         .snapshot
@@ -199,16 +246,13 @@ implements OnInit {
       this.loading =
         false;
 
-
       alert(
 
         'Visit ID missing'
 
       );
 
-
       this.cdr.detectChanges();
-
 
       return;
 
@@ -231,7 +275,6 @@ implements OnInit {
 
   ): void {
 
-
     this.loading =
       true;
 
@@ -248,7 +291,6 @@ implements OnInit {
         next:
 
           (response: any) => {
-
 
             console.log(
 
@@ -294,7 +336,32 @@ implements OnInit {
 
                 visit.notes ||
 
-                ''
+                '',
+
+
+              // Existing deal values
+              // if available
+
+              tokenAmount:
+
+                (visit as any)
+
+                  .dealId
+
+                  ?.tokenAmount ??
+
+                null,
+
+
+              amount:
+
+                (visit as any)
+
+                  .dealId
+
+                  ?.amount ??
+
+                null
 
             });
 
@@ -302,8 +369,6 @@ implements OnInit {
             this.loading =
               false;
 
-
-            // Force UI update
 
             this.cdr.detectChanges();
 
@@ -313,7 +378,6 @@ implements OnInit {
         error:
 
           (error) => {
-
 
             console.error(
 
@@ -347,6 +411,58 @@ implements OnInit {
 
 
   // =====================================================
+  // CLIENT HELPER
+  // =====================================================
+
+  getClient():
+
+    VisitClient | null {
+
+    if (
+
+      !this.visit ||
+
+      typeof this.visit.clientId === 'string'
+
+    ) {
+
+      return null;
+
+    }
+
+
+    return this.visit.clientId;
+
+  }
+
+
+  // =====================================================
+  // PROPERTY HELPER
+  // =====================================================
+
+  getProperty():
+
+    VisitProperty | null {
+
+    if (
+
+      !this.visit ||
+
+      typeof this.visit.propertyId === 'string'
+
+    ) {
+
+      return null;
+
+    }
+
+
+    return this.visit.propertyId;
+
+  }
+
+
+  // =====================================================
   // DATE FORMAT
   // =====================================================
 
@@ -359,7 +475,6 @@ implements OnInit {
 
   ): string {
 
-
     if (!date) {
 
       return '';
@@ -368,6 +483,7 @@ implements OnInit {
 
 
     const parsedDate =
+
       new Date(date);
 
 
@@ -402,12 +518,15 @@ implements OnInit {
   submit(): void {
 
 
+    // =================================================
+    // FORM VALIDATION
+    // =================================================
+
     if (
 
       this.visitForm.invalid
 
     ) {
-
 
       this.visitForm
 
@@ -420,25 +539,23 @@ implements OnInit {
 
       );
 
-
       return;
 
     }
 
 
     const id =
+
       this.visit?._id;
 
 
     if (!id) {
-
 
       alert(
 
         'Visit ID missing'
 
       );
-
 
       return;
 
@@ -453,8 +570,15 @@ implements OnInit {
 
 
     const formValue =
-      this.visitForm.getRawValue();
 
+      this.visitForm
+
+        .getRawValue();
+
+
+    // =================================================
+    // PAYLOAD
+    // =================================================
 
     const payload = {
 
@@ -471,7 +595,21 @@ implements OnInit {
 
       notes:
 
-        formValue.notes
+        formValue.notes,
+
+
+      // Token amount
+
+      tokenAmount:
+
+        formValue.tokenAmount || 0,
+
+
+      // Final deal amount
+
+      amount:
+
+        formValue.amount || 0
 
     };
 
@@ -484,6 +622,10 @@ implements OnInit {
 
     );
 
+
+    // =================================================
+    // API CALL
+    // =================================================
 
     this.service
 
@@ -501,7 +643,6 @@ implements OnInit {
 
           (response) => {
 
-
             console.log(
 
               'VISIT UPDATED:',
@@ -511,18 +652,22 @@ implements OnInit {
             );
 
 
-            alert(
-
-              'Property visit updated successfully'
-
-            );
-
-
             this.saving =
               false;
 
 
             this.cdr.detectChanges();
+
+
+            alert(
+
+              formValue.status === 'Closed'
+
+                ? 'Visit closed and deal created successfully'
+
+                : 'Property visit updated successfully'
+
+            );
 
 
             this.router.navigate([
@@ -539,7 +684,6 @@ implements OnInit {
         error:
 
           (error) => {
-
 
             console.error(
 
@@ -561,6 +705,8 @@ implements OnInit {
 
               error.error?.message ||
 
+              error.error?.error ||
+
               'Failed to update visit'
 
             );
@@ -572,3 +718,4 @@ implements OnInit {
   }
 
 }
+

@@ -24,7 +24,9 @@ import {
 import {
   PropertyVisit,
   PropertyVisitQueryParams,
-  VisitStatus
+  VisitStatus,
+  VisitClient,
+  VisitProperty
 } from '../propertyInterface';
 
 import {
@@ -119,19 +121,43 @@ implements OnInit {
   // =====================================================
 
   filterForm =
+
     new FormGroup({
 
       q:
-        new FormControl<string>(''),
+        new FormControl<string>('', {
+
+          nonNullable:
+            true
+
+        }),
+
 
       clientId:
-        new FormControl<string>(''),
+        new FormControl<string>('', {
+
+          nonNullable:
+            true
+
+        }),
+
 
       propertyId:
-        new FormControl<string>(''),
+        new FormControl<string>('', {
+
+          nonNullable:
+            true
+
+        }),
+
 
       status:
-        new FormControl<string>('')
+        new FormControl<string>('', {
+
+          nonNullable:
+            true
+
+        })
 
     });
 
@@ -181,6 +207,228 @@ implements OnInit {
 
 
   // =====================================================
+  // CLIENT TYPE GUARD
+  // =====================================================
+
+  isClientObject(
+
+    clientId:
+      string |
+
+      VisitClient
+
+  ): clientId is VisitClient {
+
+
+    return (
+
+      typeof clientId ===
+
+      'object' &&
+
+      clientId !== null
+
+    );
+
+  }
+
+
+  // =====================================================
+  // PROPERTY TYPE GUARD
+  // =====================================================
+
+  isPropertyObject(
+
+    propertyId:
+      string |
+
+      VisitProperty
+
+  ): propertyId is VisitProperty {
+
+
+    return (
+
+      typeof propertyId ===
+
+      'object' &&
+
+      propertyId !== null
+
+    );
+
+  }
+
+
+  // =====================================================
+  // CLIENT NAME
+  // =====================================================
+
+  getClientName(
+
+    visit:
+      PropertyVisit
+
+  ): string {
+
+
+    if (
+
+      this.isClientObject(
+
+        visit.clientId
+
+      )
+
+    ) {
+
+
+      return (
+
+        visit.clientId.name ||
+
+        '—'
+
+      );
+
+    }
+
+
+    return (
+
+      visit.clientId ||
+
+      '—'
+
+    );
+
+  }
+
+
+  // =====================================================
+  // CLIENT PHONE
+  // =====================================================
+
+  getClientPhone(
+
+    visit:
+      PropertyVisit
+
+  ): string {
+
+
+    if (
+
+      this.isClientObject(
+
+        visit.clientId
+
+      )
+
+    ) {
+
+
+      return (
+
+        visit.clientId.phone ||
+
+        ''
+
+      );
+
+    }
+
+
+    return '';
+
+  }
+
+
+  // =====================================================
+  // PROPERTY TITLE
+  // =====================================================
+
+  getPropertyTitle(
+
+    visit:
+      PropertyVisit
+
+  ): string {
+
+
+    if (
+
+      this.isPropertyObject(
+
+        visit.propertyId
+
+      )
+
+    ) {
+
+
+      return (
+
+        visit.propertyId.title ||
+
+        '—'
+
+      );
+
+    }
+
+
+    return (
+
+      visit.propertyId ||
+
+      '—'
+
+    );
+
+  }
+
+
+  // =====================================================
+  // PROPERTY AREA
+  // =====================================================
+
+  getPropertyArea(
+
+    visit:
+      PropertyVisit
+
+  ): string {
+
+
+    if (
+
+      this.isPropertyObject(
+
+        visit.propertyId
+
+      )
+
+    ) {
+
+
+      return (
+
+        visit.propertyId.area ||
+
+        ''
+
+      );
+
+    }
+
+
+    return '';
+
+  }
+
+
+  // =====================================================
   // LOAD VISITS
   // =====================================================
 
@@ -195,11 +443,8 @@ implements OnInit {
       this.filterForm.getRawValue();
 
 
-    // =====================================================
-    // STATUS TYPE-SAFE VALUE
-    // =====================================================
-
     const status =
+
       this.isValidVisitStatus(
 
         f.status
@@ -211,11 +456,8 @@ implements OnInit {
         : undefined;
 
 
-    // =====================================================
-    // QUERY PARAMS
-    // =====================================================
-
     const params:
+
       PropertyVisitQueryParams = {
 
 
@@ -245,10 +487,6 @@ implements OnInit {
     };
 
 
-    // =====================================================
-    // API CALL
-    // =====================================================
-
     this.visitService
 
       .getVisits(params)
@@ -269,22 +507,18 @@ implements OnInit {
             );
 
 
-            // =================================================
-            // DATA
-            // =================================================
-
             this.visits =
 
-              Array.isArray(res?.data)
+              Array.isArray(
+
+                res?.data
+
+              )
 
                 ? res.data
 
                 : [];
 
-
-            // =================================================
-            // TOTAL ITEMS
-            // =================================================
 
             this.totalItems =
 
@@ -296,10 +530,6 @@ implements OnInit {
 
               );
 
-
-            // =================================================
-            // TOTAL PAGES
-            // =================================================
 
             this.totalPages =
 
@@ -357,6 +587,9 @@ implements OnInit {
               false;
 
 
+            this.cdr.detectChanges();
+
+
             alert(
 
               err.error?.message ||
@@ -373,7 +606,7 @@ implements OnInit {
 
 
   // =====================================================
-  // VISIT STATUS VALIDATOR
+  // STATUS VALIDATOR
   // =====================================================
 
   private isValidVisitStatus(
@@ -396,7 +629,11 @@ implements OnInit {
 
       'Visited',
 
+      'Interested',
+
       'Not Interested',
+
+      'Shortlisted',
 
       'Selected',
 
@@ -444,6 +681,9 @@ implements OnInit {
     this.currentPage =
       1;
 
+
+    this.loadVisits();
+
   }
 
 
@@ -482,56 +722,6 @@ implements OnInit {
 
 
   // =====================================================
-  // NEXT PAGE
-  // =====================================================
-
-  nextPage(): void {
-
-
-    if (
-
-      this.currentPage <
-
-      this.totalPages
-
-    ) {
-
-
-      this.currentPage++;
-
-
-      this.loadVisits();
-
-    }
-
-  }
-
-
-  // =====================================================
-  // PREVIOUS PAGE
-  // =====================================================
-
-  previousPage(): void {
-
-
-    if (
-
-      this.currentPage > 1
-
-    ) {
-
-
-      this.currentPage--;
-
-
-      this.loadVisits();
-
-    }
-
-  }
-
-
-  // =====================================================
   // EDIT VISIT
   // =====================================================
 
@@ -555,7 +745,7 @@ implements OnInit {
 
 
   // =====================================================
-  // VIEW DETAIL
+  // VIEW VISIT
   // =====================================================
 
   viewVisit(
@@ -598,11 +788,7 @@ implements OnInit {
       );
 
 
-    if (
-
-      !confirmed
-
-    ) {
+    if (!confirmed) {
 
       return;
 
@@ -657,6 +843,13 @@ implements OnInit {
               ) || 1;
 
 
+            this.loading =
+              false;
+
+
+            this.cdr.detectChanges();
+
+
             if (
 
               this.visits.length === 0 &&
@@ -670,17 +863,6 @@ implements OnInit {
 
 
               this.loadVisits();
-
-            }
-
-            else {
-
-
-              this.loading =
-                false;
-
-
-              this.cdr.detectChanges();
 
             }
 
@@ -703,6 +885,9 @@ implements OnInit {
 
             this.loading =
               false;
+
+
+            this.cdr.detectChanges();
 
 
             alert(

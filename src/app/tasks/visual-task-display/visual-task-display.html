@@ -1,0 +1,770 @@
+<div class="task-analytics-page">
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <div class="analytics-header">
+
+    <div>
+
+      <span class="eyebrow">
+        TASK MANAGEMENT
+      </span>
+
+      <h1>
+        Task Analytics
+      </h1>
+
+      <p>
+        Monitor task performance, priorities and workload.
+      </p>
+
+    </div>
+
+    <div class="header-status">
+
+      <span
+        class="live-dot">
+      </span>
+
+      Live Data
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       LOADING
+  ====================================================== -->
+
+  <div
+    class="loading-state"
+    *ngIf="loading">
+
+    <div
+      class="loader">
+    </div>
+
+    <p>
+      Loading task analytics...
+    </p>
+
+  </div>
+
+
+  <!-- =====================================================
+       ERROR
+  ====================================================== -->
+
+  <div
+    class="error-state"
+    *ngIf="!loading && error">
+
+    <div
+      class="error-icon">
+
+      ⚠
+
+    </div>
+
+    <div>
+
+      <h3>
+        Unable to Load Analytics
+      </h3>
+
+      <p>
+        {{ error }}
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MAIN CONTENT
+  ====================================================== -->
+
+  <ng-container
+    *ngIf="!loading && !error">
+
+
+    <!-- =================================================
+         KPI CARDS
+    ================================================== -->
+
+    <div
+      class="kpi-grid">
+
+
+      <!-- TOTAL -->
+
+      <div
+        class="kpi-card total-card">
+
+        <div
+          class="kpi-icon">
+
+          📋
+
+        </div>
+
+        <div
+          class="kpi-content">
+
+          <span>
+            Total Tasks
+          </span>
+
+          <strong>
+            {{ totalTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- PENDING -->
+
+      <div
+        class="kpi-card pending-card">
+
+        <div
+          class="kpi-icon">
+
+          ⏳
+
+        </div>
+
+        <div
+          class="kpi-content">
+
+          <span>
+            Pending
+          </span>
+
+          <strong>
+            {{ pendingTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- IN PROGRESS -->
+
+      <div
+        class="kpi-card progress-card">
+
+        <div
+          class="kpi-icon">
+
+          🔄
+
+        </div>
+
+        <div
+          class="kpi-content">
+
+          <span>
+            In Progress
+          </span>
+
+          <strong>
+            {{ inProgressTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- COMPLETED -->
+
+      <div
+        class="kpi-card completed-card">
+
+        <div
+          class="kpi-icon">
+
+          ✅
+
+        </div>
+
+        <div
+          class="kpi-content">
+
+          <span>
+            Completed
+          </span>
+
+          <strong>
+            {{ completedTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- OVERDUE -->
+
+      <div
+        class="kpi-card overdue-card">
+
+        <div
+          class="kpi-icon">
+
+          ⚠️
+
+        </div>
+
+        <div
+          class="kpi-content">
+
+          <span>
+            Overdue
+          </span>
+
+          <strong>
+            {{ overdueTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- HIGH PRIORITY -->
+
+      <div
+        class="kpi-card high-card">
+
+        <div
+          class="kpi-icon">
+
+          🔥
+
+        </div>
+
+        <div
+          class="kpi-content">
+
+          <span>
+            High Priority
+          </span>
+
+          <strong>
+            {{ highPriorityTasks }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
+         CHART GRID
+    ================================================== -->
+
+    <div
+      class="charts-grid">
+
+
+      <!-- STATUS -->
+
+      <div
+        class="chart-card">
+
+        <div
+          class="chart-header">
+
+          <div>
+
+            <h2>
+              Task Status
+            </h2>
+
+            <p>
+              Current task distribution
+            </p>
+
+          </div>
+
+          <span
+            class="chart-badge">
+
+            STATUS
+
+          </span>
+
+        </div>
+
+        <div
+          class="chart-container">
+
+          <canvas
+            id="taskStatusChart">
+          </canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- PRIORITY -->
+
+      <div
+        class="chart-card">
+
+        <div
+          class="chart-header">
+
+          <div>
+
+            <h2>
+              Task Priority
+            </h2>
+
+            <p>
+              Tasks grouped by priority
+            </p>
+
+          </div>
+
+          <span
+            class="chart-badge">
+
+            PRIORITY
+
+          </span>
+
+        </div>
+
+        <div
+          class="chart-container">
+
+          <canvas
+            id="taskPriorityChart">
+          </canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- MONTHLY -->
+
+      <div
+        class="chart-card chart-wide">
+
+        <div
+          class="chart-header">
+
+          <div>
+
+            <h2>
+              Monthly Task Creation
+            </h2>
+
+            <p>
+              Task creation trend for the last 6 months
+            </p>
+
+          </div>
+
+          <span
+            class="chart-badge">
+
+            TREND
+
+          </span>
+
+        </div>
+
+        <div
+          class="chart-container">
+
+          <canvas
+            id="taskMonthlyChart">
+          </canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- DUE DATE -->
+
+      <div
+        class="chart-card">
+
+        <div
+          class="chart-header">
+
+          <div>
+
+            <h2>
+              Due Date Overview
+            </h2>
+
+            <p>
+              Overdue and upcoming tasks
+            </p>
+
+          </div>
+
+          <span
+            class="chart-badge">
+
+            DEADLINE
+
+          </span>
+
+        </div>
+
+        <div
+          class="chart-container">
+
+          <canvas
+            id="taskDueDateChart">
+          </canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- USER -->
+
+      <div
+        class="chart-card">
+
+        <div
+          class="chart-header">
+
+          <div>
+
+            <h2>
+              Tasks by User
+            </h2>
+
+            <p>
+              Tasks created by users
+            </p>
+
+          </div>
+
+          <span
+            class="chart-badge">
+
+            USERS
+
+          </span>
+
+        </div>
+
+        <div
+          class="chart-container horizontal-chart">
+
+          <canvas
+            id="taskUserChart">
+          </canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- CLIENT -->
+
+      <div
+        class="chart-card chart-wide">
+
+        <div
+          class="chart-header">
+
+          <div>
+
+            <h2>
+              Tasks by Client
+            </h2>
+
+            <p>
+              Client-wise task distribution
+            </p>
+
+          </div>
+
+          <span
+            class="chart-badge">
+
+            CLIENTS
+
+          </span>
+
+        </div>
+
+        <div
+          class="chart-container">
+
+          <canvas
+            id="taskClientChart">
+          </canvas>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
+         TASK SUMMARY TABLE
+    ================================================== -->
+
+    <div
+      class="task-summary-card">
+
+      <div
+        class="summary-header">
+
+        <div>
+
+          <h2>
+            Recent Tasks
+          </h2>
+
+          <p>
+            Overview of your current tasks
+          </p>
+
+        </div>
+
+        <span
+          class="task-count">
+
+          {{ tasks.length }} Tasks
+
+        </span>
+
+      </div>
+
+
+      <div
+        class="table-wrapper">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Task
+              </th>
+
+              <th>
+                Client
+              </th>
+
+              <th>
+                Property
+              </th>
+
+              <th>
+                Due Date
+              </th>
+
+              <th>
+                Priority
+              </th>
+
+              <th>
+                Status
+              </th>
+
+              <th>
+                Created By
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            <tr
+              *ngFor="let task of tasks">
+
+
+              <!-- TASK -->
+
+              <td>
+
+                <div
+                  class="task-title-cell">
+
+                  <strong>
+
+                    {{ task.title }}
+
+                  </strong>
+
+
+                  <small
+                    *ngIf="task.description">
+
+                    {{ task.description }}
+
+                  </small>
+
+                </div>
+
+              </td>
+
+
+              <!-- CLIENT -->
+
+              <td>
+
+                <span
+                  class="relation-text">
+
+                  {{ getClientName(task.relatedClient) }}
+
+                </span>
+
+              </td>
+
+
+              <!-- PROPERTY -->
+
+              <td>
+
+                <span
+                  class="relation-text">
+
+                  {{ getPropertyName(task.relatedProperty) }}
+
+                </span>
+
+              </td>
+
+
+              <!-- DUE DATE -->
+
+              <td>
+
+                <span
+                  [class.overdue-date]="isOverdue(task)">
+
+                  {{ task.dueDate | date:'dd MMM yyyy' }}
+
+                </span>
+
+
+                <small
+                  *ngIf="isOverdue(task)"
+                  class="overdue-label">
+
+                  Overdue
+
+                </small>
+
+              </td>
+
+
+              <!-- PRIORITY -->
+
+              <td>
+
+                <span
+                  class="priority-badge"
+                  [ngClass]="getPriorityClass(task.priority)">
+
+                  {{ task.priority }}
+
+                </span>
+
+              </td>
+
+
+              <!-- STATUS -->
+
+              <td>
+
+                <span
+                  class="status-badge"
+                  [ngClass]="getStatusClass(task.status)">
+
+                  {{ task.status }}
+
+                </span>
+
+              </td>
+
+
+              <!-- CREATED BY -->
+
+              <td>
+
+                <span
+                  class="user-text">
+
+                  {{ getUserName(task.createdBy) }}
+
+                </span>
+
+              </td>
+
+            </tr>
+
+
+            <!-- EMPTY -->
+
+            <tr
+              *ngIf="tasks.length === 0">
+
+              <td
+                colspan="7"
+                class="empty-state">
+
+                <div
+                  class="empty-icon">
+
+                  📭
+
+                </div>
+
+                <h3>
+                  No Tasks Found
+                </h3>
+
+                <p>
+                  No task data is available yet.
+                </p>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>

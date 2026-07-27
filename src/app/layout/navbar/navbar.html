@@ -1,8 +1,51 @@
-<nav>
-  <a routerLink="/login">Login</a> |
-  <a routerLink="/register">Register</a> |
-  <a routerLink="/profile">Profile</a> |
-  <a routerLink="/property-visits">
+<nav class="main-nav">
+
+  <a routerLink="/login">
+    Login
+  </a>
+
+  <a routerLink="/register">
+    Register
+  </a>
+
+  <a routerLink="/profile">
+    Profile
+  </a>
+  
+  <a routerLink="/home">
+    home
+  </a>
+   <a
+    type="button"
+    class="logout-btn"
+    (click)="logout()">
+
+    <span>🚪</span>
+    Logout
+
+</a>
+<!-- 
+  <a routerLink="/clients">
+    Clients
+  </a>
+
+  <a routerLink="/properties">
+    Properties
+  </a>
+<a routerLink="/property-visits">
   Property Visits
 </a>
+<a routerLink="/tasks">
+    task
+  </a>
+<a routerLink="/tasks/calendar">
+  task calendar
+</a>
+<a
+  routerLink="/property-visits/analytics"
+  class="visual-btn">
+
+  📊 Visual Analytics
+
+</a> -->
 </nav>

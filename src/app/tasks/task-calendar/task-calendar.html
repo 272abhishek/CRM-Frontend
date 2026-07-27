@@ -1,1 +1,506 @@
-<p>task-calendar works!</p>
+<div class="calendar-page">
+
+  <!-- ================= HEADER ================= -->
+  <div class="calendar-header">
+
+    <div class="header-left">
+      <h1>Task Calendar</h1>
+      <p>Manage and track your tasks by date</p>
+    </div>
+
+    <div class="header-actions">
+
+      <button
+        type="button"
+        class="today-btn"
+        (click)="goToToday()">
+
+        Today
+
+      </button>
+
+      <button
+        type="button"
+        class="nav-btn"
+        (click)="previousMonth()">
+
+        ‹
+
+      </button>
+
+      <h2>
+        {{ monthName }}
+      </h2>
+
+      <button
+        type="button"
+        class="nav-btn"
+        (click)="nextMonth()">
+
+        ›
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= SUMMARY ================= -->
+
+  <div class="task-summary">
+
+    <div class="summary-card pending">
+
+      <div class="summary-icon">
+        ⏳
+      </div>
+
+      <div>
+        <span>Pending</span>
+
+        <strong>
+          {{ getTaskCountByStatus('Pending') }}
+        </strong>
+      </div>
+
+    </div>
+
+
+    <div class="summary-card progress">
+
+      <div class="summary-icon">
+        ⚡
+      </div>
+
+      <div>
+        <span>In Progress</span>
+
+        <strong>
+          {{ getTaskCountByStatus('In Progress') }}
+        </strong>
+      </div>
+
+    </div>
+
+
+    <div class="summary-card completed">
+
+      <div class="summary-icon">
+        ✓
+      </div>
+
+      <div>
+        <span>Completed</span>
+
+        <strong>
+          {{ getTaskCountByStatus('Completed') }}
+        </strong>
+      </div>
+
+    </div>
+
+
+    <div class="summary-card total">
+
+      <div class="summary-icon">
+        📋
+      </div>
+
+      <div>
+        <span>Total Tasks</span>
+
+        <strong>
+          {{ tasks.length }}
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= MAIN CONTENT ================= -->
+
+  <div class="calendar-layout">
+
+
+    <!-- ================= CALENDAR ================= -->
+
+    <div class="calendar-card">
+
+      <!-- WEEK DAYS -->
+
+      <div class="week-days">
+
+        <div
+          *ngFor="let day of weekDays">
+
+          {{ day }}
+
+        </div>
+
+      </div>
+
+
+      <!-- LOADING -->
+
+      <div
+        *ngIf="loading"
+        class="calendar-loading">
+
+        <div class="loader"></div>
+
+        <p>
+          Loading tasks...
+        </p>
+
+      </div>
+
+
+      <!-- CALENDAR GRID -->
+
+      <div
+        *ngIf="!loading"
+        class="calendar-grid">
+
+        <div
+          *ngFor="let date of calendarDays"
+
+          class="calendar-day"
+
+          [class.other-month]="
+            !isCurrentMonth(date)
+          "
+
+          [class.today]="
+            isToday(date)
+          "
+
+          [class.selected]="
+            isSelected(date)
+          "
+
+          (click)="selectDate(date)">
+
+
+          <!-- DATE -->
+
+          <div class="date-number">
+
+            {{ date.getDate() }}
+
+          </div>
+
+
+          <!-- TASKS -->
+
+          <div
+            class="day-tasks">
+
+            <div
+              *ngFor="
+                let task of getTasksForDate(date)
+                  | slice:0:3
+              "
+
+              class="task-dot"
+
+              [class.pending]="
+                task.status === 'Pending'
+              "
+
+              [class.progress]="
+                task.status === 'In Progress'
+              "
+
+              [class.completed]="
+                task.status === 'Completed'
+              "
+
+              (click)="
+                openTask(task);
+                $event.stopPropagation()
+              "
+
+              [title]="task.title">
+
+
+              <span class="task-title">
+
+                {{ task.title }}
+
+              </span>
+
+            </div>
+
+
+            <!-- MORE TASKS -->
+
+            <div
+              *ngIf="
+                getTasksForDate(date).length > 3
+              "
+
+              class="more-tasks">
+
+              +{{
+                getTasksForDate(date).length - 3
+              }}
+              more
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= SELECTED DATE ================= -->
+
+    <div class="selected-date-card">
+
+      <div class="selected-date-header">
+
+        <div>
+
+          <span>
+            Selected Date
+          </span>
+
+          <h2>
+
+            {{ selectedDate | date:'EEEE' }}
+
+          </h2>
+
+          <p>
+
+            {{ selectedDate | date:'dd MMMM yyyy' }}
+
+          </p>
+
+        </div>
+
+        <div class="selected-date-icon">
+
+          📅
+
+        </div>
+
+      </div>
+
+
+      <!-- NO TASKS -->
+
+      <div
+        *ngIf="
+          selectedDateTasks.length === 0
+        "
+
+        class="no-tasks">
+
+        <div class="empty-icon">
+
+          📭
+
+        </div>
+
+        <h3>
+          No tasks for this day
+        </h3>
+
+        <p>
+          You have no scheduled tasks.
+        </p>
+
+      </div>
+
+
+      <!-- TASK LIST -->
+
+      <div
+        *ngIf="
+          selectedDateTasks.length > 0
+        "
+
+        class="selected-task-list">
+
+
+        <div
+          *ngFor="
+            let task of selectedDateTasks
+          "
+
+          class="task-card"
+
+          (click)="openTask(task)">
+
+
+          <!-- STATUS -->
+
+          <div
+            class="task-status-indicator"
+
+            [class.pending]="
+              task.status === 'Pending'
+            "
+
+            [class.progress]="
+              task.status === 'In Progress'
+            "
+
+            [class.completed]="
+              task.status === 'Completed'
+            ">
+
+          </div>
+
+
+          <!-- TASK CONTENT -->
+
+          <div class="task-content">
+
+            <div class="task-top">
+
+              <h3>
+
+                {{ task.title }}
+
+              </h3>
+
+              <span
+                class="priority-badge"
+
+                [class.high]="
+                  task.priority === 'High'
+                "
+
+                [class.medium]="
+                  task.priority === 'Medium'
+                "
+
+                [class.low]="
+                  task.priority === 'Low'
+                ">
+
+                {{ task.priority }}
+
+              </span>
+
+            </div>
+
+
+            <p
+              *ngIf="
+                task.description
+              "
+
+              class="task-description">
+
+              {{ task.description }}
+
+            </p>
+
+
+            <!-- TASK META -->
+
+            <div class="task-meta">
+
+
+              <div
+                *ngIf="
+                  task.dueDate
+                "
+
+                class="meta-item">
+
+                🕒
+
+                <span>
+
+                  {{ task.dueDate | date:'shortTime' }}
+
+                </span>
+
+              </div>
+
+
+              <div
+                *ngIf="
+                  task.relatedClient
+                "
+
+                class="meta-item">
+
+                👤
+
+                <span>
+
+                  {{ getClientName(task) }}
+
+                </span>
+
+              </div>
+
+
+              <div
+                *ngIf="
+                  task.relatedProperty
+                "
+
+                class="meta-item">
+
+                🏠
+
+                <span>
+
+                  {{ getPropertyTitle(task) }}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="task-footer">
+
+              <span
+                class="status-badge"
+
+                [class.pending]="
+                  task.status === 'Pending'
+                "
+
+                [class.progress]="
+                  task.status === 'In Progress'
+                "
+
+                [class.completed]="
+                  task.status === 'Completed'
+                ">
+
+                {{ task.status }}
+
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

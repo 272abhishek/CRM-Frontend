@@ -1,0 +1,218 @@
+<div class="deal-edit-page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <span class="eyebrow">DEAL MANAGEMENT</span>
+      <h2>Edit Deal</h2>
+      <p>View complete deal information and update commission/payment details</p>
+    </div>
+
+    <button type="button" class="back-btn" (click)="cancel()">
+      ← Back to Deals
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-state" *ngIf="loading">
+    Loading deal...
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div *ngIf="!loading && deal" [formGroup]="dealForm">
+
+    <!-- =====================================================
+         DEAL INFORMATION - READ ONLY
+    ====================================================== -->
+    <section class="form-card">
+      <div class="section-header">
+        <h3>Deal Information</h3>
+        <span>Read Only</span>
+      </div>
+
+      <div class="readonly-grid">
+
+        <!-- CLIENT -->
+        <div class="readonly-field">
+          <label>Client</label>
+          <div class="readonly-value">
+            <ng-container *ngIf="getClient(deal) as client; else clientIdBlock">
+              <strong>{{ client.name || '—' }}</strong>
+              <small *ngIf="client.phone">📞 {{ client.phone }}</small>
+              <small *ngIf="client.email">✉ {{ client.email }}</small>
+            </ng-container>
+            <ng-template #clientIdBlock>
+              {{ getClientId(deal) }}
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- PROPERTY -->
+        <div class="readonly-field">
+          <label>Property</label>
+          <div class="readonly-value">
+            <ng-container *ngIf="getProperty(deal) as property; else propertyIdBlock">
+              <strong>{{ property.title || '—' }}</strong>
+              <small *ngIf="property.address">{{ property.address }}</small>
+              <small *ngIf="property.area">Area: {{ property.area }}</small>
+            </ng-container>
+            <ng-template #propertyIdBlock>
+              {{ getPropertyId(deal) }}
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- AGENT -->
+        <div class="readonly-field">
+          <label>Agent</label>
+          <div class="readonly-value">{{ getUserId(deal.agentId) }}</div>
+        </div>
+
+        <!-- BUILDER -->
+        <div class="readonly-field">
+          <label>Builder</label>
+          <div class="readonly-value">{{ getUserId(deal.builderId) }}</div>
+        </div>
+
+        <!-- SELLER -->
+        <div class="readonly-field">
+          <label>Seller</label>
+          <div class="readonly-value">{{ getUserId(deal.sellerId) }}</div>
+        </div>
+
+        <!-- DEAL DATE -->
+        <div class="readonly-field">
+          <label>Deal Date</label>
+          <div class="readonly-value">
+            <span *ngIf="deal.dealDate">{{ deal.dealDate | date:'dd MMM yyyy' }}</span>
+            <span *ngIf="!deal.dealDate">—</span>
+          </div>
+        </div>
+
+        <!-- CREATED DATE -->
+        <div class="readonly-field">
+          <label>Created Date</label>
+          <div class="readonly-value">
+            <span *ngIf="deal.createdAt">{{ deal.createdAt | date:'dd MMM yyyy, hh:mm a' }}</span>
+            <span *ngIf="!deal.createdAt">—</span>
+          </div>
+        </div>
+
+        <!-- DEAL STATUS -->
+        <div class="readonly-field">
+          <label>Deal Status</label>
+          <div class="readonly-value">
+            <span class="status-badge">{{ deal.status || '—' }}</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =====================================================
+         FINANCIAL INFORMATION - COMMISSION STATUS + PAYMENT STATUS EDITABLE
+    ====================================================== -->
+    <section class="form-card">
+      <div class="section-header">
+        <h3>Financial Information</h3>
+        <span>Commission &amp; payment status can be updated</span>
+      </div>
+
+      <div class="form-grid">
+
+        <!-- DEAL AMOUNT - READ ONLY -->
+        <div class="form-group">
+          <label>Deal Amount</label>
+          <input type="text" [value]="deal.amount | number:'1.0-2'" readonly>
+        </div>
+
+        <!-- TOKEN AMOUNT - READ ONLY -->
+        <div class="form-group">
+          <label>Token Amount</label>
+          <input type="text" [value]="(deal.tokenAmount || 0) | number:'1.0-2'" readonly>
+        </div>
+
+        <!-- COMMISSION EARNED - READ ONLY -->
+        <div class="form-group">
+          <label>Commission Earned</label>
+          <input type="text" [value]="(deal.commissionEarned || 0) | number:'1.0-2'" readonly>
+        </div>
+
+        <!-- COMMISSION PERCENTAGE - READ ONLY -->
+        <div class="form-group">
+          <label>Commission Percentage</label>
+          <input
+            type="text"
+            [value]="deal.commissionPercentage !== undefined ? deal.commissionPercentage + '%' : '—'"
+            readonly>
+        </div>
+
+        <!-- PAYMENT STATUS - EDITABLE -->
+        <div class="form-group editable-field">
+          <label for="paymentStatus">Payment Status</label>
+          <select id="paymentStatus" formControlName="paymentStatus">
+            <option value="Pending">Pending</option>
+            <option value="Partial">Partial</option>
+            <option value="Paid">Paid</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <small class="error" *ngIf="hasError('paymentStatus', 'required')">
+            Payment status is required.
+          </small>
+        </div>
+
+        <!-- COMMISSION STATUS - EDITABLE -->
+        <div class="form-group editable-field">
+          <label for="commissionStatus">Commission Status</label>
+          <select id="commissionStatus" formControlName="commissionStatus">
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Paid">Paid</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+          <small class="error" *ngIf="hasError('commissionStatus', 'required')">
+            Commission status is required.
+          </small>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =====================================================
+         NOTES - READ ONLY
+    ====================================================== -->
+    <section class="form-card" *ngIf="deal.notes?.length">
+      <div class="section-header">
+        <h3>Deal Notes</h3>
+        <span>Read Only</span>
+      </div>
+
+      <div class="notes-list">
+        <div class="note-item" *ngFor="let note of deal.notes">
+          <p>{{ note.note }}</p>
+          <small *ngIf="note.createdAt">{{ note.createdAt | date:'dd MMM yyyy, hh:mm a' }}</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         ACTIONS
+    ====================================================== -->
+    <div class="form-actions">
+      <button type="button" class="cancel-btn" [disabled]="saving" (click)="cancel()">
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="save-btn"
+        [disabled]="saving || dealForm.invalid"
+        (click)="updateDeal()">
+
+        <span *ngIf="!saving">Update Commission &amp; Payment</span>
+        <span *ngIf="saving">Updating...</span>
+      </button>
+    </div>
+
+  </div>
+</div>
