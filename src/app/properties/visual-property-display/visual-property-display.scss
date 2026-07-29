@@ -1,722 +1,520 @@
-/* =====================================================
-   PROPERTY VISUAL DASHBOARD
-===================================================== */
+// =====================================================================
+// AbhiHomes CRM — Property Visual Dashboard
+// -----------------------------------------------------------------------
+// KPI cards already came with distinct classes (properties-card,
+// variants-card, price-card, commission-card), so those get exact,
+// no-guessing colors: Properties = blue, Variants = violet, Price =
+// amber (it's a money figure), Commission = emerald.
+//
+// Chart grid alternates `.large-card` (full-width) and regular cards —
+// Area / Price / Commission are wide, Possession / Variants / Amenities
+// are half-width, giving a natural zigzag rhythm instead of a flat
+// uniform grid.
+//
+// Assumption: `getPossessionClass()` presumably slugs the three
+// possession values from your form (Ready-to-move, Under-construction,
+// Upcoming). I've matched those exact strings below — rename if your
+// function returns something different (e.g. all-lowercase without
+// hyphens).
+//
+// Reminder: canvas charts (native Chart.js via #areaChart etc.) take
+// color from your .ts config, not CSS. Palette: coral #ff6b47, blue
+// #2e90fa, violet #8b5cf6, emerald #12b76a, amber #f79009, pink #ee46bc.
+// =====================================================================
+
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
+
+$canvas-bg: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
+
+$coral: #ff6b47;   $coral-bg: #ffede4;   $coral-deep: #d84315;
+$blue: #2e90fa;    $blue-bg: #e5f2ff;    $blue-deep: #155ea8;
+$violet: #8b5cf6;  $violet-bg: #f1ecff;  $violet-deep: #6425c7;
+$emerald: #12b76a; $emerald-bg: #e3f9ec; $emerald-deep: #027a48;
+$amber: #f79009;   $amber-bg: #fff3d9;   $amber-deep: #b54708;
+$pink: #ee46bc;    $pink-bg: #fde7f3;    $pink-deep: #a3106e;
+$danger: #e0334f;  $danger-bg: #fde8ea;  $danger-deep: #b0223a;
+
+$radius-lg: 22px;
+$radius-md: 14px;
+$radius-sm: 9px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$shadow-lift: 0 10px 20px -6px rgba(24, 20, 15, 0.10), 0 24px 48px -16px rgba(24, 20, 15, 0.16);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin tablet { @media (max-width: 960px) { @content; } }
 
 .visual-property-page {
-
-  min-height: 100vh;
-
-  padding: 32px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc 0%,
-      #eef2ff 100%
-    );
-
-  color: #172033;
-
+  font-family: $font-body;
+  color: $ink;
+  padding: clamp(20px, 4vw, 36px);
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
+// =======================================================================
+// HEADER
+// =======================================================================
 
-/* =====================================================
-   HEADER
-===================================================== */
+.page-header { margin-bottom: 28px; }
 
-.dashboard-header {
-
+.header-content {
   display: flex;
-
+  align-items: flex-end;
   justify-content: space-between;
-
-  align-items: center;
-
-  margin-bottom: 30px;
-
-}
-
-
-.eyebrow {
-
-  display: inline-block;
-
-  margin-bottom: 8px;
-
-  color: #6366f1;
-
-  font-size: 11px;
-
-  font-weight: 800;
-
-  letter-spacing: 1.8px;
-
-}
-
-
-.dashboard-header h1 {
-
-  margin: 0;
-
-  font-size: clamp(
-    26px,
-    3vw,
-    38px
-  );
-
-  font-weight: 800;
-
-  letter-spacing: -1px;
-
-}
-
-
-.dashboard-header p {
-
-  margin: 8px 0 0;
-
-  color: #64748b;
-
-  font-size: 15px;
-
-}
-
-
-/* =====================================================
-   KPI GRID
-===================================================== */
-
-.kpi-grid {
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
-
   gap: 20px;
 
-  margin-bottom: 24px;
+  @include mobile { flex-direction: column; align-items: stretch; }
 
+  .eyebrow {
+    display: inline-flex;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $blue-deep;
+    background: $blue-bg;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: $font-display;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+  }
+
+  p { margin: 0; color: $ink-faint; font-size: 0.94rem; max-width: 48ch; }
 }
 
-
-.kpi-card {
-
-  display: flex;
-
+.refresh-btn {
+  display: inline-flex;
   align-items: center;
-
-  gap: 16px;
-
-  padding: 22px;
-
-  background: rgba(
-    255,
-    255,
-    255,
-    0.88
-  );
-
-  border: 1px solid #e5e7eb;
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 12px 30px
-    rgba(
-      15,
-      23,
-      42,
-      0.06
-    );
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
-
-}
-
-
-.kpi-card:hover {
-
-  transform: translateY(-4px);
-
-  box-shadow:
-    0 18px 38px
-    rgba(
-      15,
-      23,
-      42,
-      0.1
-    );
-
-}
-
-
-.kpi-icon {
-
-  width: 52px;
-
-  height: 52px;
-
-  display: grid;
-
-  place-items: center;
-
-  flex-shrink: 0;
-
-  border-radius: 15px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #eef2ff,
-      #e0e7ff
-    );
-
-  font-size: 24px;
-
-}
-
-
-.kpi-card span {
-
-  display: block;
-
-  color: #64748b;
-
-  font-size: 12px;
-
+  gap: 8px;
+  font-family: $font-body;
   font-weight: 700;
+  font-size: 0.9rem;
+  color: $ink;
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: 999px;
+  padding: 11px 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.25s $ease, transform 0.25s $ease, background 0.25s $ease;
 
+  &:hover { border-color: $violet; background: $violet-bg; color: $violet-deep; transform: translateY(-2px); }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
 }
 
-
-.kpi-card strong {
-
-  display: block;
-
-  margin-top: 5px;
-
-  color: #111827;
-
-  font-size: 25px;
-
-  font-weight: 800;
-
-}
-
-
-.kpi-card small {
-
-  display: block;
-
-  margin-top: 4px;
-
-  color: #94a3b8;
-
-  font-size: 11px;
-
-}
-
-
-/* =====================================================
-   CHART GRID
-===================================================== */
-
-.chart-grid {
-
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(0, 1.5fr);
-
-  gap: 24px;
-
-  margin-bottom: 24px;
-
-}
-
-
-.chart-card {
-
-  min-width: 0;
-
-  padding: 24px;
-
-  background: #ffffff;
-
-  border: 1px solid #e5e7eb;
-
-  border-radius: 20px;
-
-  box-shadow:
-    0 12px 32px
-    rgba(
-      15,
-      23,
-      42,
-      0.06
-    );
-
-}
-
-
-.chart-card.wide {
-
-  min-width: 0;
-
-}
-
-
-.chart-header {
-
-  display: flex;
-
-  align-items: flex-start;
-
-  justify-content: space-between;
-
-  gap: 15px;
-
-  margin-bottom: 20px;
-
-}
-
-
-.chart-label {
-
-  display: block;
-
-  color: #6366f1;
-
-  font-size: 10px;
-
-  font-weight: 800;
-
-  letter-spacing: 1.4px;
-
-}
-
-
-.chart-header h2 {
-
-  margin: 6px 0 0;
-
-  color: #1e293b;
-
-  font-size: 19px;
-
-  font-weight: 800;
-
-}
-
-
-.chart-icon {
-
-  display: grid;
-
-  place-items: center;
-
-  width: 42px;
-
-  height: 42px;
-
-  border-radius: 12px;
-
-  background: #f1f5f9;
-
-  font-size: 20px;
-
-}
-
-
-.chart-container {
-
-  position: relative;
-
-  width: 100%;
-
-  height: 320px;
-
-}
-
-
-.chart-card:first-child
-.chart-container {
-
-  height: 320px;
-
-}
-
-
-/* =====================================================
-   INSIGHTS
-===================================================== */
-
-.insight-card {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 30px;
-
-  padding: 26px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #111827,
-      #1e293b
-    );
-
-  color: #ffffff;
-
-  border-radius: 20px;
-
-  box-shadow:
-    0 18px 40px
-    rgba(
-      15,
-      23,
-      42,
-      0.18
-    );
-
-}
-
-
-.insight-card
-.chart-label {
-
-  color: #a5b4fc;
-
-}
-
-
-.insight-card h2 {
-
-  margin: 6px 0 0;
-
-  font-size: 22px;
-
-}
-
-
-.insight-list {
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(4, 1fr);
-
-  gap: 18px;
-
-}
-
-
-.insight-item {
-
-  min-width: 130px;
-
-  padding: 14px 18px;
-
-  border: 1px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.12
-    );
-
-  border-radius: 12px;
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.06
-    );
-
-}
-
-
-.insight-item span {
-
-  display: block;
-
-  color: #cbd5e1;
-
-  font-size: 11px;
-
-}
-
-
-.insight-item strong {
-
-  display: block;
-
-  margin-top: 5px;
-
-  font-size: 18px;
-
-}
-
-
-/* =====================================================
-   LOADING
-===================================================== */
+// =======================================================================
+// LOADING / ERROR
+// =======================================================================
 
 .loading-state {
-
-  min-height: 420px;
-
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
-  justify-content: center;
-
-  gap: 14px;
-
-  color: #64748b;
-
+  gap: 16px;
+  padding: 80px 20px;
+  color: $ink-faint;
 }
-
 
 .loader {
-
-  width: 42px;
-
-  height: 42px;
-
-  border: 4px solid #e2e8f0;
-
-  border-top-color: #6366f1;
-
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-
-  animation:
-    spin 0.8s linear infinite;
-
+  background: conic-gradient($blue, $violet, $coral, $emerald, $blue);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  animation: spin 1s linear infinite;
 }
 
-
-@keyframes spin {
-
-  to {
-
-    transform: rotate(360deg);
-
-  }
-
-}
-
-
-/* =====================================================
-   ERROR
-===================================================== */
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .loader { animation: spin 2.4s linear infinite; } }
 
 .error-state {
+  text-align: center;
+  padding: 56px 24px;
+  background: $danger-bg;
+  border-radius: $radius-lg;
+  color: $danger-deep;
 
+  .error-icon { font-size: 2.2rem; margin-bottom: 10px; }
+  h3 { font-family: $font-display; font-size: 1.1rem; margin: 0 0 8px; }
+  p { margin: 0 0 18px; opacity: 0.85; }
+
+  button {
+    font-family: $font-body;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: $white;
+    background: $danger;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: transform 0.25s $ease;
+
+    &:hover { transform: translateY(-2px); }
+  }
+}
+
+// =======================================================================
+// KPI CARDS — exact classes from the template
+// =======================================================================
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+
+  @include tablet { grid-template-columns: repeat(2, 1fr); }
+  @include mobile { grid-template-columns: 1fr; }
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   padding: 20px;
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+  transition: transform 0.3s $ease, box-shadow 0.3s $ease;
 
-  border: 1px solid #fecaca;
+  &:hover { transform: translateY(-4px); box-shadow: $shadow-lift; }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
 
-  border-radius: 14px;
-
-  background: #fef2f2;
-
-  color: #b91c1c;
-
-  font-weight: 600;
-
-}
-
-
-/* =====================================================
-   TABLET
-===================================================== */
-
-@media (max-width: 1100px) {
-
-  .kpi-grid {
-
-    grid-template-columns:
-      repeat(2, 1fr);
-
+  .kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    flex-shrink: 0;
   }
 
-
-  .chart-grid {
-
-    grid-template-columns:
-      1fr;
-
-  }
-
-
-  .insight-card {
-
-    align-items: flex-start;
-
-    flex-direction: column;
-
-  }
-
-
-  .insight-list {
-
-    width: 100%;
-
-  }
-
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 640px) {
-
-  .visual-property-page {
-
-    padding: 18px 14px;
-
-  }
-
-
-  .dashboard-header {
-
-    margin-bottom: 22px;
-
-  }
-
-
-  .dashboard-header h1 {
-
-    font-size: 26px;
-
-  }
-
-
-  .dashboard-header p {
-
-    font-size: 13px;
-
-    line-height: 1.6;
-
-  }
-
-
-  .kpi-grid {
-
-    grid-template-columns: 1fr;
-
-    gap: 14px;
-
-  }
-
-
-  .kpi-card {
-
-    padding: 18px;
-
-  }
-
-
-  .chart-grid {
-
-    gap: 16px;
-
-    margin-bottom: 16px;
-
-  }
-
-
-  .chart-card {
-
-    padding: 18px;
-
-    border-radius: 16px;
-
-  }
-
-
-  .chart-container {
-
-    height: 270px;
-
-  }
-
-
-  .chart-header h2 {
-
-    font-size: 17px;
-
-  }
-
-
-  .insight-card {
-
-    padding: 20px;
-
-  }
-
-
-  .insight-list {
-
-    grid-template-columns:
-      repeat(2, 1fr);
-
-    gap: 10px;
-
-  }
-
-
-  .insight-item {
-
+  .kpi-content {
     min-width: 0;
 
-    padding: 12px;
+    span {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: $ink-faint;
+    }
 
+    strong {
+      display: block;
+      font-family: $font-display;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: $ink;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    small { display: block; margin-top: 2px; font-size: 0.76rem; color: $ink-faint; }
   }
 
-
-  .insight-item strong {
-
-    font-size: 15px;
-
-  }
-
+  &.properties-card .kpi-icon { background: $blue-bg; color: $blue-deep; }
+  &.variants-card .kpi-icon { background: $violet-bg; color: $violet-deep; }
+  &.price-card .kpi-icon { background: $amber-bg; color: $amber-deep; }
+  &.commission-card .kpi-icon { background: $emerald-bg; color: $emerald-deep; }
 }
 
+// =======================================================================
+// CHART GRID — zigzag large/normal
+// =======================================================================
 
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 20px;
 
-@media (max-width: 380px) {
+  @include tablet { grid-template-columns: 1fr; }
 
-  .insight-list {
+  .large-card { grid-column: 1 / -1; }
+}
 
-    grid-template-columns: 1fr;
+.chart-card {
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  padding: clamp(18px, 3vw, 26px);
+  box-shadow: $shadow-soft;
+  transition: box-shadow 0.3s $ease, transform 0.3s $ease;
 
+  &:hover { box-shadow: $shadow-lift; transform: translateY(-3px); }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
+
+  &.connectivity-card { margin-bottom: 20px; }
+}
+
+.chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+
+  .chart-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $ink-faint;
+    margin-bottom: 4px;
   }
 
-
-  .kpi-card strong {
-
-    font-size: 22px;
-
+  h2 {
+    font-family: $font-display;
+    font-size: 1.06rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: $ink;
   }
 
+  p { margin: 0; font-size: 0.84rem; color: $ink-faint; }
+
+  .chart-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+  }
+}
+
+// one accent per chart, in document order:
+// Area, Possession, Price, Variants, Commission, Amenities, Connectivity
+.chart-card:nth-of-type(1) .chart-icon { background: $blue-bg; color: $blue-deep; }
+.chart-card:nth-of-type(2) .chart-icon { background: $amber-bg; color: $amber-deep; }
+.chart-card:nth-of-type(3) .chart-icon { background: $emerald-bg; color: $emerald-deep; }
+.chart-card:nth-of-type(4) .chart-icon { background: $violet-bg; color: $violet-deep; }
+.chart-card:nth-of-type(5) .chart-icon { background: $coral-bg; color: $coral-deep; }
+.chart-card:nth-of-type(6) .chart-icon { background: $pink-bg; color: $pink-deep; }
+.connectivity-card .chart-icon { background: $blue-bg; color: $blue-deep; }
+
+.chart-container {
+  position: relative;
+  height: 260px;
+
+  canvas { max-width: 100%; }
+}
+
+.doughnut-container { height: 220px; }
+.connectivity-chart { height: 300px; }
+
+// =======================================================================
+// PROPERTY PERFORMANCE TABLE
+// =======================================================================
+
+.property-table-card {
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px clamp(18px, 3vw, 26px);
+  border-bottom: 1.5px solid $hairline;
+
+  .chart-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $ink-faint;
+    margin-bottom: 4px;
+  }
+
+  h2 { font-family: $font-display; font-size: 1.08rem; font-weight: 700; margin: 0; }
+}
+
+.property-count {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $ink-soft;
+  background: $canvas-bg;
+  border: 1px solid $hairline;
+  padding: 5px 13px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table { width: 100%; border-collapse: collapse; min-width: 760px; }
+
+thead {
+  background: $canvas-bg;
+
+  th {
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $ink-faint;
+    padding: 14px clamp(14px, 2vw, 20px);
+    border-bottom: 1.5px solid $hairline;
+    white-space: nowrap;
+  }
+}
+
+tbody {
+  tr {
+    transition: background 0.2s $ease;
+    &:hover { background: $canvas-bg; }
+    &:not(:last-child) td { border-bottom: 1px solid $hairline; }
+  }
+
+  td {
+    padding: 14px clamp(14px, 2vw, 20px);
+    vertical-align: top;
+    font-size: 0.9rem;
+  }
+}
+
+.property-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+
+  .property-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: $blue-bg;
+    color: $blue-deep;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  strong { display: block; font-size: 0.92rem; color: $ink; }
+  small { display: block; margin-top: 2px; font-size: 0.76rem; color: $ink-faint; font-family: monospace; }
+}
+
+.location-info {
+  strong { display: block; font-size: 0.9rem; color: $ink; }
+  small { display: block; margin-top: 2px; font-size: 0.8rem; color: $ink-faint; }
+}
+
+// --- possession status badge (assumed slug values) -------------------
+
+.status-badge {
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: $hairline;
+  color: $ink-soft;
+  white-space: nowrap;
+
+  &.ready-to-move { background: $emerald-bg; color: $emerald-deep; }
+  &.under-construction { background: $amber-bg; color: $amber-deep; }
+  &.upcoming { background: $blue-bg; color: $blue-deep; }
+}
+
+.variant-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: $violet-bg;
+  color: $violet-deep;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.commission-value {
+  font-family: $font-display;
+  font-weight: 700;
+  color: $emerald-deep;
+  font-variant-numeric: tabular-nums;
+}
+
+.amenities-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-width: 220px;
+}
+
+.amenity-tag {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: $canvas-bg;
+  border: 1px solid $hairline;
+  color: $ink-soft;
+}
+
+.more-amenities {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: $pink-bg;
+  color: $pink-deep;
+}
+
+// =======================================================================
+// EMPTY STATE
+// =======================================================================
+
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  background: $white;
+  border: 1.5px dashed $hairline;
+  border-radius: $radius-lg;
+
+  .empty-icon { font-size: 2.4rem; margin-bottom: 12px; opacity: 0.7; }
+  h3 { font-family: $font-display; font-size: 1.15rem; margin: 0 0 6px; color: $ink; }
+  p { margin: 0; color: $ink-faint; font-size: 0.92rem; }
 }

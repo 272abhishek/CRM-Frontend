@@ -1,641 +1,399 @@
-/* =====================================================
-   EDIT PROPERTY PAGE
-===================================================== */
+// =====================================================================
+// AbhiHomes CRM — Edit Property
+// -----------------------------------------------------------------------
+// Near-twin of the Add Property form (same blue → violet identity, same
+// CSS-counter auto-numbered "Variant N" cards), with two structural
+// differences this template has vs. that one:
+// 1. No inline validation-error <div>s here, so the simpler
+//    `label + input` / `label + select` sibling selectors are all
+//    that's needed — no need to skip past an optional error node.
+// 2. The two checkboxes are `<label><input type="checkbox"> Text
+//    </label>` — the input wraps *inside* the label instead of sitting
+//    next to it — so they're styled as clickable toggle chips instead
+//    of the label-left/input-right pattern used everywhere else.
+// The stray trailing <br> before the submit button is neutralized
+// rather than left to add a stray gap in the grid flow.
+// =====================================================================
+
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
+
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
+
+$hues: #ff6b47, #2e90fa, #8b5cf6, #12b76a, #f79009, #ee46bc;
+
+$blue: #2e90fa;    $blue-bg: #e5f2ff;    $blue-deep: #155ea8;
+$violet: #8b5cf6;  $violet-bg: #f1ecff;  $violet-deep: #6425c7;
+$emerald: #12b76a; $emerald-bg: #e3f9ec; $emerald-deep: #027a48;
+
+$radius-lg: 24px;
+$radius-md: 12px;
+$radius-sm: 9px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin wide { @media (min-width: 700px) { @content; } }
+
+// ---------------------------------------------------------------------
+// Card shell
+// ---------------------------------------------------------------------
 
 :host {
-
   display: block;
-
-  min-height: 100vh;
-
-  padding: 30px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc 0%,
-      #eef2ff 50%,
-      #f8fafc 100%
-    );
-
+  max-width: 820px;
+  margin: clamp(16px, 4vw, 40px) auto;
+  padding: clamp(24px, 4vw, 40px);
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+  font-family: $font-body;
+  color: $ink;
 }
-
-
-/* =====================================================
-   MAIN FORM
-===================================================== */
-
-form {
-
-  width: 100%;
-
-  max-width: 1100px;
-
-  margin: 0 auto;
-
-  padding: 32px;
-
-  background: rgba(255, 255, 255, 0.96);
-
-  border: 1px solid #e2e8f0;
-
-  border-radius: 24px;
-
-  box-shadow:
-    0 20px 45px rgba(15, 23, 42, 0.09);
-
-}
-
-
-/* =====================================================
-   PAGE TITLE
-===================================================== */
 
 h2 {
-
-  width: 100%;
-
-  max-width: 1100px;
-
-  margin: 0 auto 25px;
-
-  color: #0f172a;
-
-  font-size: clamp(26px, 4vw, 36px);
-
+  font-family: $font-display;
+  font-size: 1.45rem;
   font-weight: 800;
+  color: $ink;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px;
 
-  letter-spacing: -0.7px;
-
+  &::after {
+    content: '';
+    display: block;
+    width: 42px;
+    height: 4px;
+    margin-top: 12px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, $blue, $violet);
+  }
 }
 
+br { display: none; }
+
+// =======================================================================
+// MAIN FIELDS
+// =======================================================================
+
+form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 20px;
+
+  @include wide {
+    grid-template-columns: repeat(2, max-content 1fr);
+    align-items: center;
+    row-gap: 16px;
+  }
+
+  > label {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: $ink-soft;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+
+    @include wide { margin-top: 0; }
+
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  }
+
+  > input, > select {
+    font-family: $font-body;
+    font-size: 0.95rem;
+    color: $ink;
+    background: $canvas;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-md;
+    padding: 11px 14px;
+    width: 100%;
+    transition: border-color 0.25s $ease, box-shadow 0.25s $ease, background 0.25s $ease;
+
+    &::placeholder { color: $ink-faint; }
+    &:hover { border-color: darken($hairline, 8%); }
+    &:focus { outline: none; background: $white; }
+  }
+
+  > select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B6357' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+}
+
+// cycle a hue per main field (6 fields)
+@for $i from 1 through 6 {
+  $hue: nth($hues, $i);
+
+  form > label:nth-of-type(#{$i}) {
+    &::before { background: $hue; }
+
+    & + input:focus,
+    & + select:focus {
+      border-color: $hue;
+      box-shadow: 0 0 0 4px rgba($hue, 0.16);
+    }
+  }
+}
+
+// =======================================================================
+// SECTION HEADINGS
+// =======================================================================
 
 h3 {
-
-  margin: 32px 0 18px;
-
-  padding-bottom: 10px;
-
-  border-bottom: 1px solid #e2e8f0;
-
-  color: #334155;
-
-  font-size: 20px;
-
-  font-weight: 800;
-
-}
-
-
-/* =====================================================
-   LABELS
-===================================================== */
-
-form > label {
-
-  display: block;
-
-  margin: 18px 0 7px;
-
-  color: #334155;
-
-  font-size: 13px;
-
+  grid-column: 1 / -1;
+  font-family: $font-display;
+  font-size: 1rem;
   font-weight: 700;
-
-}
-
-
-/* =====================================================
-   INPUTS & SELECT
-===================================================== */
-
-input:not([type="checkbox"]),
-
-select {
-
-  width: 100%;
-
-  min-height: 46px;
-
-  padding: 0 14px;
-
-  border: 1px solid #dbe2ea;
-
-  border-radius: 11px;
-
-  background: #ffffff;
-
-  color: #1e293b;
-
-  font-size: 14px;
-
-  outline: none;
-
-  transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.25s ease;
-
-
-  &::placeholder {
-
-    color: #94a3b8;
-
-  }
-
-
-  &:hover {
-
-    border-color: #a5b4fc;
-
-  }
-
-
-  &:focus {
-
-    border-color: #6366f1;
-
-    box-shadow:
-      0 0 0 4px
-      rgba(99, 102, 241, 0.12);
-
-  }
-
-}
-
-
-select {
-
-  cursor: pointer;
-
-}
-
-
-/* =====================================================
-   BUILDER PROMISES & AMENITIES
-===================================================== */
-
-div[formArrayName="builderPromises"],
-
-div[formArrayName="amenities"] {
-
+  margin: 28px 0 14px;
+  padding-top: 20px;
+  border-top: 1.5px solid $hairline;
   display: flex;
-
-  flex-direction: column;
-
-  gap: 12px;
-
-  padding: 20px;
-
-  border: 1px solid #e2e8f0;
-
-  border-radius: 16px;
-
-  background: #f8fafc;
-
-
-  > div {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-
-    input {
-
-      flex: 1;
-
-    }
-
-  }
-
-
-  button {
-
-    align-self: flex-start;
-
-    margin-top: 5px;
-
-  }
-
-}
-
-
-/* =====================================================
-   VARIANTS SECTION
-===================================================== */
-
-div[formArrayName="variants"] {
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 20px;
-
-}
-
-
-/* =====================================================
-   VARIANT CARD
-===================================================== */
-
-div[formGroupName] {
-
-  position: relative;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
-
-  gap: 16px;
-
-  padding: 24px;
-
-  border: 1px solid #e2e8f0;
-
-  border-radius: 18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffffff,
-      #f8fafc
-    );
-
-  box-shadow:
-    0 8px 20px
-    rgba(15, 23, 42, 0.05);
-
+  align-items: center;
+  gap: 8px;
 
   &::before {
-
-    content: 'PROPERTY VARIANT';
-
-    grid-column: 1 / -1;
-
-    color: #6366f1;
-
-    font-size: 11px;
-
-    font-weight: 800;
-
-    letter-spacing: 1px;
-
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
   }
 
+  &:nth-of-type(1) { color: $violet-deep; &::before { background: $violet; } }
+  &:nth-of-type(2) { color: $emerald-deep; &::before { background: $emerald; } }
+  &:nth-of-type(3) { color: $blue-deep; &::before { background: $blue; } }
+}
 
-  label {
+form > button[type='button'] {
+  grid-column: 1 / -1;
+  justify-self: start;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: $ink-soft;
+  background: $canvas;
+  border: 1.5px dashed $hairline;
+  border-radius: 999px;
+  padding: 9px 18px;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: border-color 0.25s $ease, color 0.25s $ease, background 0.25s $ease;
 
+  &:hover { border-color: $blue; color: $blue-deep; background: $blue-bg; border-style: solid; }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+}
+
+// =======================================================================
+// BUILDER PROMISES / AMENITIES
+// =======================================================================
+
+div[formarrayname='builderPromises'],
+div[formarrayname='amenities'] {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  counter-reset: row;
+
+  > div {
+    counter-increment: row;
     display: flex;
-
-    flex-direction: column;
-
-    gap: 7px;
-
-    color: #475569;
-
-    font-size: 12px;
-
-    font-weight: 700;
-
-  }
-
-
-  /* Checkbox labels */
-
-  label:has(input[type="checkbox"]) {
-
-    flex-direction: row;
-
     align-items: center;
+    gap: 10px;
 
-    gap: 9px;
-
-    min-height: 44px;
-
-    padding: 11px 14px;
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 10px;
-
-    background: #ffffff;
-
-    cursor: pointer;
-
-    transition: 0.25s;
-
-
-    &:hover {
-
-      border-color: #a5b4fc;
-
-      background: #eef2ff;
-
+    &::before {
+      content: counter(row);
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
     }
 
-  }
+    input {
+      flex: 1;
+      font-family: $font-body;
+      font-size: 0.92rem;
+      color: $ink;
+      background: $canvas;
+      border: 1.5px solid $hairline;
+      border-radius: $radius-sm;
+      padding: 10px 14px;
+      transition: border-color 0.25s $ease, box-shadow 0.25s $ease;
 
+      &::placeholder { color: $ink-faint; }
+      &:hover { border-color: darken($hairline, 8%); }
+      &:focus { outline: none; background: $white; }
+    }
+  }
 }
 
-
-/* =====================================================
-   CHECKBOX
-===================================================== */
-
-input[type="checkbox"] {
-
-  width: 18px;
-
-  height: 18px;
-
-  accent-color: #6366f1;
-
-  cursor: pointer;
-
+div[formarrayname='builderPromises'] {
+  > div::before { background: $violet-bg; color: $violet-deep; }
+  > div input:focus { border-color: $violet; box-shadow: 0 0 0 4px rgba($violet, 0.14); }
 }
 
-
-/* =====================================================
-   BUTTONS
-===================================================== */
-
-button {
-
-  min-height: 42px;
-
-  padding: 0 18px;
-
-  border: none;
-
-  border-radius: 10px;
-
-  font-size: 13px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
-
-
-  &:hover {
-
-    transform: translateY(-2px);
-
-  }
-
-
-  &:active {
-
-    transform: translateY(0);
-
-  }
-
+div[formarrayname='amenities'] {
+  > div::before { background: $emerald-bg; color: $emerald-deep; }
+  > div input:focus { border-color: $emerald; box-shadow: 0 0 0 4px rgba($emerald, 0.14); }
 }
 
+// =======================================================================
+// VARIANTS — auto-numbered mini-form cards
+// =======================================================================
 
-/* =====================================================
-   ADD BUTTONS
-===================================================== */
-
-div[formArrayName="builderPromises"] button,
-
-div[formArrayName="amenities"] button,
-
-div[formArrayName="variants"] > button {
-
-  background: #eef2ff;
-
-  color: #4f46e5;
-
-
-  &:hover {
-
-    background: #e0e7ff;
-
-    box-shadow:
-      0 7px 15px
-      rgba(79, 70, 229, 0.18);
-
-  }
-
+div[formarrayname='variants'] {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  counter-reset: variant;
 }
 
+div[formarrayname='variants'] > div[formgroupname] {
+  counter-increment: variant;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px 16px;
+  padding: 20px clamp(16px, 3vw, 24px) 18px;
+  background: $canvas;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-md;
 
-/* =====================================================
-   SUBMIT BUTTON
-===================================================== */
+  @include wide { grid-template-columns: repeat(2, max-content 1fr); }
 
-button[type="submit"] {
-
-  display: block;
-
-  width: 100%;
-
-  min-height: 52px;
-
-  margin-top: 30px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #4f46e5,
-      #7c3aed
-    );
-
-  color: #ffffff;
-
-  font-size: 15px;
-
-  font-weight: 800;
-
-  box-shadow:
-    0 10px 22px
-    rgba(79, 70, 229, 0.25);
-
-
-  &:hover:not(:disabled) {
-
-    box-shadow:
-      0 15px 30px
-      rgba(79, 70, 229, 0.35);
-
+  &::before {
+    content: 'Variant ' counter(variant);
+    grid-column: 1 / -1;
+    font-family: $font-display;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $blue-deep;
+    margin-bottom: 6px;
   }
 
+  // the four number-field labels (Carpet Size, Super Built Up, Price, Floor)
+  > label:not(:has(input[type='checkbox'])) {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $ink-soft;
+    margin-top: 10px;
 
-  &:disabled {
-
-    opacity: 0.5;
-
-    cursor: not-allowed;
-
-    transform: none;
-
-    box-shadow: none;
-
+    @include wide { margin-top: 0; align-self: center; }
   }
 
-}
-
-
-/* =====================================================
-   RESPONSIVE TABLET
-===================================================== */
-
-@media (max-width: 768px) {
-
-  :host {
-
-    padding: 18px;
-
-  }
-
-
-  form {
-
-    padding: 24px;
-
-    border-radius: 20px;
-
-  }
-
-
-  div[formGroupName] {
-
-    grid-template-columns: 1fr;
-
-  }
-
-}
-
-
-/* =====================================================
-   RESPONSIVE MOBILE
-===================================================== */
-
-@media (max-width: 520px) {
-
-  :host {
-
-    padding: 10px;
-
-  }
-
-
-  h2 {
-
-    margin-bottom: 18px;
-
-    font-size: 26px;
-
-  }
-
-
-  form {
-
-    padding: 18px;
-
-    border-radius: 16px;
-
-  }
-
-
-  h3 {
-
-    margin-top: 26px;
-
-    font-size: 18px;
-
-  }
-
-
-  input:not([type="checkbox"]),
-
-  select {
-
-    min-height: 44px;
-
-    font-size: 13px;
-
-  }
-
-
-  div[formArrayName="builderPromises"],
-
-  div[formArrayName="amenities"] {
-
-    padding: 14px;
-
-  }
-
-
-  div[formArrayName="builderPromises"] > div,
-
-  div[formArrayName="amenities"] > div {
-
-    flex-direction: column;
-
-    align-items: stretch;
-
-  }
-
-
-  div[formArrayName="builderPromises"] button,
-
-  div[formArrayName="amenities"] button,
-
-  div[formArrayName="variants"] > button {
-
+  input[type='number'] {
+    font-family: $font-body;
+    font-size: 0.92rem;
+    color: $ink;
+    background: $white;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-sm;
+    padding: 10px 12px;
     width: 100%;
 
+    &:hover { border-color: darken($hairline, 8%); }
+    &:focus {
+      outline: none;
+      border-color: $blue;
+      box-shadow: 0 0 0 4px rgba($blue, 0.14);
+    }
   }
 
+  // Master Bedroom / Modular Kitchen — the checkbox lives *inside* its
+  // label here, so the whole label becomes one clickable toggle chip
+  > label:has(input[type='checkbox']) {
+    grid-column: span 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    width: fit-content;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: $ink;
+    background: $white;
+    border: 1.5px solid $hairline;
+    border-radius: 999px;
+    padding: 9px 16px 9px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: border-color 0.25s $ease, background 0.25s $ease;
 
-  div[formGroupName] {
+    @include wide { margin-top: 0; }
 
-    padding: 16px;
+    &:hover { border-color: $violet; }
 
+    &:has(input:checked) {
+      background: $violet-bg;
+      border-color: $violet;
+      color: $violet-deep;
+    }
+
+    input[type='checkbox'] {
+      width: 18px;
+      height: 18px;
+      accent-color: $violet;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
   }
-
-
-  button[type="submit"] {
-
-    min-height: 48px;
-
-  }
-
 }
 
+// =======================================================================
+// SUBMIT
+// =======================================================================
 
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
+form > button[type='submit'] {
+  grid-column: 1 / -1;
+  margin-top: 24px;
+  height: 50px;
+  border: none;
+  border-radius: $radius-md;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 1rem;
+  color: $white;
+  background: linear-gradient(135deg, $blue, $violet);
+  box-shadow: 0 14px 26px -10px rgba($violet, 0.5);
+  cursor: pointer;
+  transition: transform 0.25s $ease, box-shadow 0.25s $ease, opacity 0.25s $ease;
 
-@media (max-width: 360px) {
+  &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 18px 32px -8px rgba($violet, 0.58); }
+  &:focus-visible { outline: 2.5px solid $ink; outline-offset: 3px; }
 
-  form {
-
-    padding: 14px;
-
+  &:disabled {
+    background: $hairline;
+    color: $ink-faint;
+    box-shadow: none;
+    cursor: not-allowed;
   }
 
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
+}
 
-  h2 {
-
-    font-size: 23px;
-
-  }
-
+@include mobile {
+  :host { margin: 0; border-radius: 0; border-inline: none; }
 }

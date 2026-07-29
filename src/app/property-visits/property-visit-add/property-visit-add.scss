@@ -1,224 +1,198 @@
-/* =====================================================
-   PROPERTY VISIT CREATE
-   CRM STYLE UI
-===================================================== */
+// =====================================================================
+// AbhiHomes CRM — Create Property Visit (5-Step Wizard)
+// -----------------------------------------------------------------------
+// Property Visit's home-dashboard color is violet, so that's the spine
+// running through every step number and every "selected" state here.
+// This is the longest single flow in the app (search client → confirm
+// their demand → filter properties → pick one → schedule the visit),
+// so each step gets a numbered badge and its own form-card, and the
+// currently-picked client/property get a visually distinct "confirmed"
+// treatment rather than just sitting in the list.
+//
+// One a11y note: the filters-grid inputs rely on placeholder text only
+// (no visible <label>s), which is fine visually but means screen-reader
+// users get no field name once they start typing. If that matters here,
+// consider adding aria-label attributes — happy to help wire those in.
+// =====================================================================
 
-:host {
-  display: block;
-}
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
 
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
 
-/* =====================================================
-   PAGE
-===================================================== */
+$hues: #ff6b47, #2e90fa, #8b5cf6, #12b76a, #f79009, #ee46bc;
+
+$violet: #8b5cf6; $violet-bg: #f1ecff; $violet-deep: #6425c7;
+$emerald: #12b76a; $emerald-bg: #e3f9ec; $emerald-deep: #027a48;
+$danger: #e0334f;
+
+$radius-lg: 22px;
+$radius-md: 14px;
+$radius-sm: 9px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin tablet { @media (max-width: 860px) { @content; } }
 
 .visit-form-page {
-  min-height: 100vh;
-  padding: 28px;
-  background: #f5f7fb;
-  color: #1f2937;
+  font-family: $font-body;
+  color: $ink;
+  padding: clamp(20px, 4vw, 36px);
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-
-/* =====================================================
-   PAGE HEADER
-===================================================== */
+// =======================================================================
+// HEADER
+// =======================================================================
 
 .page-header {
-  max-width: 1500px;
-  margin: 0 auto 24px;
-
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
+  margin-bottom: 24px;
+
+  @include mobile { flex-direction: column; }
 
   .eyebrow {
-    display: block;
-    margin-bottom: 6px;
-
-    color: #64748b;
-
-    font-size: 11px;
+    display: inline-flex;
+    font-size: 0.74rem;
     font-weight: 700;
-    letter-spacing: 1.4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $violet-deep;
+    background: $violet-bg;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 10px;
   }
 
   h2 {
-    margin: 0;
-
-    color: #111827;
-
-    font-size: 28px;
-    font-weight: 750;
-    letter-spacing: -0.5px;
+    font-family: $font-display;
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
   }
 
-  p {
-    margin: 6px 0 0;
+  p { margin: 0; color: $ink-faint; font-size: 0.92rem; }
 
-    color: #6b7280;
-
-    font-size: 13px;
-  }
-
-  button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-
-    height: 40px;
-    padding: 0 16px;
-
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-
-    background: #ffffff;
-    color: #374151;
-
-    font-size: 13px;
-    font-weight: 600;
-
+  > button {
+    font-family: $font-body;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: $ink-soft;
+    background: $white;
+    border: 1.5px solid $hairline;
+    border-radius: 999px;
+    padding: 9px 18px;
     cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.25s $ease, background 0.25s $ease, transform 0.25s $ease;
 
-    transition: 0.2s ease;
-
-    &:hover {
-      border-color: #cbd5e1;
-      background: #f8fafc;
-    }
+    &:hover { border-color: $violet; background: $violet-bg; color: $violet-deep; transform: translateX(-2px); }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
   }
 }
 
-
-/* =====================================================
-   MAIN CARD
-===================================================== */
+// =======================================================================
+// FORM CARD + STEP HEADER
+// =======================================================================
 
 .form-card {
-  max-width: 1500px;
-  margin: 0 auto 18px;
-
-  padding: 22px;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-
-  background: #ffffff;
-
-  box-shadow:
-    0 2px 8px rgba(15, 23, 42, 0.035);
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  padding: clamp(20px, 3vw, 30px);
+  box-shadow: $shadow-soft;
+  margin-bottom: 18px;
+  animation: rise 0.35s $ease both;
 }
 
-
-/* =====================================================
-   SECTION HEADER
-===================================================== */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) { .form-card { animation: none; } }
 
 .section-header {
   display: flex;
-  align-items: center;
-  gap: 12px;
-
-  margin-bottom: 20px;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 22px;
 
   .step-number {
-    width: 34px;
-    height: 34px;
-
-    display: grid;
-    place-items: center;
-
-    flex-shrink: 0;
-
-    border-radius: 8px;
-
-    background: #eef2ff;
-    color: #4f46e5;
-
-    font-size: 13px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $violet, #2e90fa);
+    color: $white;
+    font-family: $font-display;
     font-weight: 800;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 
   h3 {
-    margin: 0;
-
-    color: #1f2937;
-
-    font-size: 16px;
+    font-family: $font-display;
+    font-size: 1.05rem;
     font-weight: 700;
+    margin: 0 0 3px;
+    color: $ink;
   }
 
-  p {
-    margin: 3px 0 0;
-
-    color: #9ca3af;
-
-    font-size: 12px;
-  }
+  p { margin: 0; font-size: 0.86rem; color: $ink-faint; }
 }
 
-
-/* =====================================================
-   SEARCH
-===================================================== */
+// =======================================================================
+// STEP 1 — CLIENT SEARCH
+// =======================================================================
 
 .search-box {
-  height: 44px;
-
   display: flex;
   align-items: center;
   gap: 10px;
+  background: $canvas;
+  border: 1.5px solid $hairline;
+  border-radius: 999px;
+  padding: 4px 4px 4px 16px;
+  transition: border-color 0.25s $ease, box-shadow 0.25s $ease;
 
-  padding: 0 13px;
+  &:focus-within { border-color: $violet; box-shadow: 0 0 0 4px rgba($violet, 0.14); background: $white; }
 
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-
-  background: #ffffff;
-
-  transition: 0.2s ease;
-
-  &:focus-within {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
-  }
-
-  span {
-    color: #9ca3af;
-    font-size: 14px;
-  }
+  span { font-size: 0.95rem; color: $ink-faint; flex-shrink: 0; }
 
   input {
-    width: 100%;
-
+    flex: 1;
     border: none;
-    outline: none;
-
-    color: #374151;
     background: transparent;
+    font-family: $font-body;
+    font-size: 0.94rem;
+    color: $ink;
+    padding: 11px 8px;
 
-    font-size: 13px;
-
-    &::placeholder {
-      color: #9ca3af;
-    }
+    &:focus { outline: none; }
+    &::placeholder { color: $ink-faint; }
   }
 }
 
-
-/* =====================================================
-   CLIENT SEARCH RESULTS
-===================================================== */
-
 .client-results {
-  display: grid;
-  gap: 8px;
-
   margin-top: 10px;
-
-  max-height: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 280px;
   overflow-y: auto;
 }
 
@@ -226,620 +200,328 @@
   display: flex;
   align-items: center;
   gap: 12px;
-
-  padding: 12px;
-
-  border: 1px solid #edf0f4;
-  border-radius: 8px;
-
+  padding: 10px 12px;
+  border-radius: $radius-sm;
   cursor: pointer;
+  transition: background 0.2s $ease;
 
-  transition: 0.2s ease;
-
-  &:hover {
-    border-color: #c7d2fe;
-    background: #f8faff;
-  }
+  &:hover { background: $violet-bg; }
 
   .avatar {
-    width: 36px;
-    height: 36px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 8px;
-
-    background: #f1f5f9;
-
-    font-size: 16px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: $violet-bg;
+    color: $violet-deep;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
   }
 
-  strong {
-    display: block;
-
-    margin-bottom: 3px;
-
-    color: #374151;
-
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  small {
-    display: block;
-
-    margin-top: 2px;
-
-    color: #9ca3af;
-
-    font-size: 11px;
-  }
+  strong { display: block; font-size: 0.92rem; color: $ink; }
+  small { display: block; font-size: 0.78rem; color: $ink-faint; }
 }
-
-
-/* =====================================================
-   SELECTED CLIENT
-===================================================== */
 
 .selected-client {
   display: flex;
   align-items: center;
-  gap: 12px;
-
-  margin-top: 14px;
-  padding: 14px;
-
-  border: 1px solid #dbeafe;
-  border-radius: 10px;
-
-  background: #f8fbff;
+  gap: 14px;
+  margin-top: 10px;
+  padding: 16px;
+  background: $violet-bg;
+  border: 1.5px solid rgba($violet, 0.3);
+  border-radius: $radius-md;
 
   .client-avatar {
-    width: 42px;
-    height: 42px;
-
-    display: grid;
-    place-items: center;
-
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: $white;
+    color: $violet-deep;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
     flex-shrink: 0;
-
-    border-radius: 9px;
-
-    background: #e0e7ff;
-
-    font-size: 18px;
   }
 
   .client-info {
     flex: 1;
+    min-width: 0;
 
-    h3 {
-      margin: 0 0 4px;
-
-      color: #1f2937;
-
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    p {
-      margin: 2px 0;
-
-      color: #6b7280;
-
-      font-size: 11px;
-    }
+    h3 { font-family: $font-display; font-size: 0.98rem; font-weight: 700; margin: 0 0 2px; color: $ink; }
+    p { margin: 0; font-size: 0.82rem; color: $ink-soft; }
   }
 
   button {
-    height: 32px;
-    padding: 0 12px;
-
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-
-    background: #ffffff;
-    color: #4b5563;
-
-    font-size: 11px;
-    font-weight: 600;
-
+    flex-shrink: 0;
+    font-family: $font-body;
+    font-weight: 700;
+    font-size: 0.84rem;
+    color: $violet-deep;
+    background: $white;
+    border: 1.5px solid rgba($violet, 0.35);
+    border-radius: 999px;
+    padding: 8px 16px;
     cursor: pointer;
+    transition: background 0.25s $ease;
 
-    &:hover {
-      background: #f9fafb;
-    }
+    &:hover { background: $violet; color: $white; }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
   }
 }
 
-
-/* =====================================================
-   CLIENT REQUIREMENT
-===================================================== */
+// =======================================================================
+// STEP 2 — CLIENT DEMAND
+// =======================================================================
 
 .demand-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 
+  @include mobile { grid-template-columns: 1fr; }
+
   > div {
-    min-height: 78px;
-
-    padding: 13px;
-
-    border: 1px solid #edf0f4;
-    border-radius: 8px;
-
-    background: #fafbfc;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: $canvas;
+    border: 1px solid $hairline;
+    border-radius: $radius-sm;
 
     span {
-      display: block;
-
-      margin-bottom: 7px;
-
-      color: #9ca3af;
-
-      font-size: 10px;
+      font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $ink-faint;
     }
 
-    strong {
-      display: block;
-
-      color: #374151;
-
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.45;
-    }
+    strong { font-size: 0.96rem; font-weight: 600; color: $ink; }
   }
 }
 
-
-/* =====================================================
-   PROPERTY FILTERS
-===================================================== */
+// =======================================================================
+// STEP 3 — PROPERTY FILTERS
+// =======================================================================
 
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 12px;
 
-  input,
-  select {
+  input, select {
+    font-family: $font-body;
+    font-size: 0.9rem;
+    color: $ink;
+    background: $canvas;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-sm;
+    padding: 10px 12px;
     width: 100%;
-    height: 42px;
+    transition: border-color 0.25s $ease, box-shadow 0.25s $ease, background 0.25s $ease;
 
-    padding: 0 11px;
-
-    border: 1px solid #e5e7eb;
-    border-radius: 7px;
-
-    outline: none;
-
-    background: #ffffff;
-    color: #374151;
-
-    font-size: 12px;
-
-    transition: 0.2s ease;
-
-    &:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
-    }
-
-    &::placeholder {
-      color: #9ca3af;
-    }
+    &::placeholder { color: $ink-faint; }
+    &:hover { border-color: darken($hairline, 8%); }
+    &:focus { outline: none; background: $white; }
   }
 
   select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B6357' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
     cursor: pointer;
   }
 }
 
+// cycle a hue per field, position-based since input and select share
+// the flow (14 fields, repeats every 6)
+@for $i from 1 through 14 {
+  $hue: nth($hues, (($i - 1) % 6) + 1);
 
-/* =====================================================
-   PROPERTY GRID
-===================================================== */
+  .filters-grid > *:nth-child(#{$i}):focus {
+    border-color: $hue;
+    box-shadow: 0 0 0 3px rgba($hue, 0.15);
+  }
+}
+
+// =======================================================================
+// STEP 4 — PROPERTY RESULTS
+// =======================================================================
 
 .property-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 14px;
 }
 
 .property-card {
   position: relative;
-
   display: flex;
   flex-direction: column;
-
-  min-height: 210px;
+  gap: 10px;
   padding: 16px;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-
-  background: #ffffff;
-
+  background: $canvas;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-md;
   cursor: pointer;
+  transition: border-color 0.25s $ease, background 0.25s $ease, transform 0.25s $ease, box-shadow 0.25s $ease;
 
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-
-    border-color: #c7d2fe;
-
-    box-shadow:
-      0 8px 20px rgba(15, 23, 42, 0.07);
-  }
-
-  &.selected {
-    border-color: #6366f1;
-
-    background: #fafaff;
-
-    box-shadow:
-      0 0 0 3px rgba(99, 102, 241, 0.08);
-  }
+  &:hover { transform: translateY(-3px); box-shadow: $shadow-soft; }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
 
   .property-icon {
-    width: 40px;
-    height: 40px;
-
-    display: grid;
-    place-items: center;
-
-    margin-bottom: 13px;
-
-    border-radius: 8px;
-
-    background: #f1f5f9;
-
-    font-size: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
   }
 
   .property-content {
-    flex: 1;
-
-    h3 {
-      margin: 0 0 6px;
-
-      color: #1f2937;
-
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    p {
-      margin: 0 0 10px;
-
-      color: #6b7280;
-
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    small {
-      display: block;
-
-      margin-top: 4px;
-
-      color: #9ca3af;
-
-      font-size: 11px;
-    }
+    h3 { font-family: $font-display; font-size: 0.94rem; font-weight: 700; margin: 0 0 3px; color: $ink; }
+    p { margin: 0 0 4px; font-size: 0.82rem; color: $ink-soft; }
+    small { display: block; font-size: 0.76rem; color: $ink-faint; }
   }
 
   .select-indicator {
-    padding-top: 11px;
+    margin-top: auto;
+    padding-top: 8px;
 
-    border-top: 1px solid #edf0f4;
-
-    color: #6b7280;
-
-    font-size: 11px;
-    font-weight: 700;
+    span {
+      display: inline-flex;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: $ink-faint;
+    }
   }
 
-  &.selected .select-indicator {
-    color: #4f46e5;
+  &.selected {
+    background: $violet-bg;
+    border-color: $violet;
+    box-shadow: 0 0 0 3px rgba($violet, 0.16);
+
+    .property-icon { background: $violet; color: $white; }
+
+    .select-indicator span {
+      color: $violet-deep;
+    }
   }
 }
-
-
-/* =====================================================
-   EMPTY STATE
-===================================================== */
 
 .empty-state {
   grid-column: 1 / -1;
-
-  padding: 45px 20px;
-
   text-align: center;
+  padding: 48px 24px;
+  color: $ink-faint;
 
-  border: 1px dashed #d1d5db;
-  border-radius: 10px;
-
-  background: #fafafa;
-
-  > div {
-    margin-bottom: 10px;
-
-    font-size: 28px;
-  }
-
-  h3 {
-    margin: 0 0 5px;
-
-    color: #4b5563;
-
-    font-size: 14px;
-  }
-
-  p {
-    margin: 0;
-
-    color: #9ca3af;
-
-    font-size: 12px;
-  }
+  > div:first-child { font-size: 2rem; margin-bottom: 10px; }
+  h3 { font-family: $font-display; font-size: 1.02rem; margin: 0 0 6px; color: $ink; }
+  p { margin: 0; font-size: 0.88rem; }
 }
 
-
-/* =====================================================
-   VISIT DETAILS
-===================================================== */
+// =======================================================================
+// STEP 5 — VISIT DETAILS
+// =======================================================================
 
 .visit-details-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 
+  @include mobile { grid-template-columns: 1fr; }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    &.full-width { grid-column: 1 / -1; }
+  }
+
   label {
-    display: block;
-
-    margin-bottom: 7px;
-
-    color: #4b5563;
-
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $ink-soft;
   }
 
-  input,
-  select,
-  textarea {
+  input, select, textarea {
+    font-family: $font-body;
+    font-size: 0.94rem;
+    color: $ink;
+    background: $canvas;
+    border: 1.5px solid $hairline;
+    border-radius: $radius-sm;
+    padding: 11px 14px;
     width: 100%;
+    transition: border-color 0.25s $ease, box-shadow 0.25s $ease, background 0.25s $ease;
 
-    border: 1px solid #e5e7eb;
-    border-radius: 7px;
-
-    outline: none;
-
-    background: #ffffff;
-    color: #374151;
-
-    font-size: 13px;
-
-    transition: 0.2s ease;
-
-    &:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
-    }
+    &:hover { border-color: darken($hairline, 8%); }
+    &:focus { outline: none; border-color: $violet; background: $white; box-shadow: 0 0 0 4px rgba($violet, 0.14); }
   }
 
-  input,
+  textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
+
   select {
-    height: 42px;
-    padding: 0 11px;
-  }
-
-  textarea {
-    min-height: 110px;
-
-    padding: 11px;
-
-    resize: vertical;
-    font-family: inherit;
-
-    &::placeholder {
-      color: #9ca3af;
-    }
-  }
-
-  .full-width {
-    grid-column: 1 / -1;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B6357' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
   }
 }
-
-
-/* =====================================================
-   ACTIONS
-===================================================== */
 
 .form-actions {
   grid-column: 1 / -1;
-
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
+  margin-top: 8px;
 
-  padding-top: 4px;
+  @include mobile { flex-direction: column-reverse; }
 
   button {
-    min-width: 115px;
-    height: 40px;
-
-    padding: 0 16px;
-
-    border-radius: 7px;
-
-    font-size: 12px;
+    font-family: $font-body;
     font-weight: 700;
-
+    font-size: 0.94rem;
+    padding: 12px 26px;
+    border-radius: 999px;
     cursor: pointer;
+    border: none;
+    transition: transform 0.25s $ease, box-shadow 0.25s $ease, opacity 0.25s $ease;
 
-    transition: 0.2s ease;
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
 
-    &:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    &[type='button'] {
-      border: 1px solid #e5e7eb;
-
-      background: #ffffff;
-      color: #4b5563;
-
-      &:hover {
-        background: #f9fafb;
-      }
-    }
-
-    &[type='submit'] {
-      border: 1px solid #4f46e5;
-
-      background: #4f46e5;
-      color: #ffffff;
-
-      &:hover {
-        background: #4338ca;
-      }
-    }
-  }
-}
-
-
-/* =====================================================
-   TABLET
-===================================================== */
-
-@media (max-width: 1100px) {
-
-  .visit-form-page {
-    padding: 22px;
+    @include mobile { width: 100%; }
   }
 
-  .demand-grid {
-    grid-template-columns: repeat(2, 1fr);
+  button[type='button'] {
+    background: $white;
+    color: $ink-soft;
+    border: 1.5px solid $hairline !important;
+
+    &:hover:not(:disabled) { border-color: $ink-faint !important; background: $canvas; }
   }
 
-  .filters-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  button[type='submit'] {
+    color: $white;
+    background: linear-gradient(135deg, $violet, $emerald);
+    box-shadow: 0 14px 26px -10px rgba($violet, 0.5);
 
-  .property-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 700px) {
-
-  .visit-form-page {
-    padding: 14px 10px;
-  }
-
-  .page-header {
-    align-items: flex-start;
-    flex-direction: column;
-
-    h2 {
-      font-size: 23px;
-    }
-
-    button {
-      width: 100%;
-    }
-  }
-
-  .form-card {
-    padding: 16px;
-    border-radius: 10px;
-  }
-
-  .section-header {
-    align-items: flex-start;
-
-    .step-number {
-      width: 30px;
-      height: 30px;
-    }
-
-    h3 {
-      font-size: 14px;
-    }
-  }
-
-  .selected-client {
-    align-items: flex-start;
-    flex-wrap: wrap;
-
-    .client-info {
-      min-width: 0;
-    }
-
-    button {
-      width: 100%;
-    }
-  }
-
-  .demand-grid,
-  .filters-grid,
-  .property-grid,
-  .visit-details-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .visit-details-grid {
-    .full-width,
-    .form-actions {
-      grid-column: auto;
-    }
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-
-    button {
-      width: 100%;
-    }
-  }
-}
-
-
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
-
-@media (max-width: 420px) {
-
-  .visit-form-page {
-    padding: 10px 7px;
-  }
-
-  .form-card {
-    padding: 13px;
-  }
-
-  .property-card {
-    min-height: auto;
+    &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 18px 32px -8px rgba($violet, 0.58); }
   }
 }

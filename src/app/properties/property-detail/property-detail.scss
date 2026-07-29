@@ -1,845 +1,389 @@
-/* =====================================================
-   PROPERTY DETAIL PAGE
-===================================================== */
+// =====================================================================
+// AbhiHomes CRM — Property Detail
+// -----------------------------------------------------------------------
+// The photo grid is the one place on this whole site where "Instagram
+// layout" is completely literal — a tight 3-up square-thumbnail grid
+// with a hover zoom, same as a profile's post grid.
+//
+// A few honest limitations, since the HTML doesn't give me hooks for
+// these:
+// 1. Master Bedroom / Modular Kitchen render as one of two identical
+//    <span> tags with no distinguishing class — I can't turn
+//    "Available" green and "Not Available" grey from CSS alone
+//    without guessing at text content. Both render as one neutral
+//    pill style. Add `[class.available]="variant.masterBedroom"` (etc.)
+//    and I'll wire in real green/grey states.
+// 2. The distance-grid items (Airport, Railway, Metro...) are each
+//    independently conditional, so their position among siblings
+//    shifts depending on which fields exist — nth-child-based icon
+//    colors would silently mismatch. All six get one consistent
+//    treatment instead, which is the safe choice.
+// 3. `:has()` is used to tell "labeled info" paragraphs (containing a
+//    <strong>) apart from "empty state" ones (plain text) — needs a
+//    reasonably current browser (all major ones qualify today).
+// =====================================================================
 
-:host {
-  display: block;
-  min-height: 100vh;
-  padding: 30px;
+$font-display: 'Sora', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
 
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc 0%,
-      #eef2ff 45%,
-      #f8fafc 100%
-    );
-}
+$canvas: #fbf9f5;
+$ink: #18140f;
+$ink-soft: #6b6357;
+$ink-faint: #a49c8c;
+$hairline: #eae3d5;
+$white: #ffffff;
 
+$hues: #ff6b47, #2e90fa, #8b5cf6, #12b76a, #f79009, #ee46bc;
 
-/* =====================================================
-   MAIN CONTAINER
-===================================================== */
+$blue: #2e90fa;   $blue-bg: #e5f2ff;   $blue-deep: #155ea8;
+$violet: #8b5cf6; $violet-bg: #f1ecff; $violet-deep: #6425c7;
+
+$radius-lg: 24px;
+$radius-md: 14px;
+$radius-sm: 10px;
+$shadow-soft: 0 2px 8px rgba(24, 20, 15, 0.05), 0 10px 30px -12px rgba(24, 20, 15, 0.10);
+$shadow-lift: 0 10px 20px -6px rgba(24, 20, 15, 0.10), 0 24px 48px -16px rgba(24, 20, 15, 0.16);
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile { @media (max-width: 639px) { @content; } }
+@mixin tablet { @media (max-width: 900px) { @content; } }
 
 .property-detail {
-  width: 100%;
-  max-width: 1250px;
+  max-width: 920px;
   margin: 0 auto;
+  padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 24px) clamp(40px, 6vw, 64px);
+  font-family: $font-body;
+  color: $ink;
 
-  padding: 34px;
+  h2 {
+    font-family: $font-display;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
 
-  background: rgba(255, 255, 255, 0.94);
-
-  border: 1px solid rgba(226, 232, 240, 0.9);
-
-  border-radius: 28px;
-
-  box-shadow:
-    0 20px 55px rgba(15, 23, 42, 0.10);
-
-  backdrop-filter: blur(18px);
+    &::after {
+      content: '';
+      display: block;
+      width: 46px;
+      height: 4px;
+      margin-top: 12px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, $blue, $violet);
+    }
+  }
 }
 
+// =======================================================================
+// SECTION HEADINGS
+// =======================================================================
 
-/* =====================================================
-   PROPERTY TITLE
-===================================================== */
+h3 {
+  font-family: $font-display;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $ink;
+  margin: 36px 0 16px;
+  padding-top: 24px;
+  border-top: 1.5px solid $hairline;
+  display: flex;
+  align-items: center;
+  gap: 9px;
 
-.property-detail > h2 {
-  position: relative;
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
 
-  margin: 0 0 30px;
-  padding-bottom: 20px;
-
-  color: #0f172a;
-
-  font-size: clamp(28px, 4vw, 42px);
-
-  font-weight: 850;
-
-  line-height: 1.2;
-
-  letter-spacing: -1px;
+  @for $i from 1 through 9 {
+    &:nth-of-type(#{$i})::before { background: nth($hues, (($i - 1) % 6) + 1); }
+  }
 }
 
-
-.property-detail > h2::after {
-  content: '';
-
-  position: absolute;
-
-  left: 0;
-  bottom: 0;
-
-  width: 90px;
-  height: 5px;
-
-  border-radius: 50px;
-
-  background:
-    linear-gradient(
-      90deg,
-      #4f46e5,
-      #8b5cf6,
-      #ec4899
-    );
-}
-
-
-/* =====================================================
-   SECTION HEADINGS
-===================================================== */
-
-.property-detail > h3 {
-  position: relative;
-
-  margin: 42px 0 20px;
-  padding-bottom: 12px;
-
-  color: #1e293b;
-
-  font-size: 22px;
-
-  font-weight: 800;
-
-  border-bottom: 1px solid #e2e8f0;
-}
-
-
-.property-detail > h3::before {
-  content: '';
-
-  display: inline-block;
-
-  width: 5px;
-  height: 22px;
-
-  margin-right: 10px;
-
-  vertical-align: -3px;
-
-  border-radius: 20px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #4f46e5,
-      #8b5cf6
-    );
-}
-
-
-/* =====================================================
-   BASIC INFORMATION
-===================================================== */
+// =======================================================================
+// BASIC INFO
+// =======================================================================
 
 .basic-info {
   display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 20px 0 0;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  @include mobile { grid-template-columns: 1fr; }
 
-  gap: 15px;
+  p {
+    margin: 0;
+    padding: 13px 16px;
+    background: $canvas;
+    border: 1px solid $hairline;
+    border-radius: $radius-sm;
+    font-size: 0.92rem;
+    color: $ink;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 
-  padding: 22px;
+    strong {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $ink-faint;
+      order: -1;
+    }
+  }
 
-  border: 1px solid #e2e8f0;
-
-  border-radius: 20px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffffff,
-      #f8fafc
-    );
+  @for $i from 1 through 5 {
+    p:nth-of-type(#{$i}) { border-left: 3px solid nth($hues, $i); }
+  }
 }
 
-
-.basic-info p {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  min-height: 70px;
-
-  margin: 0;
-  padding: 15px;
-
-  border-radius: 13px;
-
-  background: #ffffff;
-
-  border: 1px solid #eef2f7;
-
-  color: #64748b;
-
-  font-size: 14px;
-}
-
-
-.basic-info strong {
-  color: #334155;
-
-  font-size: 12px;
-
-  font-weight: 800;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.4px;
-}
-
-
-/* =====================================================
-   VARIANTS
-===================================================== */
+// =======================================================================
+// VARIANTS
+// =======================================================================
 
 .variants-container {
   display: grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(280px, 1fr)
-    );
-
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
 }
-
-
-/* =====================================================
-   VARIANT CARD
-===================================================== */
 
 .variant-card {
-  position: relative;
+  background: $white;
+  border: 1.5px solid $hairline;
+  border-radius: $radius-lg;
+  padding: 20px;
+  box-shadow: $shadow-soft;
+  transition: transform 0.3s $ease, box-shadow 0.3s $ease;
 
-  padding: 24px;
+  &:hover { transform: translateY(-4px); box-shadow: $shadow-lift; }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
 
-  overflow: hidden;
+  h4 {
+    font-family: $font-display;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: $white;
+    display: inline-flex;
+    background: linear-gradient(135deg, $blue, $violet);
+    padding: 5px 14px;
+    border-radius: 999px;
+    margin: 0 0 14px;
+  }
 
-  border: 1px solid #e2e8f0;
+  p {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0;
+    padding: 9px 0;
+    font-size: 0.88rem;
+    color: $ink;
 
-  border-radius: 20px;
+    &:not(:last-child) { border-bottom: 1px solid $hairline; }
 
-  background: #ffffff;
+    strong {
+      font-weight: 600;
+      color: $ink-soft;
+      flex-shrink: 0;
+    }
 
-  box-shadow:
-    0 8px 25px rgba(15, 23, 42, 0.06);
-
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
+    span {
+      display: inline-flex;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: $canvas;
+      color: $ink-soft;
+    }
+  }
 }
 
-
-.variant-card::before {
-  content: '';
-
-  position: absolute;
-
-  top: 0;
-  left: 0;
-  right: 0;
-
-  height: 5px;
-
-  background:
-    linear-gradient(
-      90deg,
-      #4f46e5,
-      #8b5cf6,
-      #ec4899
-    );
-}
-
-
-.variant-card:hover {
-  transform: translateY(-6px);
-
-  border-color: #c7d2fe;
-
-  box-shadow:
-    0 18px 35px rgba(15, 23, 42, 0.12);
-}
-
-
-.variant-card h4 {
-  margin: 0 0 20px;
-
-  color: #4f46e5;
-
-  font-size: 18px;
-
-  font-weight: 800;
-}
-
-
-.variant-card p {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 12px;
-
-  margin: 0;
-
-  padding: 12px 0;
-
-  border-bottom: 1px solid #f1f5f9;
-
-  color: #64748b;
-
-  font-size: 13px;
-}
-
-
-.variant-card p:last-child {
-  border-bottom: none;
-}
-
-
-.variant-card p strong {
-  color: #334155;
-
-  font-weight: 700;
-}
-
-
-.variant-card p span {
-  color: #0f172a;
-
-  font-weight: 700;
-
-  text-align: right;
-}
-
-
-/* =====================================================
-   TAG CONTAINER
-===================================================== */
+// =======================================================================
+// TAGS (Amenities / Builder Promises)
+// =======================================================================
 
 .tag-container {
   display: flex;
-
   flex-wrap: wrap;
-
-  gap: 10px;
-
-  padding: 20px;
-
-  border-radius: 18px;
-
-  background: #f8fafc;
-
-  border: 1px solid #e2e8f0;
+  gap: 8px;
+  margin-top: 16px;
 }
-
 
 .tag {
   display: inline-flex;
-
-  align-items: center;
-
-  padding: 9px 14px;
-
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 8px 16px;
   border-radius: 999px;
+  background: $canvas;
+  color: $ink;
+  border: 1px solid $hairline;
+  transition: transform 0.2s $ease;
 
-  background:
-    linear-gradient(
-      135deg,
-      #eef2ff,
-      #ede9fe
-    );
-
-  color: #4f46e5;
-
-  font-size: 12px;
-
-  font-weight: 750;
-
-  border: 1px solid #ddd6fe;
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  &:hover { transform: translateY(-2px); }
+  @media (prefers-reduced-motion: reduce) { &:hover { transform: none; } }
 }
 
-
-.tag:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 6px 14px rgba(79, 70, 229, 0.15);
+// cycle a hue per tag (repeats every 6)
+@for $i from 1 through 6 {
+  .tag:nth-of-type(6n + #{$i}) {
+    background: rgba(nth($hues, $i), 0.12);
+    color: darken(nth($hues, $i), 12%);
+    border-color: rgba(nth($hues, $i), 0.25);
+  }
 }
 
-
-/* =====================================================
-   NORMAL DESCRIPTION TEXT
-===================================================== */
-
-.property-detail > p {
-  margin: 0;
-
-  padding: 18px 20px;
-
-  border-left: 4px solid #6366f1;
-
-  border-radius: 12px;
-
-  background: #f8fafc;
-
-  color: #475569;
-
-  font-size: 14px;
-
-  line-height: 1.7;
-}
-
-
-/* =====================================================
-   DISTANCE GRID
-===================================================== */
+// =======================================================================
+// DISTANCE GRID
+// =======================================================================
 
 .distance-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
 
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(170px, 1fr)
-    );
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: $canvas;
+    border: 1px solid $hairline;
+    border-radius: $radius-sm;
 
-  gap: 15px;
+    &::before {
+      content: '📍';
+      font-size: 0.9rem;
+      margin-bottom: 2px;
+    }
+
+    strong {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: $ink-soft;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    span {
+      font-family: $font-display;
+      font-weight: 700;
+      font-size: 1rem;
+      color: $ink;
+    }
+  }
 }
 
-
-.distance-grid > div {
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  min-height: 105px;
-
-  padding: 18px;
-
-  text-align: center;
-
-  border: 1px solid #e2e8f0;
-
-  border-radius: 17px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffffff,
-      #f8fafc
-    );
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
-
-.distance-grid > div:hover {
-  transform: translateY(-4px);
-
-  box-shadow:
-    0 10px 25px rgba(15, 23, 42, 0.08);
-}
-
-
-.distance-grid strong {
-  margin-bottom: 8px;
-
-  color: #475569;
-
-  font-size: 13px;
-}
-
-
-.distance-grid span {
-  color: #4f46e5;
-
-  font-size: 18px;
-
-  font-weight: 800;
-}
-
-
-/* =====================================================
-   IMAGE GALLERY
-===================================================== */
+// =======================================================================
+// IMAGE GALLERY — the Instagram-grid moment
+// =======================================================================
 
 .image-gallery {
   display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 16px;
+  border-radius: $radius-md;
+  overflow: hidden;
 
-  grid-template-columns:
-    repeat(
-      auto-fill,
-      minmax(220px, 1fr)
-    );
-
-  gap: 18px;
+  @include mobile { gap: 3px; }
 }
-
 
 .image-card {
   position: relative;
-
-  aspect-ratio: 16 / 10;
-
+  aspect-ratio: 1;
   overflow: hidden;
+  background: $canvas;
 
-  border-radius: 18px;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s $ease;
+  }
 
-  background: #e2e8f0;
-
-  box-shadow:
-    0 8px 22px rgba(15, 23, 42, 0.08);
-
-  cursor: pointer;
+  &:hover img { transform: scale(1.06); }
+  @media (prefers-reduced-motion: reduce) { &:hover img { transform: none; } }
 }
 
-
-.image-card::after {
-  content: '';
-
-  position: absolute;
-
-  inset: 0;
-
-  background:
-    linear-gradient(
-      180deg,
-      transparent 60%,
-      rgba(15, 23, 42, 0.35)
-    );
-
-  opacity: 0;
-
-  transition: opacity 0.3s ease;
-}
-
-
-.image-card img {
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  object-fit: cover;
-
-  transition:
-    transform 0.45s ease;
-}
-
-
-.image-card:hover img {
-  transform: scale(1.08);
-}
-
-
-.image-card:hover::after {
-  opacity: 1;
-}
-
-
-/* =====================================================
-   DOCUMENTS
-===================================================== */
+// =======================================================================
+// DOCUMENTS
+// =======================================================================
 
 .documents-list {
   display: flex;
-
   flex-direction: column;
-
-  gap: 12px;
+  gap: 8px;
+  margin-top: 16px;
 }
-
 
 .document-item {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  background: $canvas;
+  border: 1px solid $hairline;
+  border-radius: $radius-sm;
 
-  gap: 15px;
+  span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $ink;
 
-  padding: 16px 18px;
+    &::before { content: '📄 '; }
+  }
 
-  border: 1px solid #e2e8f0;
+  a {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: $white;
+    background: $blue;
+    padding: 7px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: background 0.25s $ease, transform 0.25s $ease;
 
-  border-radius: 14px;
-
-  background: #ffffff;
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+    &:hover { background: $blue-deep; transform: translateY(-1px); }
+    &:focus-visible { outline: 2.5px solid $ink; outline-offset: 2px; }
+  }
 }
 
+// =======================================================================
+// PLAIN PARAGRAPHS (Community Restrictions, Connectivity, ownership,
+// dates, and the various empty-state lines)
+// =======================================================================
 
-.document-item:hover {
-  transform: translateX(4px);
+.property-detail > p {
+  margin: 0 0 10px;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: $ink;
 
-  box-shadow:
-    0 8px 20px rgba(15, 23, 42, 0.08);
-}
+  strong { color: $ink-soft; font-weight: 700; margin-right: 4px; }
 
-
-.document-item span {
-  color: #334155;
-
-  font-size: 14px;
-
-  font-weight: 700;
-}
-
-
-.document-item a {
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 9px 14px;
-
-  border-radius: 9px;
-
-  background: #eef2ff;
-
-  color: #4f46e5;
-
-  font-size: 12px;
-
-  font-weight: 750;
-
-  text-decoration: none;
-
-  transition: 0.25s;
-}
-
-
-.document-item a:hover {
-  background: #4f46e5;
-
-  color: #ffffff;
-}
-
-
-/* =====================================================
-   PROPERTY INFORMATION
-===================================================== */
-
-.property-detail > p strong {
-  color: #334155;
-
-  font-weight: 800;
-}
-
-
-/* =====================================================
-   RESPONSIVE TABLET
-===================================================== */
-
-@media (max-width: 850px) {
-
-  :host {
-    padding: 20px;
+  // "labeled" info line (has a <strong>) vs. an empty-state message
+  // (plain text, no <strong>)
+  &:has(strong) {
+    padding: 12px 16px;
+    background: $canvas;
+    border: 1px solid $hairline;
+    border-radius: $radius-sm;
   }
 
-
-  .property-detail {
-    padding: 25px;
-
-    border-radius: 22px;
+  &:not(:has(strong)) {
+    font-style: italic;
+    color: $ink-faint;
+    padding: 4px 0;
   }
-
-
-  .basic-info {
-    grid-template-columns: 1fr;
-  }
-
-
-  .image-gallery {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
-  }
-
-}
-
-
-/* =====================================================
-   RESPONSIVE MOBILE
-===================================================== */
-
-@media (max-width: 600px) {
-
-  :host {
-    padding: 10px;
-  }
-
-
-  .property-detail {
-    padding: 17px;
-
-    border-radius: 18px;
-  }
-
-
-  .property-detail > h2 {
-    font-size: 28px;
-
-    margin-bottom: 24px;
-  }
-
-
-  .property-detail > h3 {
-    margin-top: 32px;
-
-    font-size: 19px;
-  }
-
-
-  .basic-info {
-    gap: 10px;
-
-    padding: 12px;
-  }
-
-
-  .basic-info p {
-    min-height: auto;
-
-    padding: 13px;
-  }
-
-
-  .variants-container {
-    grid-template-columns: 1fr;
-
-    gap: 14px;
-  }
-
-
-  .variant-card {
-    padding: 18px;
-  }
-
-
-  .variant-card p {
-    align-items: flex-start;
-
-    flex-direction: column;
-
-    gap: 4px;
-  }
-
-
-  .variant-card p span {
-    text-align: left;
-  }
-
-
-  .distance-grid {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
-
-    gap: 10px;
-  }
-
-
-  .distance-grid > div {
-    min-height: 90px;
-
-    padding: 12px;
-  }
-
-
-  .distance-grid span {
-    font-size: 16px;
-  }
-
-
-  .image-gallery {
-    grid-template-columns: 1fr;
-
-    gap: 13px;
-  }
-
-
-  .image-card {
-    aspect-ratio: 16 / 10;
-  }
-
-
-  .document-item {
-    align-items: flex-start;
-
-    flex-direction: column;
-  }
-
-
-  .document-item a {
-    width: 100%;
-  }
-
-
-  .property-detail > p {
-    padding: 15px;
-
-    font-size: 13px;
-  }
-
-}
-
-
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
-
-@media (max-width: 380px) {
-
-  .property-detail {
-    padding: 13px;
-  }
-
-
-  .property-detail > h2 {
-    font-size: 24px;
-  }
-
-
-  .distance-grid {
-    grid-template-columns: 1fr;
-  }
-
-
-  .tag {
-    font-size: 11px;
-
-    padding: 8px 11px;
-  }
-
 }
