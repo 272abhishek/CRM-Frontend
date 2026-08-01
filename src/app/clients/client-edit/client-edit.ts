@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Client, ClientInterface } from '../client';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
   selector: 'app-client-edit',
   standalone: true,
@@ -20,7 +20,8 @@ export class ClientEdit implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private clientService: Client,
-    private router: Router
+    private router: Router,
+      private notification: NotificationServices
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -60,16 +61,35 @@ export class ClientEdit implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        alert(err.error?.message || 'Failed to load client');
-      }
+       console.error(err);
+
+  this.notification.error(
+
+    err?.error?.error ||
+
+    err?.error?.message ||
+
+    err?.message ||
+
+    'Failed to load client'
+
+  );
+     }
     });
   }
 
   updateClient() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+   if (this.form.invalid) {
+
+  this.notification.warning(
+    'Please fill all required fields'
+  );
+
+  this.form.markAllAsTouched();
+
+  return;
+
+}
 
     const data = this.form.value;
     // agar naya note khali chhoda hai to key hi mat bhejo — backend ka
@@ -80,14 +100,36 @@ export class ClientEdit implements OnInit {
     }
 
     this.clientService.updateClient(this.id, data).subscribe({
-      next: () => {
-        alert('Client Updated Successfully');
-        this.router.navigate(['/clients']);
-      },
+      next: (res: any) => {
+
+  this.notification.success(
+
+    res?.message ||
+
+    'Client Updated Successfully'
+
+  );
+
+  this.router.navigate(['/clients']);
+
+},
       error: (err) => {
-        console.error('UPDATE ERROR:', err);
-        alert(err.error?.message || err.error?.error || 'Failed to update client');
-      }
+
+  console.error('UPDATE ERROR:', err);
+
+  this.notification.error(
+
+    err?.error?.error ||
+
+    err?.error?.message ||
+
+    err?.message ||
+
+    'Failed to update client'
+
+  );
+
+}
     });
   }
 }

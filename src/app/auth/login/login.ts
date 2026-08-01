@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule,MatError  } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { } from '@angular/material/form-field';
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
   selector: 'app-login',
    standalone: true,
@@ -20,7 +21,8 @@ user: any;
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
-    private router: Router
+    private router: Router,
+    private notification: NotificationServices
   ) {
     // ✅ initialize form inside constructor
     this.form = this.fb.group({
@@ -28,33 +30,46 @@ user: any;
       password: ['', Validators.required]
     });
   }
+onSubmit() {
 
-  onSubmit() {
-    if (this.form.valid) {
-      this.api.post('/auth/login', this.form.value).subscribe({
-        next: (res: any) => {
-          console.log(res.token)
-          localStorage.setItem('jwt', res.token);
-          // ✅ jo bhi user object mein aaya, sab store kar do
-        if (res.user) {
-          localStorage.setItem('user', JSON.stringify(res.user));
-        }
-
-        const role = res.user?.role;
-           this.router.navigate(['/profile']);
-          // switch (res.user?.role) {
-          //   case 'admin': this.router.navigate(['/admin-dashboard']); break;
-          //   case 'agent': this.router.navigate(['/agent-dashboard']); break;
-          //   case 'client': this.router.navigate(['/client-dashboard']); break;
-          //   case 'builder': this.router.navigate(['/builder-dashboard']); break;
-          //   case 'seller': this.router.navigate(['/seller-dashboard']); break;
-          //   default: this.router.navigate(['/dashboard']);
-          // }
-        },
-        error: (err) => {
-          alert(err.error?.message || 'Login failed, please try again.');
-        }
-      });
-    }
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  this.api.post('/auth/login', this.form.value).subscribe({
+
+    next: (res: any) => {
+
+      localStorage.setItem('jwt', res.token);
+
+      if (res.user) {
+        localStorage.setItem('user', JSON.stringify(res.user));
+      }
+
+      this.notification.success(
+        res?.message || 'Login successful'
+      );
+
+      this.router.navigate(['/profile']);
+
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      const message =
+        err?.error?.error ||
+        err?.error?.message ||
+        err?.message ||
+        'Login failed';
+
+      this.notification.error(message);
+
+    }
+
+  });
+
+}
 }

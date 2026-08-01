@@ -36,7 +36,7 @@ import {
   VisitClient,
   VisitProperty
 } from '../propertyInterface';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 
 @Component({
 
@@ -219,7 +219,8 @@ implements OnInit {
       Router,
 
     private cdr:
-      ChangeDetectorRef
+      ChangeDetectorRef,
+        private notification: NotificationServices
 
   ) {}
 
@@ -246,11 +247,7 @@ implements OnInit {
       this.loading =
         false;
 
-      alert(
-
-        'Visit ID missing'
-
-      );
+      this.notification.error('Visit ID missing');
 
       this.cdr.detectChanges();
 
@@ -395,13 +392,10 @@ implements OnInit {
             this.cdr.detectChanges();
 
 
-            alert(
-
-              error.error?.message ||
-
-              'Failed to load visit'
-
-            );
+            this.notification.error(
+  error.error?.message ||
+  'Failed to load visit'
+);
 
           }
 
@@ -532,12 +526,9 @@ implements OnInit {
 
         .markAllAsTouched();
 
-
-      alert(
-
-        'Please fill all required fields'
-
-      );
+this.notification.warning(
+  'Please fill all required fields'
+);
 
       return;
 
@@ -551,11 +542,9 @@ implements OnInit {
 
     if (!id) {
 
-      alert(
-
-        'Visit ID missing'
-
-      );
+     this.notification.error(
+  'Visit ID missing'
+);
 
       return;
 
@@ -659,15 +648,13 @@ implements OnInit {
             this.cdr.detectChanges();
 
 
-            alert(
+            this.notification.success(
 
-              formValue.status === 'Closed'
+  formValue.status === 'Closed'
+    ? 'Visit closed and deal created successfully'
+    : 'Property visit updated successfully'
 
-                ? 'Visit closed and deal created successfully'
-
-                : 'Property visit updated successfully'
-
-            );
+);
 
 
             this.router.navigate([
@@ -701,15 +688,15 @@ implements OnInit {
             this.cdr.detectChanges();
 
 
-            alert(
+           this.notification.error(
 
-              error.error?.message ||
+  error.error?.message ||
 
-              error.error?.error ||
+  error.error?.error ||
 
-              'Failed to update visit'
+  'Failed to update visit'
 
-            );
+);
 
           }
 

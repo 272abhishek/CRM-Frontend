@@ -13,7 +13,7 @@ import {
   HttpHeaders
 } from '@angular/common/http';
 
-
+import { NotificationServices } from '../../core/notification/notification-services';
 // =====================================================
 // TASK INTERFACE
 // =====================================================
@@ -178,7 +178,8 @@ implements OnInit {
       HttpClient,
 
     private cdr:
-      ChangeDetectorRef
+      ChangeDetectorRef,
+      private notification: NotificationServices
 
   ) {}
 
@@ -409,30 +410,31 @@ implements OnInit {
           },
 
 
-        error:
-          (err) => {
+        error: (err) => {
 
+  console.error(
 
-            console.error(
+    'LOAD TASKS ERROR:',
 
-              'LOAD TASKS ERROR:',
+    err
 
-              err
+  );
 
-            );
+  this.tasks = [];
 
+  this.loading = false;
 
-            this.tasks =
-              [];
+  this.cdr.detectChanges();
 
+  this.notification.error(
 
-            this.loading =
-              false;
+    err?.error?.message ||
 
+    'Failed to load tasks'
 
-            this.cdr.detectChanges();
+  );
 
-          }
+}
 
       });
 

@@ -26,7 +26,7 @@ import {
 import {
   PropertyVisitService
 } from '../property-visit';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 
 @Component({
 
@@ -92,7 +92,8 @@ implements OnInit {
       PropertyVisitService,
 
     private cdr:
-      ChangeDetectorRef
+      ChangeDetectorRef,
+       private notification: NotificationServices
 
   ) {}
 
@@ -118,9 +119,9 @@ implements OnInit {
       this.loading =
         false;
 
-      alert(
-        'Visit ID missing'
-      );
+     this.notification.error(
+  'Visit ID missing'
+);
 
       return;
 
@@ -182,32 +183,29 @@ implements OnInit {
           },
 
 
-        error:
+        error: (error) => {
 
-          (error) => {
+  console.error(
 
-            console.error(
+    'GET VISIT DETAIL ERROR:',
 
-              'GET VISIT DETAIL ERROR:',
+    error
 
-              error
+  );
 
-            );
+  this.loading = false;
 
+  this.notification.error(
 
-            this.loading =
-              false;
+    error?.error?.message ||
 
+    error?.error?.error ||
 
-            alert(
+    'Failed to load visit'
 
-              error.error?.message ||
+  );
 
-              'Failed to load visit'
-
-            );
-
-          }
+}
 
       });
 

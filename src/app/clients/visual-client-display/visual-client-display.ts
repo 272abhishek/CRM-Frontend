@@ -18,7 +18,7 @@ import {
   Client,
   ClientInterface
 } from '../client';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 
 // =====================================================
 // REGISTER CHART.JS
@@ -157,7 +157,7 @@ export class VisualClientDisplay
   // =====================================================
 
   constructor(
-
+private notification: NotificationServices,
     private cdr:
       ChangeDetectorRef,
 
@@ -340,37 +340,26 @@ export class VisualClientDisplay
         // ERROR
         // =============================================
 
-        error:
-          (err) => {
+        error: (err) => {
 
+  console.error(
+    'CLIENT ANALYTICS ERROR:',
+    err
+  );
 
-            console.error(
+  this.clients = [];
 
-              'CLIENT ANALYTICS ERROR:',
+  this.loading = false;
 
-              err
+  this.error =
+    err?.error?.error ||
+    err?.error?.message ||
+    err?.message ||
+    'Unable to load client analytics.';
 
-            );
+  this.notification.error(this.error);
 
-
-            this.clients =
-              [];
-
-
-            this.loading =
-              false;
-
-
-            this.error =
-
-              err?.error?.message ||
-
-              err?.error?.error ||
-
-              'Unable to load client analytics.';
-
-
-          }
+}
 
       });
 

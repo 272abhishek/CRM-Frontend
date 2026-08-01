@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Client, ClientInterface, ClientQueryParams } from '../client';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
   selector: 'app-client-list',
   standalone: true,
@@ -39,7 +39,8 @@ export class ClientList implements OnInit {
   constructor(
     private router: Router,
     private clientService: Client,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private notification: NotificationServices
   ) {}
 
   ngOnInit() {
@@ -82,9 +83,22 @@ export class ClientList implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error(err);
-        alert(err.error?.message || 'Failed to load clients');
-      }
+
+  console.error(err);
+
+  this.notification.error(
+
+    err?.error?.error ||
+
+    err?.error?.message ||
+
+    err?.message ||
+
+    'Failed to load clients'
+
+  );
+
+}
     });
   }
 
@@ -125,18 +139,41 @@ export class ClientList implements OnInit {
   editClient(id: string) {
     this.router.navigate(['/clients/edit', id]);
   }
+async deleteClient(id: string) {
 
-  deleteClient(id: string) {
-    if (!confirm('Are you sure you want to delete this client?')) return;
-    this.clientService.deleteClient(id).subscribe({
-      next: () => {
-        this.clients = this.clients.filter(c => c._id !== id);
-        this.totalItems--;
-      },
-      error: (err) => {
-        console.error(err);
-        alert(err.error?.message || 'Delete failed');
-      }
-    });
-  }
+  const confirmed = await this.notification.confirmDelete(
+    'Delete Client?',
+    'This action cannot be undone.'
+  );
+
+  if (!confirmed) return;
+
+  this.clientService.deleteClient(id).subscribe({
+
+    next: (res: any) => {
+
+      this.clients = this.clients.filter(c => c._id !== id);
+
+      this.totalItems--;
+
+      this.notification.success(
+        res?.message || 'Client deleted successfully'
+      );
+
+    },
+
+    error: (err) => {
+
+      this.notification.error(
+        err?.error?.error ||
+        err?.error?.message ||
+        err?.message ||
+        'Delete failed'
+      );
+
+    }
+
+  });
+
+}
 }

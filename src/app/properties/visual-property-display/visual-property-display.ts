@@ -23,7 +23,7 @@ import {
 import {
   Subscription
 } from 'rxjs';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -116,7 +116,9 @@ export class VisualPropertyDisplay
   constructor(
 
     private propertyService:
-      Property
+      Property,
+
+  private notification: NotificationServices
 
   ) {}
 
@@ -191,27 +193,25 @@ export class VisualPropertyDisplay
             },
 
 
-          error:
-            (err) => {
+         error: (err) => {
 
+  console.error(
+    'PROPERTY ANALYTICS ERROR:',
+    err
+  );
 
-              console.error(
+  this.error =
+    err?.error?.message ||
+    err?.error?.error ||
+    'Unable to load property analytics data.';
 
-                'Property analytics error:',
+  this.loading = false;
 
-                err
+  this.notification.error(
+    this.error
+  );
 
-              );
-
-
-              this.error =
-                'Unable to load property analytics data.';
-
-
-              this.loading =
-                false;
-
-            }
+}
 
         });
 

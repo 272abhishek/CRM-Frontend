@@ -64,6 +64,9 @@ export const routes: Routes = [
   {
     path: 'property-visits',
 canActivate: [authGuard],
+loadComponent: () =>
+      import('./layout/deals/deals')
+        .then(m => m.Deals),
     children: [
 
       {

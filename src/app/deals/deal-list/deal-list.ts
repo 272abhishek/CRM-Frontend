@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 import { DealService, Deal, DealQueryParams } from '../deal';
 
 @Component({
@@ -71,7 +71,8 @@ export class DealList implements OnInit {
   constructor(
     private router: Router,
     private dealService: DealService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+     private notification: NotificationServices
   ) {}
 
   // ===================================================
@@ -104,9 +105,16 @@ export class DealList implements OnInit {
       const user = JSON.parse(rawUser);
       this.userRole = user?.role || null;
     } catch (error) {
-      console.error('Invalid user data', error);
-      this.userRole = null;
-    }
+
+  console.error('Invalid user data:', error);
+
+  this.userRole = null;
+
+  this.notification.error(
+    'Invalid user session. Please login again.'
+  );
+
+}
   }
 
   // ===================================================
@@ -331,33 +339,99 @@ export class DealList implements OnInit {
   // ===================================================
   // DELETE DEAL
   // ===================================================
-  deleteDeal(id: string): void {
-    const confirmed = confirm('Are you sure you want to delete this deal?');
+  async deleteDeal(id: string): Promise<void> {
 
-    if (!confirmed) {
-      return;
-    }
+  const confirmed = await this.notification.confirmDelete(
+  'Delete Deal?',
+  'This action cannot be undone.'
+);
 
-    this.dealService.deleteDeal(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.deals = this.deals.filter(deal => deal._id !== id);
-          this.totalItems = Math.max(0, this.totalItems - 1);
-          this.totalPages = Math.ceil(this.totalItems / this.pageSize) || 1;
+if (!confirmed) {
+  return;
+}
 
-          // Current page empty
-          if (this.deals.length === 0 && this.currentPage > 1) {
-            this.currentPage--;
-            this.loadDeals();
-          }
-        },
-        error: (err) => {
-          console.error('DELETE DEAL ERROR:', err);
-          alert(err?.error?.message || err?.error?.error || 'Delete failed');
+  this.dealService
+    .deleteDeal(id)
+    .pipe(
+      takeUntilDestroyed(this.destroyRef)
+    )
+    .subscribe({
+
+      next: (res: any) => {
+
+        this.deals = this.deals.filter(
+
+          deal => deal._id !== id
+
+        );
+
+        this.totalItems = Math.max(
+
+          0,
+
+          this.totalItems - 1
+
+        );
+
+        this.totalPages =
+
+          Math.ceil(
+
+            this.totalItems / this.pageSize
+
+          ) || 1;
+
+        this.notification.success(
+
+          res?.message ||
+
+          'Deal deleted successfully'
+
+        );
+
+        if (
+
+          this.deals.length === 0 &&
+
+          this.currentPage > 1
+
+        ) {
+
+          this.currentPage--;
+
+          this.loadDeals();
+
         }
-      });
-  }
+
+      },
+
+      error: (err) => {
+
+        console.error(
+
+          'DELETE DEAL ERROR:',
+
+          err
+
+        );
+
+        this.notification.error(
+
+          err?.error?.error ||
+
+          err?.error?.message ||
+
+          err?.message ||
+
+          'Delete failed'
+
+        );
+
+      }
+
+    });
+
+}
 
   // ===================================================
   // STATUS CLASS

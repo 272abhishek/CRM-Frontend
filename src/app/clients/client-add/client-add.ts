@@ -8,7 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Client } from '../client';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
   selector: 'app-client-add',
   standalone: true,
@@ -26,7 +26,8 @@ export class ClientAdd {
   constructor(
     private fb: FormBuilder,
     private clientService: Client,
-    private router: Router
+    private router: Router,
+    private notification: NotificationServices
   ) {
     this.clientForm = this.fb.group({
       name: ['', Validators.required],
@@ -70,7 +71,7 @@ export class ClientAdd {
     const user = this.getUser();
 
     if (!user) {
-      alert('Session expired, please login again.');
+      this.notification.warning('Session expired, please login again.');
       return;
     }
 
@@ -91,19 +92,23 @@ export class ClientAdd {
     };
 
     this.clientService.createClient(payload).subscribe({
-      next: () => {
-        alert('Client created successfully!');
+      next: (res: any) => {
+        this.notification.success(
+    res?.message || 'Client created successfully!'
+  );
         this.router.navigate(['/clients']);
       },
 
       error: (err) => {
-        console.error('❌ Create Client Error:', err);
+       console.error('❌ Create Client Error:', err);
 
-        alert(
-          err.error?.error ||
-          err.error?.message ||
-          'Failed to create client'
-        );
+  const message =
+    err?.error?.error ||
+    err?.error?.message ||
+    err?.message ||
+    'Failed to create client';
+
+  this.notification.error(message);
       }
     });
   }

@@ -22,7 +22,7 @@ import {
   TaskClient,
   TaskProperty
 } from '../task';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 
 Chart.register(
   ...registerables
@@ -146,7 +146,9 @@ implements
   constructor(
 private cdr: ChangeDetectorRef,
     private taskService:
-      TaskService
+      TaskService,
+      private notification: NotificationServices
+
 
   ) {}
 
@@ -281,36 +283,27 @@ setTimeout(() => {
           },
 
 
-        error:
-          (err) => {
+        error: (err) => {
 
+  console.error(
+    'TASK ANALYTICS ERROR:',
+    err
+  );
 
-            console.error(
+  this.tasks = [];
 
-              'TASK ANALYTICS ERROR:',
+  this.loading = false;
 
-              err
+  this.error =
+    err?.error?.error ||
+    err?.error?.message ||
+    'Unable to load task analytics.';
 
-            );
+  this.notification.error(this.error);
 
+  this.cdr.detectChanges();
 
-            this.tasks =
-              [];
-
-
-            this.loading =
-              false;
-
-
-            this.error =
-
-              err?.error?.error ||
-
-              err?.error?.message ||
-
-              'Unable to load task analytics.';
-
-          }
+}
 
       });
 

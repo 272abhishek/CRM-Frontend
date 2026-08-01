@@ -5,7 +5,7 @@ import { ApiService } from '../../core/api'; // ✅ correct path
 import { CommonModule } from '@angular/common';
 import { MatError, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
   selector: 'app-signup',
    standalone: true,
@@ -19,7 +19,8 @@ export class Signup {
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
-    private router: Router
+    private router: Router,
+    private notification: NotificationServices
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -29,18 +30,50 @@ export class Signup {
       role: ['', Validators.required]
     });
   }
+onSubmit() {
 
-  onSubmit() {
-    if (this.form.valid) {
-      this.api.post('/auth/register', this.form.value).subscribe({
-        next: () => {
-          this.router.navigate(['/login']);
-        },
-        error: (err) => {
-          alert(err.error?.message || 'Signup failed, please try again.');
-        }
-      });
-    }
+  if (this.form.invalid) {
+
+    this.form.markAllAsTouched();
+
+    return;
+
   }
+
+  this.api.post('/auth/register', this.form.value).subscribe({
+
+    next: (res: any) => {
+
+      this.notification.success(
+
+        res?.message || 'Account created successfully'
+
+      );
+
+      this.router.navigate(['/login']);
+
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      const message =
+
+        err?.error?.error ||
+
+        err?.error?.message ||
+
+        err?.message ||
+
+        'Signup failed';
+
+      this.notification.error(message);
+
+    }
+
+  });
+
+}
 }
 

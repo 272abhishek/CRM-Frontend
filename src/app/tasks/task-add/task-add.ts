@@ -28,7 +28,9 @@ import {
   TaskService,
   TaskPayload
 } from '../task';
-
+import {
+  NotificationServices
+} from '../../core/notification/notification-services';
 
 // =====================================================
 // CLIENT TYPE
@@ -303,7 +305,9 @@ export class TaskAdd implements OnInit {
 
     private http: HttpClient,
 
-    private router: Router
+    private router: Router,
+    private notification:
+    NotificationServices
 
   ) {}
 
@@ -380,22 +384,29 @@ export class TaskAdd implements OnInit {
         },
 
 
-        error: (err) => {
+      error: (err) => {
 
-          console.error(
+  console.error(
 
-            'LOAD PROPERTIES ERROR:',
+    'LOAD PROPERTIES ERROR:',
 
-            err
+    err
 
-          );
+  );
 
+  this.properties = [];
 
-          this.properties = [];
+  this.loading = false;
 
-          this.loading = false;
+  this.notification.error(
 
-        }
+    err?.error?.message ||
+
+    'Failed to load properties'
+
+  );
+
+}
 
       });
 
@@ -485,15 +496,19 @@ export class TaskAdd implements OnInit {
 
     if (
 
-      this.taskForm.invalid
+  this.taskForm.invalid
 
-    ) {
+) {
 
-      this.taskForm.markAllAsTouched();
+  this.taskForm.markAllAsTouched();
 
-      return;
+  this.notification.warning(
+    'Please fill all required fields'
+  );
 
-    }
+  return;
+
+}
 
 
     this.saving = true;
@@ -602,11 +617,11 @@ export class TaskAdd implements OnInit {
             'Task created successfully';
 
 
-          alert(
+         this.notification.success(
 
-            'Task created successfully'
+  'Task created successfully'
 
-          );
+);
 
 
           this.router.navigate([
@@ -632,13 +647,20 @@ export class TaskAdd implements OnInit {
           this.saving = false;
 
 
-          this.error =
+         this.error =
 
-            err?.error?.message ||
+  err?.error?.message ||
 
-            err?.error?.error ||
+  err?.error?.error ||
 
-            'Failed to create task';
+  'Failed to create task';
+
+
+this.notification.error(
+
+  this.error
+
+);
 
         }
 

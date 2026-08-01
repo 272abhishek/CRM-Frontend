@@ -21,7 +21,7 @@ import {
   DealService
 } from '../deal';
 
-
+import { NotificationServices } from '../../core/notification/notification-services';
 // =====================================================
 // REGISTER CHART.JS
 // =====================================================
@@ -185,7 +185,8 @@ export class VisualDealDisplay
       DealService,
 
     private cdr:
-      ChangeDetectorRef
+      ChangeDetectorRef,
+      private notification: NotificationServices
 
   ) {}
 
@@ -331,36 +332,29 @@ export class VisualDealDisplay
         // ERROR
         // =============================================
 
-        error:
-          (error: any) => {
+        error: (error: any) => {
 
+  console.error(
+    'DEAL ANALYTICS ERROR:',
+    error
+  );
 
-            console.error(
+  this.deals = [];
 
-              'DEAL ANALYTICS ERROR:',
+  this.loading = false;
 
-              error
+  this.errorMessage =
+    error?.error?.message ||
+    error?.error?.error ||
+    'Unable to load deal analytics.';
 
-            );
+  this.notification.error(
+    this.errorMessage
+  );
 
+  this.cdr.detectChanges();
 
-            this.deals =
-              [];
-
-
-            this.loading =
-              false;
-
-
-            this.errorMessage =
-
-              error?.error?.message ||
-
-              error?.error?.error ||
-
-              'Unable to load deal analytics.';
-
-          }
+}
 
       });
 
@@ -659,22 +653,17 @@ export class VisualDealDisplay
         ?.nativeElement;
 
 
-    if (
+   if (!canvas) {
 
-      !canvas
+  console.warn('Status chart canvas not available');
 
-    ) {
+  this.notification.warning(
+    'Status chart canvas not available.'
+  );
 
-      console.warn(
+  return;
 
-        'Status chart canvas not available'
-
-      );
-
-
-      return;
-
-    }
+}
 
 
     const statusCounts = {
@@ -848,22 +837,17 @@ export class VisualDealDisplay
         ?.nativeElement;
 
 
-    if (
+   if (!canvas) {
 
-      !canvas
+  console.warn('Payment chart canvas not available');
 
-    ) {
+  this.notification.warning(
+    'Payment chart canvas not available.'
+  );
 
-      console.warn(
+  return;
 
-        'Payment chart canvas not available'
-
-      );
-
-
-      return;
-
-    }
+}
 
 
     const paymentCounts = {
@@ -1037,22 +1021,17 @@ export class VisualDealDisplay
         ?.nativeElement;
 
 
-    if (
+    if (!canvas) {
 
-      !canvas
+  console.warn('Amount chart canvas not available');
 
-    ) {
+  this.notification.warning(
+    'Amount chart canvas not available.'
+  );
 
-      console.warn(
+  return;
 
-        'Amount chart canvas not available'
-
-      );
-
-
-      return;
-
-    }
+}
 
 
     const sortedDeals = [
@@ -1283,22 +1262,17 @@ export class VisualDealDisplay
         ?.nativeElement;
 
 
-    if (
+    if (!canvas) {
 
-      !canvas
+  console.warn('Commission chart canvas not available');
 
-    ) {
+  this.notification.warning(
+    'Commission chart canvas not available.'
+  );
 
-      console.warn(
+  return;
 
-        'Commission chart canvas not available'
-
-      );
-
-
-      return;
-
-    }
+}
 
 
     const sortedDeals = [

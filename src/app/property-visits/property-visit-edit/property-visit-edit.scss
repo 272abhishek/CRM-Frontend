@@ -1,539 +1,882 @@
-.visit-edit-page {
-  min-height: 100vh;
-  padding: 32px;
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc 0%,
-      #eef2ff 50%,
-      #f8fafc 100%
-    );
-  color: #172033;
+// ===================================================================
+// EDIT PROPERTY VISIT
+// PREMIUM CRM UI
+// ===================================================================
+
+$font-display: 'Sora', sans-serif;
+$font-body: 'Inter', sans-serif;
+
+$bg: #faf9ff;
+$card: #ffffff;
+$text: #18181b;
+$text-soft: #6b7280;
+$border: #ece8f7;
+
+$primary: #8b5cf6;
+$primary-dark: #6d28d9;
+$primary-light: #f3edff;
+
+$success: #16a34a;
+$danger: #dc2626;
+$warning: #f59e0b;
+
+$radius-lg: 22px;
+$radius-md: 16px;
+$radius-sm: 10px;
+
+$shadow:
+0 8px 30px rgba(17,24,39,.06);
+
+$transition:.30s ease;
+
+// ======================================================
+// PAGE
+// ======================================================
+
+.visit-edit-page{
+
+max-width:1100px;
+
+margin:auto;
+
+padding:35px;
+
+background:$bg;
+
+font-family:$font-body;
+
+min-height:100vh;
+
 }
 
-
-// =====================================================
+// ======================================================
 // HEADER
-// =====================================================
+// ======================================================
 
-.page-header {
-  max-width: 1100px;
-  margin: 0 auto 28px;
+.page-header{
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+display:flex;
 
-  padding: 28px 32px;
+justify-content:space-between;
 
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+align-items:flex-start;
 
-  border-radius: 24px;
+gap:20px;
 
-  box-shadow:
-    0 20px 50px rgba(15, 23, 42, 0.08);
+margin-bottom:30px;
 
-  backdrop-filter: blur(18px);
+flex-wrap:wrap;
 
-  .eyebrow {
-    display: inline-block;
+.eyebrow{
 
-    margin-bottom: 8px;
+display:inline-block;
 
-    font-size: 11px;
-    font-weight: 800;
+padding:7px 16px;
 
-    letter-spacing: 1.8px;
+border-radius:40px;
 
-    color: #6366f1;
-  }
+background:$primary-light;
 
-  h2 {
-    margin: 0;
+color:$primary-dark;
 
-    font-size: clamp(24px, 4vw, 36px);
+font-size:12px;
 
-    font-weight: 800;
+font-weight:700;
 
-    letter-spacing: -0.8px;
+letter-spacing:1px;
 
-    color: #111827;
-  }
+margin-bottom:12px;
 
-  p {
-    margin: 8px 0 0;
-
-    color: #64748b;
-
-    font-size: 14px;
-  }
-
-  button {
-    min-width: 110px;
-
-    padding: 12px 18px;
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 12px;
-
-    background: #ffffff;
-
-    color: #334155;
-
-    font-size: 14px;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition:
-      0.25s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-
-      background: #f8fafc;
-
-      border-color: #c7d2fe;
-
-      box-shadow:
-        0 8px 20px rgba(15, 23, 42, 0.08);
-    }
-  }
 }
 
+h2{
 
-// =====================================================
+margin:0;
+
+margin-bottom:8px;
+
+font-size:34px;
+
+font-family:$font-display;
+
+font-weight:800;
+
+color:$text;
+
+}
+
+p{
+
+margin:0;
+
+color:$text-soft;
+
+font-size:15px;
+
+}
+
+button{
+
+border:none;
+
+cursor:pointer;
+
+padding:12px 24px;
+
+border-radius:50px;
+
+background:white;
+
+border:1px solid $border;
+
+font-weight:700;
+
+transition:$transition;
+
+}
+
+button:hover{
+
+background:$primary-light;
+
+border-color:$primary;
+
+color:$primary-dark;
+
+transform:translateX(-4px);
+
+}
+
+}
+
+// ======================================================
 // LOADING
-// =====================================================
+// ======================================================
 
-.loading-state {
-  max-width: 1100px;
+.loading-state{
 
-  margin: 0 auto;
+background:white;
 
-  padding: 80px 24px;
+padding:40px;
 
-  text-align: center;
+text-align:center;
 
-  border-radius: 24px;
+border-radius:$radius-lg;
 
-  background: rgba(255, 255, 255, 0.85);
+box-shadow:$shadow;
 
-  color: #64748b;
+font-weight:600;
 
-  font-size: 16px;
-  font-weight: 600;
+color:$primary-dark;
 
-  box-shadow:
-    0 15px 40px rgba(15, 23, 42, 0.06);
 }
 
-
-// =====================================================
+// ======================================================
 // FORM CARD
-// =====================================================
+// ======================================================
 
-.form-card {
-  max-width: 1100px;
+.form-card{
 
-  margin: 0 auto;
+background:$card;
 
-  padding: 32px;
+padding:35px;
 
-  background: rgba(255, 255, 255, 0.9);
+border-radius:$radius-lg;
 
-  border: 1px solid rgba(226, 232, 240, 0.9);
+box-shadow:$shadow;
 
-  border-radius: 24px;
+border:1px solid rgba(139,92,246,.08);
 
-  box-shadow:
-    0 20px 55px rgba(15, 23, 42, 0.08);
+animation:fadeUp .45s ease;
 
-  backdrop-filter: blur(16px);
+position:relative;
+
+overflow:hidden;
+
 }
 
+.form-card::before{
 
-// =====================================================
-// READONLY SECTION
-// =====================================================
+content:"";
 
-.readonly-section {
-  margin-bottom: 24px;
+position:absolute;
 
-  padding: 22px;
+top:0;
 
-  border: 1px solid #e2e8f0;
+left:0;
 
-  border-radius: 18px;
+height:5px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc,
-      #ffffff
-    );
+width:100%;
 
-  transition:
-    0.25s ease;
+background:linear-gradient(
+90deg,
+#8b5cf6,
+#6366f1,
+#3b82f6
+);
 
-  &:hover {
-    border-color: #c7d2fe;
-
-    box-shadow:
-      0 10px 25px rgba(99, 102, 241, 0.06);
-  }
-
-  h3 {
-    margin: 0 0 6px;
-
-    font-size: 17px;
-
-    font-weight: 800;
-
-    color: #1e293b;
-  }
-
-  p {
-    margin: 0 0 16px;
-
-    font-size: 13px;
-
-    color: #64748b;
-  }
 }
 
+// ======================================================
+// READ ONLY SECTION
+// ======================================================
 
-.readonly-value {
-  display: flex;
-  align-items: center;
+.readonly-section{
 
-  min-height: 48px;
+margin-bottom:30px;
 
-  padding: 0 16px;
+padding:24px;
 
-  border-radius: 12px;
+border-radius:$radius-md;
 
-  background: #f1f5f9;
+background:linear-gradient(
+135deg,
+#ffffff,
+#faf7ff
+);
 
-  border: 1px solid #e2e8f0;
+border:1px solid rgba(139,92,246,.12);
 
-  color: #475569;
+transition:$transition;
 
-  font-size: 14px;
-
-  font-weight: 600;
-
-  word-break: break-word;
 }
 
+.readonly-section:hover{
 
-// =====================================================
-// FORM
-// =====================================================
+transform:translateY(-4px);
 
-form {
-  display: grid;
+box-shadow:
+0 18px 35px rgba(0,0,0,.08);
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 22px;
 }
 
+.readonly-section h3{
 
-// =====================================================
+margin:0;
+
+margin-bottom:6px;
+
+font-size:22px;
+
+font-family:$font-display;
+
+font-weight:700;
+
+color:$text;
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+}
+
+.readonly-section:first-child h3::before{
+
+content:"👤";
+
+width:40px;
+
+height:40px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:50%;
+
+background:$primary-light;
+
+}
+
+.readonly-section:nth-child(2) h3::before{
+
+content:"🏠";
+
+width:40px;
+
+height:40px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:50%;
+
+background:$primary-light;
+
+}
+
+.readonly-section>p{
+
+margin-bottom:18px;
+
+color:$text-soft;
+
+font-size:14px;
+
+}
+
+// ======================================================
+// READ ONLY VALUES
+// ======================================================
+
+.readonly-value{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(240px,1fr));
+
+gap:16px;
+
+}
+
+.readonly-value>div{
+
+padding:16px;
+
+background:white;
+
+border-radius:12px;
+
+border:1px solid $border;
+
+transition:$transition;
+
+}
+
+.readonly-value>div:hover{
+
+border-color:$primary;
+
+background:$primary-light;
+
+}
+
+.readonly-value strong{
+
+display:block;
+
+margin-bottom:6px;
+
+color:$primary-dark;
+
+font-size:13px;
+
+text-transform:uppercase;
+
+letter-spacing:.5px;
+
+}
+
+// ======================================================
 // FORM GROUP
-// =====================================================
+// ======================================================
 
-.form-group {
-  display: flex;
+.form-group{
 
-  flex-direction: column;
+display:flex;
 
-  gap: 8px;
+flex-direction:column;
 
-  label {
-    font-size: 13px;
+margin-bottom:24px;
 
-    font-weight: 800;
-
-    color: #334155;
-
-    span {
-      color: #ef4444;
-    }
-  }
-
-  input,
-  select,
-  textarea {
-    width: 100%;
-
-    box-sizing: border-box;
-
-    border: 1px solid #dbe3ef;
-
-    border-radius: 12px;
-
-    background: #ffffff;
-
-    color: #1e293b;
-
-    font-family: inherit;
-
-    font-size: 14px;
-
-    outline: none;
-
-    transition:
-      border-color 0.25s ease,
-      box-shadow 0.25s ease,
-      background 0.25s ease;
-  }
-
-  input,
-  select {
-    height: 50px;
-
-    padding: 0 15px;
-  }
-
-  textarea {
-    min-height: 130px;
-
-    padding: 14px 15px;
-
-    resize: vertical;
-
-    line-height: 1.6;
-  }
-
-  input:hover,
-  select:hover,
-  textarea:hover {
-    border-color: #a5b4fc;
-  }
-
-  input:focus,
-  select:focus,
-  textarea:focus {
-    border-color: #6366f1;
-
-    background: #ffffff;
-
-    box-shadow:
-      0 0 0 4px rgba(99, 102, 241, 0.12);
-  }
-
-  small {
-    color: #ef4444;
-
-    font-size: 12px;
-
-    font-weight: 600;
-  }
 }
 
+.form-group label{
 
-// =====================================================
-// NOTES FULL WIDTH
-// =====================================================
+font-weight:700;
 
-.form-group:has(textarea) {
-  grid-column: 1 / -1;
+margin-bottom:8px;
+
+color:$text;
+
+font-size:15px;
+
 }
 
+.form-group label span{
 
-// =====================================================
-// ACTIONS
-// =====================================================
+color:$danger;
 
-.form-actions {
-  grid-column: 1 / -1;
+margin-left:3px;
 
-  display: flex;
-
-  justify-content: flex-end;
-
-  gap: 14px;
-
-  margin-top: 8px;
-
-  padding-top: 24px;
-
-  border-top: 1px solid #e2e8f0;
-
-  button {
-    min-width: 145px;
-
-    height: 48px;
-
-    padding: 0 22px;
-
-    border-radius: 12px;
-
-    font-family: inherit;
-
-    font-size: 14px;
-
-    font-weight: 800;
-
-    cursor: pointer;
-
-    transition:
-      0.25s ease;
-
-    &:first-child {
-      border: 1px solid #e2e8f0;
-
-      background: #ffffff;
-
-      color: #475569;
-
-      &:hover {
-        background: #f8fafc;
-
-        border-color: #cbd5e1;
-
-        transform: translateY(-2px);
-      }
-    }
-
-    &:last-child {
-      border: none;
-
-      background:
-        linear-gradient(
-          135deg,
-          #6366f1,
-          #4f46e5
-        );
-
-      color: #ffffff;
-
-      box-shadow:
-        0 10px 22px rgba(79, 70, 229, 0.25);
-
-      &:hover:not(:disabled) {
-        transform: translateY(-2px);
-
-        box-shadow:
-          0 14px 28px rgba(79, 70, 229, 0.35);
-      }
-
-      &:disabled {
-        opacity: 0.6;
-
-        cursor: not-allowed;
-
-        box-shadow: none;
-      }
-    }
-  }
 }
 
+.form-group input,
+.form-group select,
+.form-group textarea{
 
-// =====================================================
-// TABLET
-// =====================================================
+width:100%;
 
-@media (max-width: 768px) {
+padding:14px 16px;
 
-  .visit-edit-page {
-    padding: 20px;
-  }
+border-radius:14px;
 
-  .page-header {
-    align-items: flex-start;
+border:1px solid $border;
 
-    padding: 24px;
+background:#fcfcff;
 
-    flex-direction: column;
+font-size:15px;
 
-    button {
-      width: 100%;
-    }
-  }
+transition:$transition;
 
-  .form-card {
-    padding: 24px;
-  }
+font-family:$font-body;
 
-  form {
-    grid-template-columns: 1fr;
-  }
-
-  .form-actions {
-    justify-content: stretch;
-
-    button {
-      flex: 1;
-    }
-  }
 }
 
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
 
-// =====================================================
-// MOBILE
-// =====================================================
+outline:none;
 
-@media (max-width: 520px) {
+border-color:$primary;
 
-  .visit-edit-page {
-    padding: 12px;
-  }
+background:white;
 
-  .page-header {
-    margin-bottom: 16px;
+box-shadow:
+0 0 0 4px rgba(139,92,246,.12);
 
-    padding: 20px;
+}
 
-    border-radius: 18px;
+.form-group textarea{
 
-    h2 {
-      font-size: 25px;
-    }
+resize:vertical;
 
-    p {
-      line-height: 1.5;
-    }
-  }
+min-height:130px;
 
-  .form-card {
-    padding: 16px;
+line-height:1.6;
 
-    border-radius: 18px;
-  }
+}
 
-  .readonly-section {
-    padding: 16px;
+.form-group small{
 
-    border-radius: 14px;
-  }
+margin-top:8px;
 
-  .readonly-value {
-    align-items: flex-start;
+font-size:13px;
 
-    padding: 14px;
+color:$danger;
 
-    line-height: 1.5;
-  }
+font-weight:600;
 
-  .form-actions {
-    flex-direction: column;
+}// ======================================================
+// FORM ACTIONS
+// ======================================================
 
-    button {
-      width: 100%;
-    }
-  }
+.form-actions{
 
-  .form-group {
-    input,
-    select {
-      height: 48px;
-    }
-  }
+display:flex;
+
+justify-content:flex-end;
+
+align-items:center;
+
+gap:16px;
+
+margin-top:35px;
+
+flex-wrap:wrap;
+
+}
+
+.form-actions button{
+
+padding:14px 34px;
+
+border:none;
+
+border-radius:50px;
+
+font-size:15px;
+
+font-weight:700;
+
+cursor:pointer;
+
+transition:all .3s ease;
+
+font-family:$font-body;
+
+}
+
+.form-actions button:first-child{
+
+background:#ffffff;
+
+border:1px solid $border;
+
+color:$text-soft;
+
+}
+
+.form-actions button:first-child:hover{
+
+background:#f8f5ff;
+
+border-color:$primary;
+
+color:$primary-dark;
+
+transform:translateX(-3px);
+
+}
+
+.form-actions button:last-child{
+
+background:linear-gradient(
+135deg,
+$primary,
+#6366f1
+);
+
+color:white;
+
+box-shadow:
+0 12px 30px rgba(139,92,246,.30);
+
+}
+
+.form-actions button:last-child:hover:not(:disabled){
+
+transform:translateY(-3px);
+
+box-shadow:
+0 20px 40px rgba(139,92,246,.35);
+
+}
+
+.form-actions button:last-child:disabled{
+
+opacity:.6;
+
+cursor:not-allowed;
+
+transform:none;
+
+box-shadow:none;
+
+}
+
+// ======================================================
+// INPUT HOVER
+// ======================================================
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover{
+
+border-color:#c4b5fd;
+
+background:#ffffff;
+
+}
+
+// ======================================================
+// SELECT STYLE
+// ======================================================
+
+.form-group select{
+
+appearance:none;
+
+-webkit-appearance:none;
+
+cursor:pointer;
+
+padding-right:44px;
+
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236b21a8' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+background-repeat:no-repeat;
+
+background-position:right 16px center;
+
+}
+
+// ======================================================
+// NUMBER INPUT
+// ======================================================
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button{
+
+margin:0;
+
+}
+
+// ======================================================
+// DATE INPUT
+// ======================================================
+
+input[type="date"]{
+
+cursor:pointer;
+
+}
+
+// ======================================================
+// ANIMATION
+// ======================================================
+
+@keyframes fadeUp{
+
+from{
+
+opacity:0;
+
+transform:translateY(25px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+.readonly-section{
+
+animation:fadeUp .45s ease both;
+
+}
+
+.readonly-section:nth-child(2){
+
+animation-delay:.08s;
+
+}
+
+.form-group{
+
+animation:fadeUp .45s ease both;
+
+}
+
+.form-group:nth-child(1){animation-delay:.10s;}
+.form-group:nth-child(2){animation-delay:.15s;}
+.form-group:nth-child(3){animation-delay:.20s;}
+.form-group:nth-child(4){animation-delay:.25s;}
+.form-group:nth-child(5){animation-delay:.30s;}
+
+.form-actions{
+
+animation:fadeUp .45s ease both;
+
+animation-delay:.35s;
+
+}
+
+// ======================================================
+// CUSTOM SCROLLBAR
+// ======================================================
+
+::-webkit-scrollbar{
+
+width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+background:#f5f3ff;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+background:$primary;
+
+border-radius:30px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+background:$primary-dark;
+
+}
+
+// ======================================================
+// SELECTION
+// ======================================================
+
+::selection{
+
+background:$primary;
+
+color:#fff;
+
+}
+
+// ======================================================
+// FOCUS
+// ======================================================
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible{
+
+outline:3px solid rgba(139,92,246,.25);
+
+outline-offset:2px;
+
+}
+
+// ======================================================
+// RESPONSIVE
+// ======================================================
+
+@media(max-width:992px){
+
+.visit-edit-page{
+
+padding:25px;
+
+}
+
+.page-header{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+}
+
+.page-header h2{
+
+font-size:28px;
+
+}
+
+.form-card{
+
+padding:28px;
+
+}
+
+.readonly-value{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:768px){
+
+.visit-edit-page{
+
+padding:18px;
+
+}
+
+.page-header button{
+
+width:100%;
+
+}
+
+.form-card{
+
+padding:22px;
+
+}
+
+.readonly-section{
+
+padding:18px;
+
+}
+
+.readonly-section h3{
+
+font-size:20px;
+
+}
+
+.form-group{
+
+margin-bottom:20px;
+
+}
+
+.form-actions{
+
+flex-direction:column-reverse;
+
+}
+
+.form-actions button{
+
+width:100%;
+
+}
+
+}
+
+@media(max-width:480px){
+
+.page-header h2{
+
+font-size:22px;
+
+}
+
+.page-header p{
+
+font-size:14px;
+
+}
+
+.form-card{
+
+padding:18px;
+
+border-radius:18px;
+
+}
+
+.readonly-section{
+
+padding:16px;
+
+}
+
+.readonly-section h3{
+
+font-size:18px;
+
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+
+padding:12px 14px;
+
+font-size:14px;
+
+}
+
+.form-actions button{
+
+padding:13px 18px;
+
+font-size:14px;
+
+}
+
 }

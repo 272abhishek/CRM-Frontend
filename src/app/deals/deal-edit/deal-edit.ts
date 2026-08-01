@@ -9,7 +9,7 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { DealService, Deal, DealClient, DealProperty } from '../deal';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 type CommissionStatus = 'Pending' | 'Approved' | 'Paid' | 'Rejected';
 type PaymentStatus = 'Pending' | 'Partial' | 'Paid' | 'Completed';
 
@@ -47,7 +47,8 @@ export class DealEdit implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dealService: DealService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+     private notification: NotificationServices
   ) {}
 
   // ===================================================
@@ -57,7 +58,7 @@ export class DealEdit implements OnInit {
     this.dealId = this.route.snapshot.paramMap.get('id') || '';
 
     if (!this.dealId) {
-      alert('Deal ID not found');
+      this.notification.error('Deal ID not found');
       this.router.navigate(['/deals']);
       return;
     }
@@ -85,11 +86,13 @@ export class DealEdit implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('LOAD DEAL ERROR:', err);
-        this.loading = false;
-        this.cdr.detectChanges();
-        alert(err?.error?.message || 'Failed to load deal');
-        this.router.navigate(['/deals']);
+        this.notification.error(
+  err?.error?.error ||
+  err?.error?.message ||
+  err?.message ||
+  'Failed to load deal'
+);
+        
       }
     });
   }
@@ -114,17 +117,27 @@ export class DealEdit implements OnInit {
     };
 
     this.dealService.updateDeal(this.dealId, payload).subscribe({
-      next: () => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        alert('Deal updated successfully');
-        this.router.navigate(['/deals']);
-      },
+    next: (res: any) => {
+
+  this.saving = false;
+
+  this.cdr.detectChanges();
+
+  this.notification.success(
+    res?.message ||
+    'Deal updated successfully'
+  );
+
+  this.router.navigate(['/deals']);
+
+},
       error: (err) => {
-        console.error('UPDATE DEAL ERROR:', err);
-        this.saving = false;
-        this.cdr.detectChanges();
-        alert(err?.error?.message || err?.error?.error || 'Failed to update deal');
+        this.notification.error(
+  err?.error?.error ||
+  err?.error?.message ||
+  err?.message ||
+  'Failed to update deal'
+);
       }
     });
   }

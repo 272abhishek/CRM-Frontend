@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Client, ClientInterface } from '../client';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
   selector: 'app-client-detail',
   standalone: true,
@@ -23,16 +23,19 @@ export class ClientDetail implements OnInit {
     private route: ActivatedRoute,
     private clientService: Client,
     private router: Router,
-    private cdr:ChangeDetectorRef
+    private cdr:ChangeDetectorRef,
+    private notification: NotificationServices
+
   ) {}
 
   ngOnInit(): void {
     const clientId = this.route.snapshot.paramMap.get('id');
 
     if (!clientId) {
-      this.errorMessage = 'Client ID not found';
-      this.loading = false;
-      return;
+     this.errorMessage = 'Client ID not found';
+this.notification.error('Client ID not found');
+this.loading = false;
+return;
     }
 
     this.loadClient(clientId);
@@ -51,12 +54,17 @@ export class ClientDetail implements OnInit {
       error: (err) => {
         console.error('Client Detail Error:', err);
 
-        this.errorMessage =
-          err.error?.error ||
-          err.error?.message ||
-          'Failed to load client details';
+  const message =
+    err?.error?.error ||
+    err?.error?.message ||
+    err?.message ||
+    'Failed to load client details';
 
-        this.loading = false;
+  this.errorMessage = message;
+
+  this.notification.error(message);
+
+  this.loading = false;
       }
 
     });

@@ -19,7 +19,7 @@ import {
   TaskResponse
 } from '../task';
 
-
+import { NotificationServices } from '../../core/notification/notification-services';
 // =====================================================
 // TASK LIST COMPONENT
 // =====================================================
@@ -83,7 +83,8 @@ implements OnInit {
       Router,
 
     private cdr:
-      ChangeDetectorRef
+      ChangeDetectorRef,
+       private notification: NotificationServices
 
   ) {}
 
@@ -235,16 +236,19 @@ implements OnInit {
             [];
 
 
-          this.error =
+       this.error =
 
-            err?.error?.message ||
+  err?.error?.message ||
 
-            err?.error?.error ||
+  err?.error?.error ||
 
-            'Failed to load tasks';
+  'Failed to load tasks';
 
+this.cdr.detectChanges();
 
-          this.cdr.detectChanges();
+this.notification.error(this.error);
+
+          
 
         }
 
@@ -353,83 +357,42 @@ implements OnInit {
 
     }
 
+this.notification.confirm(
+  'Delete Task',
+  `Delete task "${task.title}"?`
+).then((confirmed) => {
 
-    const confirmDelete =
+  if (!confirmed) {
+    return;
+  }
 
-      confirm(
+  this.taskService.deleteTask(task._id!).subscribe({
 
-        `Delete task "${task.title}"?`
+    next: () => {
 
+      this.notification.success(
+        'Task deleted successfully'
       );
 
+      this.loadTasks();
 
-    if (
+    },
 
-      !confirmDelete
+    error: (err) => {
 
-    ) {
+      this.notification.error(
+        err?.error?.message ||
+        err?.error?.error ||
+        'Failed to delete task'
+       );
 
-      return;
+      }
 
-    }
+    });
 
+  });
 
-    this.taskService
-
-      .deleteTask(
-
-        task._id
-
-      )
-
-      .subscribe({
-
-        next:
-
-          () => {
-
-
-          alert(
-
-            'Task deleted successfully'
-
-          );
-
-
-          this.loadTasks();
-
-        },
-
-
-        error:
-
-          (err) => {
-
-
-          console.error(
-
-            'DELETE TASK ERROR:',
-
-            err
-
-          );
-
-
-          alert(
-
-            err?.error?.message ||
-
-            err?.error?.error ||
-
-            'Failed to delete task'
-
-          );
-
-        }
-
-      });
-
-  }
+}
 
 
   // =====================================================

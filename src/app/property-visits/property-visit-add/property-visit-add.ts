@@ -37,7 +37,7 @@ import {
   VisitStatus
 } from '../propertyInterface';
 
-
+import { NotificationServices } from '../../core/notification/notification-services';
 // =====================================================
 // COMPONENT
 // =====================================================
@@ -241,7 +241,8 @@ implements OnInit {
       PropertyVisitService,
 
     private router:
-      Router
+      Router,
+       private notification: NotificationServices
 
   ) {}
 
@@ -606,11 +607,9 @@ implements OnInit {
 
     ) {
 
-      alert(
-
-        'Please select a client'
-
-      );
+      this.notification.warning(
+  'Please select a client'
+);
 
       return;
 
@@ -626,12 +625,9 @@ implements OnInit {
       !this.selectedProperty
 
     ) {
-
-      alert(
-
-        'Please select a property'
-
-      );
+this.notification.warning(
+  'Please select a property'
+);
 
       return;
 
@@ -651,12 +647,9 @@ implements OnInit {
 
       this.visitForm.markAllAsTouched();
 
-
-      alert(
-
-        'Please select visit date'
-
-      );
+this.notification.warning(
+  'Please select visit date'
+);
 
 
       return;
@@ -684,11 +677,9 @@ implements OnInit {
 
     ) {
 
-      alert(
-
-        'Client or property ID missing'
-
-      );
+      this.notification.error(
+  'Client or Property ID missing'
+);
 
 
       return;
@@ -763,74 +754,51 @@ implements OnInit {
     // ===================================================
     // API CALL
     // ===================================================
+this.visitService
+  .createVisit(payload)
+  .subscribe({
 
-    this.visitService
+    next: (response) => {
 
-      .createVisit(payload)
+      console.log(
+        'Property Visit Created:',
+        response
+      );
 
-      .subscribe({
+      this.notification.success(
 
-        next:
-          response => {
+        response?.message ||
 
+        'Property visit created successfully'
 
-            console.log(
+      );
 
-              'Property Visit Created:',
+      this.router.navigate([
+        '/property-visits'
+      ]);
 
-              response
+    },
 
-            );
+    error: (error) => {
 
+      console.error(
+        'Create Visit Error:',
+        error
+      );
 
-            alert(
+      this.notification.error(
 
-              'Property visit created successfully'
+        error?.error?.message ||
 
-            );
+        error?.error?.error ||
 
+        'Failed to create property visit'
 
-            this.loading =
-              false;
+      );
 
+    }
 
-            this.router.navigate([
-
-              '/property-visits'
-
-            ]);
-
-          },
-
-
-        error:
-          error => {
-
-
-            console.error(
-
-              'Create Visit Error:',
-
-              error
-
-            );
-
-
-            this.loading =
-              false;
-
-
-            alert(
-
-              error.error?.message ||
-
-              'Failed to create property visit'
-
-            );
-
-          }
-
-      });
+  });
 
   }
 

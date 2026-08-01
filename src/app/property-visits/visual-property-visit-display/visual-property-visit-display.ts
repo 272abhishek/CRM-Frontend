@@ -23,7 +23,9 @@ import {
 import {
   PropertyVisit
 } from '../propertyInterface';
-
+import {
+  NotificationServices
+} from '../../core/notification/notification-services';
 
 // =====================================================
 // REGISTER CHART.JS
@@ -185,7 +187,9 @@ export class VisualPropertyVisitDisplay
 
     private cdr:
 
-      ChangeDetectorRef
+      ChangeDetectorRef,
+      private notification:
+    NotificationServices
 
   ) {}
 
@@ -399,15 +403,14 @@ export class VisualPropertyVisitDisplay
 
               false;
 
+this.error =
+  err?.error?.message ||
+  err?.error?.error ||
+  'Unable to load property visit analytics.';
 
-            this.error =
-
-              err?.error?.message ||
-
-              err?.error?.error ||
-
-              'Unable to load property visit analytics.';
-
+this.notification.error(
+  this.error
+);
           }
 
       });

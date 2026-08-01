@@ -10,7 +10,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Property } from '../property';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
   selector: 'app-property-edit',
   standalone: true,
@@ -31,7 +31,8 @@ export class PropertyEdit implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private propertyService: Property,
-    private router: Router
+    private router: Router,
+      private notification: NotificationServices
   ) {
 
     this.form = this.fb.group({
@@ -93,136 +94,160 @@ export class PropertyEdit implements OnInit {
   // Load Property
   // =========================
 
-  ngOnInit() {
+ ngOnInit(): void {
 
-    this.id =
-      this.route.snapshot.paramMap.get('id')!;
+  const id = this.route.snapshot.paramMap.get('id');
 
-    this.propertyService
-      .getPropertyById(this.id)
-      .subscribe({
+  if (!id) {
 
-        next: (property: any) => {
+    this.notification.error(
+      'Property ID not found.'
+    );
 
-          console.log('Property:', property);
+    this.router.navigate(['/property-list']);
 
-
-          // Basic fields
-          this.form.patchValue({
-
-            title: property.title,
-
-            address: property.address,
-
-            area: property.area,
-
-            subArea: property.subArea,
-
-            possessionStatus:
-              property.possessionStatus,
-
-            commissionPercentage:
-              property.commissionPercentage
-
-          });
-
-
-          // Builder Promises
-          property.builderPromises?.forEach(
-            (promise: string) => {
-
-              this.builderPromises.push(
-                this.fb.control(promise)
-              );
-
-            }
-          );
-
-
-          // Amenities
-          property.amenities?.forEach(
-            (amenity: string) => {
-
-              this.amenities.push(
-                this.fb.control(amenity)
-              );
-
-            }
-          );
-
-
-          // Variants
-          property.variants?.forEach(
-            (variant: any) => {
-
-              this.variants.push(
-
-                this.fb.group({
-
-                  carpetSize: [
-                    variant.carpetSize,
-                    [
-                      Validators.required,
-                      Validators.min(0)
-                    ]
-                  ],
-
-                  superBuiltUpArea: [
-                    variant.superBuiltUpArea,
-                    [
-                      Validators.required,
-                      Validators.min(0)
-                    ]
-                  ],
-
-                  price: [
-                    variant.price,
-                    [
-                      Validators.required,
-                      Validators.min(0)
-                    ]
-                  ],
-
-                  floor: [
-                    variant.floor,
-                    [
-                      Validators.required,
-                      Validators.min(0)
-                    ]
-                  ],
-
-                  masterBedroom: [
-                    variant.masterBedroom || false
-                  ],
-
-                  modularKitchen: [
-                    variant.modularKitchen || false
-                  ]
-
-                })
-
-              );
-
-            }
-
-          );
-
-        },
-
-        error: (err) => {
-
-          console.error(err);
-
-          alert(
-            err.error?.message ||
-            'Failed to load property'
-          );
-
-        }
-
-      });
+    return;
 
   }
+
+  this.id = id;
+
+  this.propertyService
+    .getPropertyById(this.id)
+    .subscribe({
+
+      next: (property: any) => {
+
+        console.log(
+          'Property:',
+          property
+        );
+
+        this.form.patchValue({
+
+          title: property.title,
+
+          address: property.address,
+
+          area: property.area,
+
+          subArea: property.subArea,
+
+          possessionStatus:
+            property.possessionStatus,
+
+          commissionPercentage:
+            property.commissionPercentage
+
+        });
+
+        this.builderPromises.clear();
+        this.amenities.clear();
+        this.variants.clear();
+
+        property.builderPromises?.forEach(
+          (promise: string) => {
+
+            this.builderPromises.push(
+              this.fb.control(promise)
+            );
+
+          }
+        );
+
+        property.amenities?.forEach(
+          (amenity: string) => {
+
+            this.amenities.push(
+              this.fb.control(amenity)
+            );
+
+          }
+        );
+
+        property.variants?.forEach(
+          (variant: any) => {
+
+            this.variants.push(
+
+              this.fb.group({
+
+                carpetSize: [
+                  variant.carpetSize,
+                  [
+                    Validators.required,
+                    Validators.min(0)
+                  ]
+                ],
+
+                superBuiltUpArea: [
+                  variant.superBuiltUpArea,
+                  [
+                    Validators.required,
+                    Validators.min(0)
+                  ]
+                ],
+
+                price: [
+                  variant.price,
+                  [
+                    Validators.required,
+                    Validators.min(0)
+                  ]
+                ],
+
+                floor: [
+                  variant.floor,
+                  [
+                    Validators.required,
+                    Validators.min(0)
+                  ]
+                ],
+
+                masterBedroom: [
+                  variant.masterBedroom ?? false
+                ],
+
+                modularKitchen: [
+                  variant.modularKitchen ?? false
+                ]
+
+              })
+
+            );
+
+          }
+
+        );
+
+      },
+
+      error: (err: any) => {
+
+        console.error(
+          'LOAD PROPERTY ERROR:',
+          err
+        );
+
+        this.notification.error(
+
+          err?.error?.message ||
+
+          err?.error?.error ||
+
+          'Failed to load property.'
+
+        );
+
+        this.router.navigate([
+          '/property-list'
+        ]);
+
+      }
+
+    });
+
+}
 
 
   // =========================
@@ -308,53 +333,68 @@ export class PropertyEdit implements OnInit {
   // Update Property
   // =========================
 
-  updateProperty() {
+  updateProperty(): void {
 
-    if (this.form.invalid) {
+  if (this.form.invalid) {
 
-      this.form.markAllAsTouched();
+    this.form.markAllAsTouched();
 
-      return;
+    this.notification.warning(
+      'Please fill all required fields.'
+    );
 
-    }
-
-    const data = this.form.value;
-
-    console.log('UPDATE DATA:', data);
-
-    this.propertyService
-      .updateProperty(this.id, data)
-      .subscribe({
-
-        next: () => {
-
-          alert(
-            'Property Updated Successfully'
-          );
-
-          this.router.navigate([
-            '/property-list'
-          ]);
-
-        },
-
-        error: (err) => {
-
-          console.error(
-            'UPDATE ERROR:',
-            err
-          );
-
-          alert(
-            err.error?.message ||
-            err.error?.error ||
-            'Failed to update property'
-          );
-
-        }
-
-      });
+    return;
 
   }
+
+  const data = this.form.getRawValue();
+
+  console.log(
+    'UPDATE DATA:',
+    data
+  );
+
+  this.propertyService
+    .updateProperty(this.id, data)
+    .subscribe({
+
+      next: (res: any) => {
+
+        this.notification.success(
+
+          res?.message ||
+
+          'Property updated successfully.'
+
+        );
+
+        this.router.navigate([
+          '/property-list'
+        ]);
+
+      },
+
+      error: (err: any) => {
+
+        console.error(
+          'UPDATE PROPERTY ERROR:',
+          err
+        );
+
+        this.notification.error(
+
+          err?.error?.message ||
+
+          err?.error?.error ||
+
+          'Failed to update property.'
+
+        );
+
+      }
+
+    });
+
+}
 
 }

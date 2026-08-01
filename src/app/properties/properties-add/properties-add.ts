@@ -4,7 +4,7 @@ import { Property } from '../property';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { PropertiesRoutingModule } from '../properties-routing-module';
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
   selector: 'app-properties-add',
   standalone: true,
@@ -15,7 +15,7 @@ import { PropertiesRoutingModule } from '../properties-routing-module';
 export class PropertiesAdd {
   propertyForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private propertyService: Property,private router: Router) {
+  constructor(private fb: FormBuilder, private propertyService: Property,private router: Router,  private notification: NotificationServices) {
     this.propertyForm = this.fb.group({
       title: ['', Validators.required],
       address: ['', Validators.required],
@@ -83,29 +83,84 @@ export class PropertiesAdd {
     return null;
   }
 }
+onSubmit(): void {
 
-  onSubmit() {
-    if (this.propertyForm.invalid || this.variants.length === 0) {
-      this.propertyForm.markAllAsTouched();
-      return;
-    }
+  if (this.propertyForm.invalid || this.variants.length === 0) {
 
-    const user = this.getUser();
-    if (!user) {
-      alert('Session expired, please login again.');
-      return;
-    }
+    this.propertyForm.markAllAsTouched();
 
-    const payload = {
-      ...this.propertyForm.value,
-      
-    };
+    this.notification.warning(
+      'Please fill all required fields.'
+    );
 
-    this.propertyService.createProperty(payload).subscribe({
-      next: (res) => {alert('Property created successfully!')
-        this.router.navigate(['/property-list']);
-      },
-      error: (err) => alert(err.error?.message || 'Failed to create property')
-    });
+    return;
+
   }
+
+  const user = this.getUser();
+
+  if (!user) {
+
+    this.notification.error(
+      'Session expired. Please login again.'
+    );
+
+    this.router.navigate(['/login']);
+
+    return;
+
+  }
+
+  const payload = {
+    ...this.propertyForm.value
+  };
+
+  this.propertyService
+    .createProperty(payload)
+    .subscribe({
+
+      next: (res: any) => {
+
+        this.notification.success(
+
+          res?.message ||
+
+          'Property created successfully.'
+
+        );
+
+        this.propertyForm.reset();
+
+        this.builderPromises.clear();
+
+        this.amenities.clear();
+
+        this.variants.clear();
+
+        this.router.navigate(['/property-list']);
+
+      },
+
+      error: (err: any) => {
+
+        console.error(
+          'CREATE PROPERTY ERROR:',
+          err
+        );
+
+        this.notification.error(
+
+          err?.error?.message ||
+
+          err?.error?.error ||
+
+          'Failed to create property.'
+
+        );
+
+      }
+
+    });
+
+}
 }

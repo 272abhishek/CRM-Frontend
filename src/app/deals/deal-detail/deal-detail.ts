@@ -17,8 +17,7 @@ import {
   Deal,
   DealService
 } from '../deal';
-
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
 
   selector:
@@ -86,7 +85,7 @@ implements OnInit {
 
     private route:
       ActivatedRoute,
-
+ private notification: NotificationServices,
     private dealService:
       DealService,
 
@@ -177,35 +176,30 @@ implements OnInit {
         },
 
 
-        error: (
-          err
-        ) => {
+        error: (err) => {
 
+  console.error(
+    'Failed to load deal:',
+    err
+  );
 
-          console.error(
+  this.loading = false;
 
-            'Failed to load deal:',
+  this.errorMessage =
 
-            err
+    err?.error?.error ||
 
-          );
+    err?.error?.message ||
 
+    err?.message ||
 
-          this.loading =
-            false;
+    'Failed to load deal';
 
+  this.notification.error(this.errorMessage);
 
-          this.errorMessage =
+  this.cdr.detectChanges();
 
-            err.error?.message ||
-
-            'Failed to load deal';
-
-
-          this.cdr
-            .detectChanges();
-
-        }
+}
 
       });
 

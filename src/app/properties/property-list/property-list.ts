@@ -25,8 +25,7 @@ import {
 
 import { PropertiesRoutingModule }
 from '../properties-routing-module';
-
-
+import { NotificationServices } from '../../core/notification/notification-services';
 @Component({
 
   selector:
@@ -198,48 +197,52 @@ showFilters = false;
       Property,
 
     private cdr:
-      ChangeDetectorRef
+      ChangeDetectorRef,
+       private notification: NotificationServices
 
   ) {}
 
 
-  ngOnInit() {
+  ngOnInit(): void {
 
+  const rawUser = localStorage.getItem('user');
 
-    const rawUser =
-      localStorage.getItem('user');
+  if (rawUser) {
 
+    try {
 
-    if (rawUser) {
+      const user = JSON.parse(rawUser);
 
-      const user =
-        JSON.parse(rawUser);
+      this.userRole = user?.role || null;
 
-      this.userRole =
-        user.role;
+    } catch (error) {
+
+      console.error(
+        'Invalid user data:',
+        error
+      );
+
+      this.userRole = null;
+
+      this.notification.error(
+        'Invalid user session. Please login again.'
+      );
 
     }
 
+  }
+
+  this.loadProperties();
+
+  this.filterForm.valueChanges.subscribe(() => {
+
+    this.currentPage = 1;
 
     this.loadProperties();
 
+  });
 
-    /*
-    Auto filter while typing/changing
-    */
-
-    this.filterForm.valueChanges
-      .subscribe(() => {
-
-        this.currentPage =
-          1;
-
-        this.loadProperties();
-
-      });
-
-  }
-
+}
 
   loadProperties() {
 
@@ -489,19 +492,24 @@ showFilters = false;
         },
 
 
-        error: (err) => {
+        error: (err: any) => {
 
-          console.error(err);
+  console.error(
+    'LOAD PROPERTY ERROR:',
+    err
+  );
 
-          alert(
+  this.notification.error(
 
-            err.error?.message ||
+    err?.error?.message ||
 
-            'Failed to load properties'
+    err?.error?.error ||
 
-          );
+    'Failed to load properties.'
 
-        }
+  );
+
+}
 
       });
 
@@ -681,62 +689,100 @@ showFilters = false;
   }
 
 
-  deleteProperty(
-    id: string
-  ) {
+  async deleteProperty(id: string): Promise<void> {
 
+  const confirmed = await this.notification.confirmDelete(
 
-    if (
+    'Delete Property?',
 
-      !confirm(
+    'This action cannot be undone.'
 
-        'Are you sure you want to delete this property?'
+  );
 
-      )
+  if (!confirmed) {
 
-    ) {
+    return;
 
-      return;
+  }
 
-    }
+  this.propertyService
+    .deleteProperty(id)
+    .subscribe({
 
+      next: (res: any) => {
 
-    this.propertyService
-      .deleteProperty(id)
-      .subscribe({
+        this.properties = this.properties.filter(
 
-        next: () => {
+          property => property._id !== id
 
+        );
 
-          this.properties =
-            this.properties.filter(
+        this.totalItems = Math.max(
 
-              p => p._id !== id
+          0,
 
-            );
+          this.totalItems - 1
 
+        );
 
-          this.totalItems--;
+        this.totalPages =
 
-        },
+          Math.ceil(
 
+            this.totalItems / this.pageSize
 
-        error: (err) => {
+          ) || 1;
 
-          console.error(err);
+        this.notification.success(
 
-          alert(
+          res?.message ||
 
-            err.error?.message ||
+          'Property deleted successfully.'
 
-            'Delete failed'
+        );
 
-          );
+        if (
+
+          this.properties.length === 0 &&
+
+          this.currentPage > 1
+
+        ) {
+
+          this.currentPage--;
+
+          this.loadProperties();
 
         }
 
-      });
+      },
 
-  }
+      error: (err: any) => {
+
+        console.error(
+
+          'DELETE PROPERTY ERROR:',
+
+          err
+
+        );
+
+        this.notification.error(
+
+          err?.error?.message ||
+
+          err?.error?.error ||
+
+          err?.message ||
+
+          'Failed to delete property.'
+
+        );
+
+      }
+
+    });
+
+}
 
 }

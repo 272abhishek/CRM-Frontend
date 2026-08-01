@@ -33,7 +33,7 @@ import {
   PropertyVisitService
 } from '../property-visit';
 
-
+import { NotificationServices } from '../../core/notification/notification-services';
 // =====================================================
 // COMPONENT
 // =====================================================
@@ -175,7 +175,8 @@ implements OnInit {
       Router,
 
     private cdr:
-      ChangeDetectorRef
+      ChangeDetectorRef,
+      private notification: NotificationServices
 
   ) {}
 
@@ -590,13 +591,13 @@ implements OnInit {
             this.cdr.detectChanges();
 
 
-            alert(
+           this.notification.error(
 
-              err.error?.message ||
+  err.error?.message ||
 
-              'Failed to load property visits'
+  'Failed to load property visits'
 
-            );
+);
 
           }
 
@@ -770,138 +771,150 @@ implements OnInit {
   // =====================================================
   // DELETE VISIT
   // =====================================================
+// =====================================================
+// DELETE VISIT
+// =====================================================
 
-  deleteVisit(
+async deleteVisit(
 
-    id:
-      string
+  id:
+    string
 
-  ): void {
-
-
-    const confirmed =
-
-      confirm(
-
-        'Are you sure you want to delete this visit?'
-
-      );
+): Promise<void> {
 
 
-    if (!confirmed) {
+  const confirmed =
 
-      return;
+    await this.notification.confirmDelete(
 
-    }
+      'Delete Property Visit?',
 
+      'This property visit will be permanently deleted.'
 
-    this.loading =
-      true;
-
-
-    this.visitService
-
-      .deleteVisit(id)
-
-      .subscribe({
-
-        next:
-
-          () => {
+    );
 
 
-            this.visits =
+  if (!confirmed) {
 
-              this.visits.filter(
+    return;
 
-                visit =>
-
-                  visit._id !== id
-
-              );
+  }
 
 
-            this.totalItems =
-
-              Math.max(
-
-                0,
-
-                this.totalItems - 1
-
-              );
+  this.loading =
+    true;
 
 
-            this.totalPages =
+  this.visitService
 
-              Math.ceil(
+    .deleteVisit(id)
 
-                this.totalItems /
+    .subscribe({
 
-                this.pageSize
+      next:
 
-              ) || 1;
-
-
-            this.loading =
-              false;
+        () => {
 
 
-            this.cdr.detectChanges();
+          this.visits =
 
+            this.visits.filter(
 
-            if (
+              visit =>
 
-              this.visits.length === 0 &&
-
-              this.currentPage > 1
-
-            ) {
-
-
-              this.currentPage--;
-
-
-              this.loadVisits();
-
-            }
-
-          },
-
-
-        error:
-
-          (err) => {
-
-
-            console.error(
-
-              'Delete Visit Error:',
-
-              err
+                visit._id !== id
 
             );
 
 
-            this.loading =
-              false;
+          this.totalItems =
 
+            Math.max(
 
-            this.cdr.detectChanges();
+              0,
 
-
-            alert(
-
-              err.error?.message ||
-
-              'Failed to delete visit'
+              this.totalItems - 1
 
             );
+
+
+          this.totalPages =
+
+            Math.ceil(
+
+              this.totalItems /
+
+              this.pageSize
+
+            ) || 1;
+
+
+          this.loading =
+            false;
+
+
+          this.cdr.detectChanges();
+
+
+          this.notification.success(
+
+            'Property visit deleted successfully'
+
+          );
+
+
+          if (
+
+            this.visits.length === 0 &&
+
+            this.currentPage > 1
+
+          ) {
+
+
+            this.currentPage--;
+
+
+            this.loadVisits();
 
           }
 
-      });
+        },
 
-  }
+
+      error:
+
+        (err) => {
+
+
+          console.error(
+
+            'Delete Visit Error:',
+
+            err
+
+          );
+
+
+          this.loading =
+            false;
+
+
+          this.cdr.detectChanges();
+
+
+          this.notification.error(
+
+            err.error?.message ||
+
+            'Failed to delete property visit'
+
+          );
+
+        }
+
+    });
+
+}
 
 }
